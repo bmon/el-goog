@@ -1,2 +1,2 @@
-# el-goog
-cs4920 assignment
+# el-goog 
+the ethical file sync and backup system
