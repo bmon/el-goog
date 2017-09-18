@@ -1,2 +1,5 @@
 /vendor/
+/node_modules/
+/assets/dist/
 el-goog
+webpack-stats.json
