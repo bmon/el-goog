@@ -34,6 +34,8 @@ the ethical file sync and backup system
    `$ dep ensure`
    this will install any extra (golang) libraries we've added to the code
 
+6. install nvm: https://github.com/creationix/nvm
+
 6. last, run `go build`, then
    `$ ./el-goog`
    and go to http://localhost:8000 in your browser

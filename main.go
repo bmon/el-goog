@@ -1,20 +1,26 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-)
+	"os"
 
-func YourHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!\n"))
-}
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+)
 
 func main() {
 	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
-	r.HandleFunc("/", YourHandler)
+
+	// handlers for index.html and bundle.js
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "assets/dist/index.html")
+	})
+	r.HandleFunc("/bundle.js", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "assets/dist/bundle.js")
+	})
 
 	// Bind to a port and pass our router in
-	log.Fatal(http.ListenAndServe(":8000", r))
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+	log.Fatal(http.ListenAndServe(":8000", loggedRouter))
 }
