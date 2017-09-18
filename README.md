@@ -36,7 +36,14 @@ the ethical file sync and backup system
 
 6. install nvm: https://github.com/creationix/nvm
 
-6. last, run `go build`, then
+   ```
+   nvm install node
+   npm install
+   ./node_modules/.bin/webpack --config webpack.config.js
+   ```
+
+
+7. last, run `go build`, then
    `$ ./el-goog`
    and go to http://localhost:8000 in your browser
 
@@ -44,7 +51,15 @@ the ethical file sync and backup system
 
 ## making changes:
 
-to make changes to the assingment:
+### when jamming:
+
+set yourself up with ./node_modules/.bin/webpack --config webpack.config.js --watch
+which should auto rebuild any files you change under /assets
+
+set your editor to run `gofmt` on write in .go files, check out `fatih/vim-go` for vim
+there'll be equivalents for other editors
+
+### to make changes to the assingment:
 
 ```
 $ git pull
