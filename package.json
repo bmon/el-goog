@@ -1,0 +1,24 @@
+{
+  "name": "el-goog",
+  "version": "0.1.0",
+  "description": "the ethical file sync and sharing website",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/bmon/el-goog"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "copy-webpack-plugin": "^4.0.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "webpack": "^3.6.0",
+    "webpack-bundle-tracker": "^0.2.0"
+  }
+}
