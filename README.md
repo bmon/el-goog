@@ -33,6 +33,7 @@ the ethical file sync and backup system
 5. `$ cd el-goog`
    `$ dep ensure`
    this will install any extra (golang) libraries we've added to the code
+   `go get -u github.com/pressly/goose/cmd/goose`
 
 6. install nvm: https://github.com/creationix/nvm
 
