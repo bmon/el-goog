@@ -2,4 +2,5 @@
 /node_modules/
 /assets/dist/
 el-goog
+elgoog.db
 webpack-stats.json
