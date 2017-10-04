@@ -1,5 +1,5 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
 var App = require('./app')
-
-ReactDOM.render(<App/>, document.getElementById('react-app'))
+var Router = require('react-router')
+var Route = require('react-router')
