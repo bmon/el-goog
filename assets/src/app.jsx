@@ -1,9 +1,9 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
 
-var Router = require('react-router').Router
-var Route = require('react-router').Route
-var Route = require('react-router').hashHistory
+var HashRouter = require('react-router-dom').HashRouter
+var Route = require('react-router-dom').Route
+//var Link = require('react-router-dom').Link
 //import {Router, Route, hashHistory } from 'react-router'
 
 var homeStyle = {
@@ -74,13 +74,36 @@ var Home = React.createClass({
   }
 })
 
+
+var DavidTest = React.createClass({
+  render() {
+    return (
+      <div style={homeStyle}>
+        <h1>Hey what are you doing here</h1>
+        <div style={buttonStyle}>
+          <h2>It is i</h2>
+         </div>
+         <div style={buttonStyle}>
+          <h2>Frontend master</h2>
+         </div>
+        <div className="content">
+ 		<Content/>
+        </div>
+      </div>
+    )
+  }
+})
+
+
 //ReactDOM.render(<Home/>, document.getElementById('react-app'));
 
 ReactDOM.render((
-  <Router history={hashHistory}>
-    <Route path="/" component={Home}/>
- 
-  </Router>
+  <HashRouter>
+	<div>
+		<Route exact path="/" component={Home}/>
+		<Route path="/test" component={DavidTest}/> 
+	</div>
+  </HashRouter>
 ), document.getElementById('react-app'))
 
 
