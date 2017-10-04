@@ -11,7 +11,6 @@ CREATE TABLE files (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     parent_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    path TEXT NOT NULL,
     size INTEGER NOT NULL,
     checksum TEXT NOT NULL,
     modified INTEGER NOT NULL,
