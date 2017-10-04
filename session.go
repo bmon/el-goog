@@ -24,19 +24,18 @@ type Session struct {
 	Checksum [sha256.Size]byte
 }
 
-func (s *Session) insert() error {
+func (s *Session) insert() {
 	db, err := sql.Open("sqlite3", DatabaseFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	sqlStmt := fmt.Sprintf("insert into sessions values (NULL, %d, %d, \"%x\")", s.UserID, s.Expires.Unix(), s.Checksum)
+	sqlStmt := fmt.Sprintf("insert into sessions values (NULL, %d, %d, '%x')", s.UserID, s.Expires.Unix(), s.Checksum)
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		fmt.Println(err)
 	}
-	return err
 }
 
 func CreateSession(userID int) string {
@@ -79,7 +78,7 @@ func GetSessionUserID(sessionID string) (int, error) {
 
 	fmt.Printf("%x\n", sha256.Sum256(saltedSessionID))
 
-	stmt := fmt.Sprintf("select user_id from sessions where checksum=\"%x\" and expires > %d", sha256.Sum256(saltedSessionID), time.Now().Unix())
+	stmt := fmt.Sprintf("select user_id from sessions where checksum='%x' and expires > %d", sha256.Sum256(saltedSessionID), time.Now().Unix())
 	row := db.QueryRow(stmt)
 	switch err := row.Scan(&user_id); err {
 	case sql.ErrNoRows:
