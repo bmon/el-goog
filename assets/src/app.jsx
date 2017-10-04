@@ -1,7 +1,10 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
-var Router = require('react-router').Router
-var Route = require('react-router')
+
+//var Router = require('react-router').Router
+//var Route = require('react-router')
+
+import {Router, Route, hashHistory } from 'react-router'
 
   	var homeStyle = {
         padding: 10,
@@ -71,4 +74,13 @@ var Home = React.createClass({
   }
 })
 
-ReactDOM.render(<Home/>, document.getElementById('react-app'));
+//ReactDOM.render(<Home/>, document.getElementById('react-app'));
+
+render((
+  <Router history={hashHistory}>
+    <Route path="/" component={Home}/>
+ 
+  </Router>
+  ), document.getElementById('react-app'))
+
+
