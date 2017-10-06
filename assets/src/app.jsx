@@ -6,6 +6,11 @@ var Route = require('react-router-dom').Route
 //var Link = require('react-router-dom').Link
 //import {Router, Route, hashHistory } from 'react-router'
 
+// importing cause requiring a class definition doesnt seem to work
+import { Component } from 'react'
+import FineUploaderTraditional from 'fine-uploader-wrappers'
+import Gallery from 'react-fine-uploader'
+
 var homeStyle = {
   padding: 10,
   margin: 10,
@@ -75,20 +80,50 @@ var Home = React.createClass({
 })
 
 
+//==============================================================================
+// React Fine Uploader Example
+//
+
+
+const uploader = new FineUploaderTraditional ({
+    options: {
+        chunking: {
+            enabled: true
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        request: {
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        }
+    }
+})
+
+console.log(uploader)
+
+class UploadComponent extends Component {
+    render() {
+        return (
+            <Gallery uploader={ uploader } />
+        )
+    }
+}
+
+var UploadTest = new UploadComponent()
+
+
+//==============================================================================
+// David's sandbox
 var DavidTest = React.createClass({
   render() {
     return (
       <div style={homeStyle}>
         <h1>Hey what are you doing here</h1>
-        <div style={buttonStyle}>
-          <h2>It is i</h2>
-         </div>
-         <div style={buttonStyle}>
-          <h2>Frontend master</h2>
-         </div>
-        <div className="content">
- 		<Content/>
-        </div>
+        <Gallery uploader={ uploader  } />
       </div>
     )
   }
