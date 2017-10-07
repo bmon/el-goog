@@ -18,4 +18,10 @@ var routes = Routes{
 		"/users",
 		UserCreate,
 	},
+	Route{
+		"UploadHandler",
+		"POST",
+		"/upload",
+		UploadHandler,
+	},
 }
