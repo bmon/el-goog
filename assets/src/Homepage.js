@@ -38,7 +38,7 @@ const HomePage = () => (
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button} label="Login" />}
+    iconElementRight={<RaisedButton style={styles.button} href="./#/login" label="Login" />}
   />
 
   <Card>
