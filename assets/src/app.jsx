@@ -88,18 +88,26 @@ var Home = React.createClass({
 const uploader = new FineUploaderTraditional ({
     options: {
         chunking: {
-            enabled: true
+            // so max 1,2gb files for now
+            enabled: false
         },
         deleteFile: {
-            enabled: true,
-            endpoint: '/uploads'
+            enabled: false,
+            //endpoint: '/upload'
         },
         request: {
-            endpoint: '/uploads'
+            endpoint: '/upload',
+            // using default names:
+            //
+            // filenameParam: 'qqfilename',
+            // inputName: 'qqfile',
+            // totalFileSizeName: 'qqtotalfilesize',
+            // uuidName: 'qquuid',
         },
         retry: {
             enableAuto: true
         }
+
     }
 })
 
