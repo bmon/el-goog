@@ -10,6 +10,8 @@ var Route = require('react-router-dom').Route
 import { Component } from 'react'
 import FineUploaderTraditional from 'fine-uploader-wrappers'
 import Gallery from 'react-fine-uploader'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Register from './Register';
 
 var homeStyle = {
   padding: 10,
@@ -79,6 +81,14 @@ var Home = React.createClass({
   }
 })
 
+//==============================================================================
+// React Material-UI
+const MuiThemeExample = () => (
+  <MuiThemeProvider>
+    <Register />
+  </MuiThemeProvider>
+);
+
 
 //==============================================================================
 // React Fine Uploader Example
@@ -136,7 +146,8 @@ ReactDOM.render((
   <HashRouter>
 	<div>
 		<Route exact path="/" component={Home}/>
-		<Route path="/test" component={DavidTest}/> 
+		<Route path="/test" component={DavidTest}/>
+		<Route path="/mui" component={MuiThemeExample}/> 
 	</div>
   </HashRouter>
 ), document.getElementById('react-app'))
