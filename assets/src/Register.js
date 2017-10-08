@@ -7,49 +7,83 @@ import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
 
-function handleTouchTap() {
-  alert('onClick triggered on the title component');
-}
 
-const styles = {
-  title: {
-    cursor: 'pointer',
-    fontSize: 20
-  },
-  button: {
-    textAlign: 'center',
-    margin: 12
-  },
-  content: {
-    textAlign: 'center',
-    fontSize: 15
-  },
-  body: {
-    textAlign: 'center'
+export default class Login extends React.Component {
+  constructor(props) {
+    super(props);
+
+    // Initial state
+    this.state = {
+      open: false,
+    }
+
+    // Bind methods
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
-};
 
-const HomePage = () => (
-  <div style={styles.body}>
-  <AppBar
-    title={<span style={styles.title}></span>}
-    onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button} label="Login" />}
-  />
+  handleOpen (){
+    this.setState({open: true});
+  };
 
-  <Card>
-    <CardMedia>
-      <img src="https://photos-4.dropbox.com/t/2/AABaZfPa1r57FngiNy9IvgY613OOvrJexBrspZAfWDhENw/12/4828321/png/32x32/1/_/1/2/elgoog%20header.png/EPn5zgMYgaYCIAIoAg/Oaz7S-K4pHQZKe3o-T4SGF8I1U8w_UTfANjF1Ik7GNQ?size=2048x1536&size_mode=3" alt="el-goog logo" />
-    </CardMedia>
-    <CardTitle style={styles.title} title="To Do Sign Up" />
+  handleClose () {
+    this.setState({open: false});
+  };
 
-  </Card>
+render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onClick={this.handleClose}
+      />,
+      <FlatButton
+        label="Login"
+        primary={true}
+        onClick={this.handleClose}
+      />,
+    ];
 
-
-
-  </div>
-);
-
-export default HomePage;
+    return (
+      <div>
+        <RaisedButton label="Sign Up" onClick={this.handleOpen} />
+        <Dialog
+          title="Sign Up"
+          actions={actions}
+          modal={true}
+          open={this.state.open}
+        >
+          <TextField ref='fullname'
+             name='fullname'
+             required={true}
+             hintText="Full Name"
+             //errorText={"error"}
+             floatingLabelText="Full Name"
+             type="text">
+          </TextField>
+          <br/>
+          <TextField ref='email'
+             name='email'
+             required={true}
+             hintText="Email"
+             //errorText={"error"}
+             floatingLabelText="Email"
+             type="text">
+          </TextField>
+          <br/>
+          <TextField ref='password'
+             name='password'
+             required={true}
+             hintText="Password"
+             //errorText={"errorrr"}
+             floatingLabelText="Password"
+             type="text">
+          </TextField>
+          <br/>
+        </Dialog>
+      </div>
+    );
+  }
+}
