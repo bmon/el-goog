@@ -8,6 +8,8 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 
+import Register from './Register';
+
 function handleTouchTap() {
   alert('onClick triggered on the title component');
 }
@@ -18,15 +20,15 @@ const styles = {
     fontSize: 20
   },
   button: {
-    textAlign: 'center',
-    margin: 12
+  	textAlign: 'center',
+  	margin: 12
   },
   content: {
-    textAlign: 'center',
-    fontSize: 15
+  	textAlign: 'center',
+  	fontSize: 15
   },
   body: {
-    textAlign: 'center'
+  	textAlign: 'center'
   }
 };
 
@@ -36,14 +38,23 @@ const HomePage = () => (
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button} label="Login" />}
+    iconElementRight={<RaisedButton style={styles.button} href="./#/login" label="Login" />}
   />
 
   <Card>
     <CardMedia>
       <img src="https://photos-4.dropbox.com/t/2/AABaZfPa1r57FngiNy9IvgY613OOvrJexBrspZAfWDhENw/12/4828321/png/32x32/1/_/1/2/elgoog%20header.png/EPn5zgMYgaYCIAIoAg/Oaz7S-K4pHQZKe3o-T4SGF8I1U8w_UTfANjF1Ik7GNQ?size=2048x1536&size_mode=3" alt="el-goog logo" />
     </CardMedia>
-    <CardTitle style={styles.title} title="To Do Sign Up" />
+    <CardTitle style={styles.title} title="Ethical File Sync and Backup" />
+    <CardActions>
+      <RaisedButton style={styles.button} href="./#/signup" label="Sign Up" />
+    </CardActions>
+
+    <Divider />
+    <br/>
+    <CardTitle titleStyle={styles.content} title="The elegant way to store your files and access them anytime, anywhere" />
+    <br/>
+    <CardTitle titleStyle={styles.content} title="[insert visual instructions on how to use el-goog]" />
 
   </Card>
 
