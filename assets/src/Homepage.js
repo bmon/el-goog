@@ -7,13 +7,17 @@ import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
 
 import Register from './Register';
+import LoginPU from './LoginPU';
 
+// currently unused
 function handleTouchTap() {
   alert('onClick triggered on the title component');
 }
 
+// css to be applied to elements
 const styles = {
   title: {
     cursor: 'pointer',
@@ -38,7 +42,8 @@ const HomePage = () => (
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button} href="./#/login" label="Login" />}
+    iconElementRight={<RaisedButton><LoginPU /></RaisedButton>
+	}
   />
 
   <Card>
@@ -47,7 +52,7 @@ const HomePage = () => (
     </CardMedia>
     <CardTitle style={styles.title} title="Ethical File Sync and Backup" />
     <CardActions>
-      <RaisedButton style={styles.button} href="./#/signup" label="Sign Up" />
+      <RaisedButton style={styles.button}><Register /></RaisedButton>
     </CardActions>
 
     <Divider />

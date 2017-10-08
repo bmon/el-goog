@@ -40,7 +40,7 @@ render() {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Submit"
+        label="Login"
         primary={true}
         onClick={this.handleClose}
       />,
@@ -55,12 +55,12 @@ render() {
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='username'
-             name='username'
+          <TextField ref='email'
+             name='email'
              required={true}
-           hintText="Username"
-         //  errorText={"errorrr"}
-               floatingLabelText="Username"
+           hintText="Email"
+         //  errorText={"error"}
+               floatingLabelText="Email"
                type="text">
             </TextField>
             <br/>
