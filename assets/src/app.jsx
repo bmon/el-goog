@@ -12,7 +12,7 @@ import FineUploaderTraditional from 'fine-uploader-wrappers'
 import Gallery from 'react-fine-uploader'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Register from './Register';
-import HomePage from './HomePage';
+import HomePage from './Homepage';
 import Login from './Login';
 //import FineUploaderTraditional from 'fine-uploader-wrappers'
 //import Gallery from 'react-fine-uploader'
