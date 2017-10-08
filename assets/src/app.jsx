@@ -12,6 +12,8 @@ import FineUploaderTraditional from 'fine-uploader-wrappers'
 import Gallery from 'react-fine-uploader'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Register from './Register';
+import HomePage from './HomePage';
+import Login from './Login';
 //import FineUploaderTraditional from 'fine-uploader-wrappers'
 //import Gallery from 'react-fine-uploader'
 
@@ -63,7 +65,7 @@ var Content = React.createClass({
     }
 })
 
-var Login = React.createClass({
+/*var Login = React.createClass({
   render() {
       return (
         <div style={homeStyle}>
@@ -73,7 +75,7 @@ var Login = React.createClass({
       )
     }
 })
-
+*/
 var SignUp = React.createClass({
   render() {
     return (
@@ -103,14 +105,25 @@ var Home = React.createClass({
 })
 
 //==============================================================================
-// React Material-UI
-const MuiThemeExample = () => (
+// React Material UI New Homepage
+
+const NewHome = () => (
+  <MuiThemeProvider>
+    <HomePage />
+  </MuiThemeProvider>
+);
+
+const NewRegister = () => (
   <MuiThemeProvider>
     <Register />
   </MuiThemeProvider>
 );
 
-
+const SignIn = () => (
+  <MuiThemeProvider>
+    <Login />
+  </MuiThemeProvider>
+);
 
 //==============================================================================
 // React Fine Uploader Example
@@ -175,12 +188,11 @@ var DavidTest = React.createClass({
 
 ReactDOM.render((
   <HashRouter>
-  	<div>
-  		<Route exact path="/" component={Home}/>
- 		<Route path="/test" component={DavidTest}/> 
- 		<Route path="/login" component={Login}/>
- 		<Route path="/signup" component={SignUp}/>
- 		<Route path="/mui" component={MuiThemeExample}/> 
-  	</div>
+    <div>
+      <Route exact path="/" component={NewHome}/>
+    <Route path="/test" component={DavidTest}/> 
+    <Route path="/login" component={SignIn}/>
+    <Route path="/signup" component={NewRegister}/>
+    </div>
     </HashRouter>
   ), document.getElementById('react-app'))
