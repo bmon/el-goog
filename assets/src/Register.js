@@ -8,29 +8,85 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
+import axios from 'axios';
+import qs from 'qs';
 
 
 export default class Login extends React.Component {
+
   constructor(props) {
     super(props);
 
     // Initial state
     this.state = {
       open: false,
+      username: '',
+      email: '',
+      password: '',
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleUsername = this.handleUsername.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
+    this.handlePassword = this.handlePassword.bind(this);
+    this.sendForm = this.sendForm.bind(this);
   }
 
-  handleOpen (){
+  handleOpen () {
     this.setState({open: true});
   };
 
   handleClose () {
     this.setState({open: false});
   };
+
+  handleUsername (event) {
+    var key = "username"
+    var val = event.target.value
+    console.log(val);
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );  
+  }
+  handleEmail (event) {
+    var key = "email"
+    var val = event.target.value
+    console.log(val);
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );  
+  }
+  handlePassword (event) {
+    var key = "password"
+    var val = event.target.value
+    console.log(val);
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );  
+  }
+
+  sendForm() {
+    axios.post(
+        '/users', qs.stringify({
+            username: this.state.username,
+            email: this.state.email, 
+            password: this.state.password,
+        })
+    ).then(function(response) {
+      console.log(response.status)
+      console.log(response.statusText)
+      console.log(response.data)
+    }).catch(function (error) {
+      console.log(error)
+    });
+
+    // TODO instead have user-friendly response and maintain close button
+    this.setState({open: false});
+  };
+
+  
 
 render() {
     const actions = [
@@ -42,7 +98,7 @@ render() {
       <FlatButton
         label="Login"
         primary={true}
-        onClick={this.handleClose}
+        onClick={this.sendForm}
       />,
     ];
 
@@ -61,6 +117,8 @@ render() {
              hintText="Full Name"
              //errorText={"error"}
              floatingLabelText="Full Name"
+             value={this.state.username}
+             onChange={this.handleUsername}
              type="text">
           </TextField>
           <br/>
@@ -70,6 +128,8 @@ render() {
              hintText="Email"
              //errorText={"error"}
              floatingLabelText="Email"
+             value={this.state.email}
+             onChange={this.handleEmail}
              type="text">
           </TextField>
           <br/>
@@ -79,6 +139,8 @@ render() {
              hintText="Password"
              //errorText={"errorrr"}
              floatingLabelText="Password"
+             value={this.state.password}
+             onChange={this.handlePassword}
              type="text">
           </TextField>
           <br/>
