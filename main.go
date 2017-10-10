@@ -25,7 +25,7 @@ func main() {
 
 	// Bind to a port and pass our router in
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
-	log.Fatal(http.ListenAndServe(":8000", loggedRouter))
+	log.Fatal(http.ListenAndServe(":5000", loggedRouter))
 }
 
 func newRouter() *mux.Router {
