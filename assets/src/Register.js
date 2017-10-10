@@ -78,6 +78,7 @@ export default class Login extends React.Component {
       console.log(response.status)
       console.log(response.statusText)
       console.log(response.data)
+      alert(response.data)
     }).catch(function (error) {
       console.log(error)
     });
