@@ -48,7 +48,7 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		}
                 fmt.Fprintf(w, "Success! ID is:"+strconv.FormatInt(id,10))
 	} else {
-		fmt.Fprintf(w, "ERROR: invalid email address")
+		fmt.Fprintf(w, "ERROR: invalid email address. Received address: "+eml)
 	        fmt.Println("yeah nah mate get a better email address")
 	}
 }
