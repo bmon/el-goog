@@ -4,6 +4,8 @@ var ReactDOM = require('react-dom')
 var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
+
+var axios = require('axios').axios
 //import {Router, Route, hashHistory } from 'react-router'
 
 // importing cause requiring a class definition doesnt seem to work
@@ -156,18 +158,15 @@ const uploader = new FineUploaderTraditional ({
     }
 })
 
-console.log(uploader)
+//console.log(uploader)
 
-class UploadComponent extends Component {
+class UploadComponent extends React.Component {
     render() {
         return (
             <Gallery uploader={ uploader } />
         )
     }
 }
-
-var UploadTest = new UploadComponent()
-
 
 // ==============================================================================
 // David's sandbox
@@ -176,7 +175,7 @@ var DavidTest = React.createClass({
     return (
       <div style={homeStyle}>
         <h1>Hey what are you doing here</h1>
-        <Gallery uploader={ uploader  } />
+        <UploadComponent/>
       </div>
     )
   }
