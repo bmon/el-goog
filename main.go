@@ -19,6 +19,9 @@ func main() {
 	r.HandleFunc("/bundle.js", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "assets/dist/bundle.js")
 	})
+	r.HandleFunc("/logo", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "assets/dist/TEMPLOGO.png")
+	})
 
 	// Bind to a port and pass our router in
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
