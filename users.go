@@ -105,15 +105,14 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	sltpwd := append([]byte(password), pwdsalt...)
+	dbBytepass := []byte(dbPass)
 
-	var dbBytepass = []byte(dbPass)
+	compErr := bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
 
-	err = bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
-
-	if err == nil {
+	if compErr == nil {
 		fmt.Println("match!")
 	} else {
-		fmt.Println(err)
+		fmt.Println("match failed ;_;")
 	}
 
 	//check that email address exists
