@@ -42,6 +42,19 @@ func (u *User) Insert() error {
 	return nil
 }
 
+func UserSelectByID(userID int) (*User, error) {
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		return nil, err
+	}
+	u := &User{}
+	err = db.QueryRow("SELECT id, email, password, username FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Email)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
 func UserCreate(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
@@ -96,52 +109,65 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	row := db.QueryRow("SELECT id,password FROM users WHERE email = ?", user.Email)
 
 	var dbPass string
-	scanErr := row.Scan(&user.ID, &dbPass)
-	if scanErr == nil {
-		fmt.Println("got " + dbPass)
+	err = row.Scan(&user.ID, &dbPass)
+	if err != nil {
+		http.Error(w, "bad username or password", 400)
 	}
 
 	sltpwd := append([]byte(user.Password), pwdsalt...)
 	dbBytepass := []byte(dbPass)
 
-	compErr := bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
+	err = bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
 
-	if compErr == nil {
-		fmt.Println("login match! creating session...")
-		user.CreateSession(w)
-	} else {
-		fmt.Println("match failed ;_;")
+	if err != nil {
+		http.Error(w, "bad username or password", 400)
 	}
+	user.CreateSession(w)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
 	/*
-		cookie, cookieErr := r.Cookie("session_id")
-		if cookieErr != nil {
-			// the user did not give us a cookie to logout with
-			// they probably typed in the exact url for logout requests
-			// TODO 404 them
-			return
-		}
+				cookie, cookieErr := r.Cookie("session_id")
+				if cookieErr != nil {
+					// the user did not give us a cookie to logout with
+					// they probably typed in the exact url for logout requests
+					// TODO 404 them
+					return
+				}
 
-		// Salt the session and generate checksum
+				// Salt the session and generate checksum
 
-		//saltedChecksum := bytestream the cookie.value
-		// then concat the salt from session.go
-		// TODO a function that literally does this in session.go
-		// then generates either bytestream or string
-		// then we can hand it off to sql
+				//saltedChecksum := bytestream the cookie.value
+				// then concat the salt from session.go
+				// TODO a function that literally does this in session.go
+				// then generates either bytestream or string
+				// then we can hand it off to sql
 
-		// find session cookie in database and clear if there
-		db, sqlErr := sql.Open("sqlite3", DatabaseFile)
-		if sqlErr != nil {
-			return sqlErr
-		}
-		defer db.Close()
-		row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
+				// find session cookie in database and clear if there
+				db, sqlErr := sql.Open("sqlite3", DatabaseFile)
+				if sqlErr != nil {
+					return sqlErr
+				}
+				defer db.Close()
+				row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
+		=======
+			// find session cookie in database and clear if there
+			//db, err := sql.Open("sqlite3", DatabaseFile)
+			//if err != nil {
+			//	return err
+			//	http.Error(w, err.Error(), 500)
+			//	return
+			//}
+			//defer db.Close()
+			//err = db.Exec("DELETE FROM sessions WHERE checksum = ?", saltedChecksum)
+			//if err != nil && err != sql.ErrNoRows {
+			//	http.Error(w, err.Error(), 500)
+			//	return
+			//}
+		>>>>>>> Stashed changes
 
-		// tell user to clear cookie regardless
-		cookie.MaxAge = -1
-		http.SetCookie(w, cookie)
+				// tell user to clear cookie regardless
+				cookie.MaxAge = -1
+				http.SetCookie(w, cookie)
 	*/
 }

@@ -13,27 +13,27 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"UserCreate",
+		"usersCreate",
 		"POST",
-		"/user/create",
+		"/users",
 		UserCreate,
 	},
 	Route{
-		"UserLogin",
+		"usersLogin",
 		"POST",
-		"/user/login",
+		"/login",
 		UserLogin,
 	},
 	Route{
-		"UserLogout",
+		"usersLogout",
 		"POST",
-		"/user/logout",
+		"/logout",
 		UserLogout,
 	},
 	Route{
-		"UploadHandler",
+		"FileCreateHandler",
 		"POST",
-		"/upload",
-		UploadHandler,
+		"/files",
+		FileCreateHandler,
 	},
 }

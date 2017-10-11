@@ -48,7 +48,7 @@ const HomePage = () => (
 
   <Card>
     <CardMedia>
-      <img src="logo.png" alt="el-goog logo" />
+      <img src="/assets/logo.png" alt="el-goog logo" />
     </CardMedia>
     <CardTitle style={styles.title} title="Ethical File Sync and Backup" />
     <CardActions>

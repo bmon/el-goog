@@ -43,19 +43,19 @@ export default class Login extends React.Component {
     var val = event.target.value
     var rel = {}
     rel[key] = val
-    this.setState( rel );  
+    this.setState( rel );
   }
   handlePassword (event) {
     var key = "password"
     var val = event.target.value
     var rel = {}
     rel[key] = val
-    this.setState( rel );  
+    this.setState( rel );
   }
   sendForm() {
     axios.post(
-        '/user/login', qs.stringify({
-            email: this.state.email, 
+        '/login', qs.stringify({
+            email: this.state.email,
             password: this.state.password,
         })
     ).then(function(response) {
