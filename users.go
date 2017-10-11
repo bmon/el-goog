@@ -3,10 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 	"regexp"
 	"strconv"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type User struct {
@@ -29,29 +30,33 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	if isEmail.MatchString(eml) {
 		db, err := sql.Open("sqlite3", "./elgoog.db")
 		if err != nil {
-			fmt.Fprintf(w, "ERROR: could not access database")
-			fmt.Println("couldn't open le database")
+			fmt.Println(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
 		}
 		stmt, err := db.Prepare("INSERT INTO users(id, email, password, username) values(?,?,?,?)")
 		if err != nil {
-			fmt.Fprintf(w, "ERROR: faulty SQL command")
-			fmt.Println("insert line is broken, I dun goof'd")
+			fmt.Println(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
 		}
 		res, err := stmt.Exec(nil, eml, pwd, usr)
 		if err != nil {
-			fmt.Fprintf(w, "ERROR: Failed to execute SQL insert")
-			fmt.Println("could not insert lel")
+			fmt.Println(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
 		}
 		id, err := res.LastInsertId()
 		if err != nil {
-			fmt.Fprintf(w, "ERROR: failed to add data to database")
-			fmt.Println("There was an insert errror")
+			fmt.Println(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
 		} else {
 			fmt.Println("Result of SQL insert: " + strconv.FormatInt(id, 10))
 		}
 		fmt.Fprintf(w, "Success! ID is:"+strconv.FormatInt(id, 10))
 	} else {
-		fmt.Fprintf(w, "ERROR: invalid email address. Received address: "+eml)
-		fmt.Println("yeah nah mate get a better email address")
+		http.Error(w, "ERROR: invalid email address. Received address: "+eml, 400)
+		return
 	}
 }

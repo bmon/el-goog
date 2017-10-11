@@ -80,14 +80,14 @@ export default class Login extends React.Component {
       console.log(response.data)
       alert(response.data)
     }).catch(function (error) {
-      console.log(error)
+      alert(error.response.data)
     });
 
     // TODO instead have user-friendly response and maintain close button
     this.setState({open: false});
   };
 
-  
+
 
 render() {
     const actions = [
