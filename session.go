@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -38,7 +39,7 @@ func (s *Session) insert() {
 	}
 }
 
-func CreateSession(userID int) string {
+func (u *User) CreateSession(w http.ResponseWriter) {
 	sessionID := make([]byte, keySize) // make empty byte slice
 	_, err := rand.Read(sessionID)     // fill it with random data
 	if err != nil {
@@ -48,14 +49,18 @@ func CreateSession(userID int) string {
 	saltedSessionID := append(sessionID, salt...)
 
 	newSession := &Session{
-		userID,
+		u.ID,
 		time.Now().AddDate(0, 0, expiryDays),
 		sha256.Sum256(saltedSessionID),
 	}
 
 	newSession.insert()
 
-	return base64.StdEncoding.EncodeToString(sessionID)
+	http.SetCookie(w, &http.Cookie{
+		Name: "session_id", Value: base64.StdEncoding.EncodeToString(sessionID),
+		MaxAge: expiryDays * 24 * 60 * 60, Secure: true, HttpOnly: true,
+	})
+
 }
 
 func GetSessionUserID(sessionID string) (int, error) {
@@ -75,8 +80,6 @@ func GetSessionUserID(sessionID string) (int, error) {
 	defer db.Close()
 
 	var user_id int
-
-	fmt.Printf("%x\n", sha256.Sum256(saltedSessionID))
 
 	stmt := fmt.Sprintf("select user_id from sessions where checksum='%x' and expires > %d", sha256.Sum256(saltedSessionID), time.Now().Unix())
 	row := db.QueryRow(stmt)
