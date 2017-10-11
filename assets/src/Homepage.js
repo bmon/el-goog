@@ -42,7 +42,7 @@ const HomePage = () => (
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton><LoginPU /></RaisedButton>
+    iconElementRight={<RaisedButton style={styles.button}><LoginPU /></RaisedButton>
 	}
   />
 
