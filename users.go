@@ -90,16 +90,20 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
              fmt.Println(err)
         }
 
-        var recPassword string
+        var recPassword []byte
 
         sltpwd := append([]byte(password), pwdsalt...)
-        hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
-
-        hashedPassword := string(hshpwd[:])
-
+        
         err = row.Scan(&recPassword)
 
-        if recPassword == hashedPassword {
+        if err == nil {
+            fmt.Println("error scanning row")
+        }
+       
+        err = bcrypt.CompareHashAndPassword(recPassword, sltpwd)
+
+
+        if err == nil {
             fmt.Println("match!")
         } else {
             fmt.Println("try again lel")
