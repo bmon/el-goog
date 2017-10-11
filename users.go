@@ -92,18 +92,14 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// run it
-	row, err := db.Query("SELECT password FROM users WHERE email = ?", email)
-	if err != nil {
-		fmt.Println(err)
-	}
+	row := db.QueryRow("SELECT password FROM users WHERE email = ?", email)
 
 	var dbPass string
-	for row.Next() {
-		err = row.Scan(&dbPass)
-		if err == nil {
-			fmt.Println("got " + dbPass)
-		}
+	scanErr := row.Scan(&dbPass)
+	if scanErr == nil {
+		fmt.Println("got " + dbPass)
 	}
+
 	sltpwd := append([]byte(password), pwdsalt...)
 	dbBytepass := []byte(dbPass)
 
