@@ -66,7 +66,7 @@ export default class Login extends React.Component {
 
   sendForm() {
     axios.post(
-        '/users', qs.stringify({
+        '/user/create', qs.stringify({
             username: this.state.username,
             email: this.state.email, 
             password: this.state.password,

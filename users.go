@@ -3,9 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"regexp"
-        "golang.org/x/crypto/bcrypt"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
@@ -51,10 +51,10 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	if isEmail.MatchString(email) {
 
-                sltpwd := append([]byte(password), pwdsalt...)
-                hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+		sltpwd := append([]byte(password), pwdsalt...)
+		hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
 
-                hashedPassword := string(hshpwd[:])
+		hashedPassword := string(hshpwd[:])
 
 		user := &User{-1, email, hashedPassword, username}
 		err := user.Insert()
@@ -84,63 +84,72 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 
-        db, err := sql.Open("sqlite3", DatabaseFile)
-        row, err :=db.Query("SELECT password FROM users WHERE email = '"+email+"'")
-        if err != nil {
-             fmt.Println(err)
-        }
+	// open
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
 
-        var recPassword []byte
+	// run it
+	row, err := db.Query("SELECT password FROM users WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-        sltpwd := append([]byte(password), pwdsalt...)
-        
-        err = row.Scan(&recPassword)
+	var dbPass string
+	for row.Next() {
+		err = row.Scan(&dbPass)
+		if err == nil {
+			fmt.Println("got " + dbPass)
+		}
+	}
+	sltpwd := append([]byte(password), pwdsalt...)
 
-        if err == nil {
-            fmt.Println("error scanning row")
-        }
-       
-        err = bcrypt.CompareHashAndPassword(recPassword, sltpwd)
+	var dbBytepass = []byte(dbPass)
 
+	err = bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
 
-        if err == nil {
-            fmt.Println("match!")
-        } else {
-            fmt.Println("try again lel")
-        }
-        
-        //check that email address exists
-        //create struct instance
-        //check password
-        //if yes - instance.CreateSession
+	if err == nil {
+		fmt.Println("match!")
+	} else {
+		fmt.Println(err)
+	}
+
+	//check that email address exists
+	//create struct instance
+	//check password
+	//if yes - instance.CreateSession
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
-	cookie, cookieErr := r.Cookie("session_id")
-	if cookieErr != nil {
-		// the user did not give us a cookie to logout with
-		// they probably typed in the exact url for logout requests
-		// TODO 404 them
-		return
-	}
+	/*
+		cookie, cookieErr := r.Cookie("session_id")
+		if cookieErr != nil {
+			// the user did not give us a cookie to logout with
+			// they probably typed in the exact url for logout requests
+			// TODO 404 them
+			return
+		}
 
-	// Salt the session and generate checksum
+		// Salt the session and generate checksum
 
-	//saltedChecksum := bytestream the cookie.value
-	// then concat the salt from session.go
-	// TODO a function that literally does this in session.go
-	// then generates either bytestream or string
-	// then we can hand it off to sql
+		//saltedChecksum := bytestream the cookie.value
+		// then concat the salt from session.go
+		// TODO a function that literally does this in session.go
+		// then generates either bytestream or string
+		// then we can hand it off to sql
 
-	// find session cookie in database and clear if there
-	db, sqlErr := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-	row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
+		// find session cookie in database and clear if there
+		db, sqlErr := sql.Open("sqlite3", DatabaseFile)
+		if sqlErr != nil {
+			return sqlErr
+		}
+		defer db.Close()
+		row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
 
-	// tell user to clear cookie regardless
-	cookie.MaxAge = -1
-	http.SetCookie(w, cookie)
+		// tell user to clear cookie regardless
+		cookie.MaxAge = -1
+		http.SetCookie(w, cookie)
+	*/
 }
