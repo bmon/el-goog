@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-        "golang.org/x/crypto/bcrypt"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
@@ -51,10 +52,10 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	if isEmail.MatchString(email) {
 
-                sltpwd := append([]byte(password), pwdsalt...)
-                hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+		sltpwd := append([]byte(password), pwdsalt...)
+		hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
 
-                hashedPassword := string(hshpwd[:])
+		hashedPassword := string(hshpwd[:])
 
 		user := &User{-1, email, hashedPassword, username}
 		err := user.Insert()
@@ -87,7 +88,31 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
-	cookie := 
-	
+	cookie, cookieErr := r.Cookie("session_id")
+	if cookieErr != nil {
+		// the user did not give us a cookie to logout with
+		// they probably typed in the exact url for logout requests
+		// TODO 404 them
+		return
+	}
 
+	// Salt the session and generate checksum
+
+	//saltedChecksum := bytestream the cookie.value
+	// then concat the salt from session.go
+	// TODO a function that literally does this in session.go
+	// then generates either bytestream or string
+	// then we can hand it off to sql
+
+	// find session cookie in database and clear if there
+	db, sqlErr := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
+
+	// tell user to clear cookie regardless
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 }
