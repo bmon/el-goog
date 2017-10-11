@@ -16,11 +16,11 @@ func main() {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "assets/dist/index.html")
 	})
-	r.HandleFunc("/bundle.js", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/dist/bundle.js")
-	})
-	r.HandleFunc("/logo", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/static/TEMPLOGO.png")
+
+	r.HandleFunc("/{distfile}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		distfile := vars["distfile"]
+		http.ServeFile(w, r, "assets/dist/"+distfile)
 	})
 
 	// Bind to a port and pass our router in
