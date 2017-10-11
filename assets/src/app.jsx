@@ -13,9 +13,11 @@ import { Component } from 'react'
 import FineUploaderTraditional from 'fine-uploader-wrappers'
 import Gallery from 'react-fine-uploader'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import Register from './Register';
 import HomePage from './Homepage';
 import Login from './Login';
+import FilesPage from './Files';
 //import FineUploaderTraditional from 'fine-uploader-wrappers'
 //import Gallery from 'react-fine-uploader'
 
@@ -127,61 +129,11 @@ const SignIn = () => (
   </MuiThemeProvider>
 );
 
-//==============================================================================
-// React Fine Uploader Example
-//
-
-
-const uploader = new FineUploaderTraditional ({
-    options: {
-        chunking: {
-            // so max 1,2gb files for now
-            enabled: false
-        },
-        deleteFile: {
-            enabled: false,
-            //endpoint: '/upload'
-        },
-        request: {
-            endpoint: '/upload',
-            // using default names:
-            //
-            // filenameParam: 'qqfilename',
-            // inputName: 'qqfile',
-            // totalFileSizeName: 'qqtotalfilesize',
-            // uuidName: 'qquuid',
-        },
-        retry: {
-            enableAuto: true
-        }
-
-    }
-})
-
-//console.log(uploader)
-
-class UploadComponent extends React.Component {
-    render() {
-        return (
-            <Gallery uploader={ uploader } />
-        )
-    }
-}
-
-// ==============================================================================
-// David's sandbox
-var DavidTest = React.createClass({
-  render() {
-    return (
-      <div style={homeStyle}>
-        <h1>Hey what are you doing here</h1>
-        <UploadComponent/>
-      </div>
-    )
-  }
-})
-
-
+const Files = () => (
+  <MuiThemeProvider>
+    <FilesPage />
+  </MuiThemeProvider>
+);
 
 //ReactDOM.render(<Home/>, document.getElementById('react-app'));
 
@@ -189,9 +141,9 @@ ReactDOM.render((
   <HashRouter>
     <div>
       <Route exact path="/" component={NewHome}/>
-    <Route path="/test" component={DavidTest}/> 
     <Route path="/login" component={SignIn}/>
     <Route path="/signup" component={NewRegister}/>
+    <Route path="/files" component={Files}/>
     </div>
     </HashRouter>
   ), document.getElementById('react-app'))
