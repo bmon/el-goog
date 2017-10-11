@@ -70,3 +70,15 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func UserLogin(w http.ResponseWriter, r *http.Request) {
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+}
+
+func UserLogout(w http.ResponseWriter, r *http.Request) {
+	cookie := 
+	
+
+}

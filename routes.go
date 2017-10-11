@@ -15,8 +15,20 @@ var routes = Routes{
 	Route{
 		"UserCreate",
 		"POST",
-		"/users",
+		"/user/create",
 		UserCreate,
+	},
+	Route{
+		"UserLogin",
+		"POST",
+		"/user/login",
+		UserLogin,
+	},
+	Route{
+		"UserLogout",
+		"POST",
+		"/user/logout",
+		UserLogout,
 	},
 	Route{
 		"UploadHandler",
