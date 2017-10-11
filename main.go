@@ -20,7 +20,7 @@ func main() {
 		http.ServeFile(w, r, "assets/dist/bundle.js")
 	})
 	r.HandleFunc("/logo", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/dist/TEMPLOGO.png")
+		http.ServeFile(w, r, "assets/static/TEMPLOGO.png")
 	})
 
 	// Bind to a port and pass our router in
