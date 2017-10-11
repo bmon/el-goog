@@ -95,7 +95,7 @@ render() {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Login"
+        label="Register"
         primary={true}
         onClick={this.sendForm}
       />,
