@@ -82,7 +82,7 @@ export default class Login extends React.Component {
     });
 
     // TODO instead have user-friendly response and maintain close button
-    this.setState({open: false});
+    //this.setState({open: false});
   };
 
 

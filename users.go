@@ -81,8 +81,9 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
-	email := r.PostFormValue("email")
-	password := r.PostFormValue("password")
+	var user User
+	user.Email = r.PostFormValue("email")
+	user.Password = r.PostFormValue("password")
 
 	// open
 	db, err := sql.Open("sqlite3", DatabaseFile)
@@ -92,29 +93,25 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// run it
-	row := db.QueryRow("SELECT password FROM users WHERE email = ?", email)
+	row := db.QueryRow("SELECT id,password FROM users WHERE email = ?", user.Email)
 
 	var dbPass string
-	scanErr := row.Scan(&dbPass)
+	scanErr := row.Scan(&user.ID, &dbPass)
 	if scanErr == nil {
 		fmt.Println("got " + dbPass)
 	}
 
-	sltpwd := append([]byte(password), pwdsalt...)
+	sltpwd := append([]byte(user.Password), pwdsalt...)
 	dbBytepass := []byte(dbPass)
 
 	compErr := bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
 
 	if compErr == nil {
-		fmt.Println("match!")
+		fmt.Println("login match! creating session...")
+		user.CreateSession(w)
 	} else {
 		fmt.Println("match failed ;_;")
 	}
-
-	//check that email address exists
-	//create struct instance
-	//check password
-	//if yes - instance.CreateSession
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
