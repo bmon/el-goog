@@ -45,7 +45,6 @@ export default class Login extends React.Component {
   handleUsername (event) {
     var key = "username"
     var val = event.target.value
-    console.log(val);
     var rel = {}
     rel[key] = val
     this.setState( rel );  
@@ -53,7 +52,6 @@ export default class Login extends React.Component {
   handleEmail (event) {
     var key = "email"
     var val = event.target.value
-    console.log(val);
     var rel = {}
     rel[key] = val
     this.setState( rel );  
@@ -61,7 +59,6 @@ export default class Login extends React.Component {
   handlePassword (event) {
     var key = "password"
     var val = event.target.value
-    console.log(val);
     var rel = {}
     rel[key] = val
     this.setState( rel );  
@@ -75,6 +72,7 @@ export default class Login extends React.Component {
             password: this.state.password,
         })
     ).then(function(response) {
+        // TODO proper form responses
       console.log(response.status)
       console.log(response.statusText)
       console.log(response.data)
