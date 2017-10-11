@@ -55,12 +55,15 @@ func (u *User) CreateSession(w http.ResponseWriter) {
 	}
 
 	newSession.insert()
-
+	fmt.Println(base64.StdEncoding.EncodeToString(sessionID))
 	http.SetCookie(w, &http.Cookie{
-		Name: "session_id", Value: base64.StdEncoding.EncodeToString(sessionID),
-		MaxAge: expiryDays * 24 * 60 * 60, Secure: true, HttpOnly: true,
+		Name:     "session_id",
+		Value:    base64.StdEncoding.EncodeToString(sessionID),
+		MaxAge:   expiryDays * 24 * 60 * 60,
+		Secure:   true,
+		HttpOnly: true,
 	})
-
+	fmt.Fprintf(w, "Welcome to el'Goog")
 }
 
 func GetSessionUserID(sessionID string) (int, error) {

@@ -8,6 +8,8 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
+import axios from 'axios';
+import qs from 'qs';
 
 
 export default class Login extends React.Component {
@@ -17,11 +19,16 @@ export default class Login extends React.Component {
     // Initial state
     this.state = {
       open: false,
+      email: "",
+      password: "",
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
+    this.handlePassword = this.handlePassword.bind(this);
+    this.sendForm = this.sendForm.bind(this);
   }
 
   handleOpen (){
@@ -30,6 +37,37 @@ export default class Login extends React.Component {
 
   handleClose () {
     this.setState({open: false});
+  };
+  handleEmail (event) {
+    var key = "email"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );  
+  }
+  handlePassword (event) {
+    var key = "password"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );  
+  }
+  sendForm() {
+    axios.post(
+        '/user/login', qs.stringify({
+            email: this.state.email, 
+            password: this.state.password,
+        })
+    ).then(function(response) {
+        // TODO proper form responses
+      console.log(response)
+      alert(response.data)
+    }).catch(function (error) {
+      alert(error.response.data)
+    });
+
+    // TODO instead have user-friendly response and maintain close button
+    //this.setState({open: false});
   };
 
 render() {
@@ -42,7 +80,7 @@ render() {
       <FlatButton
         label="Login"
         primary={true}
-        onClick={this.handleClose}
+        onClick={this.sendForm}
       />,
     ];
 
@@ -61,6 +99,8 @@ render() {
            hintText="Email"
          //  errorText={"error"}
                floatingLabelText="Email"
+                value={this.state.email}
+                onChange={this.handleEmail}
                type="text">
             </TextField>
             <br/>
@@ -70,6 +110,8 @@ render() {
            hintText="Password"
          //  errorText={"errorrr"}
                floatingLabelText="Password"
+                value={this.state.password}
+                onChange={this.handlePassword}
                type="password">
             </TextField>
             <br/>
