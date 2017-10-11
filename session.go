@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -63,17 +62,21 @@ func (u *User) CreateSession(w http.ResponseWriter) {
 		Secure:   true,
 		HttpOnly: true,
 	})
-	fmt.Fprintf(w, "Welcome to el'Goog")
 }
 
-func GetSessionUserID(sessionID string) (int, error) {
-	sessionBytes, err := base64.StdEncoding.DecodeString(sessionID)
-	if err != nil {
-		return -1, err
+func GetRequestUser(r *http.Request) *User {
+	cookie, err := r.Cookie("session_id")
+	if err == http.ErrNoCookie {
+		// the cookie session_id was not found, so return a nil user.
+		return nil
 	}
-	if len(sessionBytes) != keySize {
-		return -1, errors.New("Bad sessionID given")
+
+	sessionBytes, err := base64.StdEncoding.DecodeString(cookie.Value)
+	if err != nil || len(sessionBytes) != keySize {
+		// the cookie value was bad
+		return nil
 	}
+
 	saltedSessionID := append(sessionBytes, salt...)
 
 	db, err := sql.Open("sqlite3", DatabaseFile)
@@ -82,19 +85,26 @@ func GetSessionUserID(sessionID string) (int, error) {
 	}
 	defer db.Close()
 
-	var user_id int
+	var userID int
 
 	stmt := fmt.Sprintf("select user_id from sessions where checksum='%x' and expires > %d", sha256.Sum256(saltedSessionID), time.Now().Unix())
 	row := db.QueryRow(stmt)
-	switch err := row.Scan(&user_id); err {
+	switch err := row.Scan(&userID); err {
 	case sql.ErrNoRows:
-		return -1, err
+		// no such session id exists, or it's expired.
+		return nil
 	case nil:
-		return user_id, nil
+		// the user session exists and is valid!
+		user, err := UserSelectByID(userID)
+		if err != nil {
+			return nil
+		}
+		return user
 	default:
-		log.Fatal(err)
+		// something else horrible!
+		fmt.Println("ERROR retrieving user sesion:", err)
+		return nil
 	}
-	return -1, nil
 }
 
 func getEnv(key, fallback string) string {

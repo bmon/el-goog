@@ -12,24 +12,13 @@ import (
 func main() {
 	r := newRouter()
 
+	r.PathPrefix("/assets").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/dist"))))
+
 	// handlers for index.html and bundle.js
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/dist/index.html")
+		http.ServeFile(w, r, "assets/dist/home.html")
 	})
-	r.HandleFunc("/logo.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/dist/logo.png")
-	})
-	r.HandleFunc("/bundle.js", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "assets/dist/bundle.js")
-	})
-	/*
-		TODO proper dist folder dealings
-			r.HandleFunc("/{distfile}", func(w http.ResponseWriter, r *http.Request) {
-				vars := mux.Vars(r)
-				distfile := vars["distfile"]
-				http.ServeFile(w, r, "assets/dist/"+distfile)
-			})
-	*/
+
 	// Bind to a port and pass our router in
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	log.Fatal(http.ListenAndServe(":5000", loggedRouter))
