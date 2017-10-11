@@ -62,7 +62,7 @@ const Login = () => (
            hintText="Password"
          //  errorText={"errorrr"}
                floatingLabelText="Password"
-               type="text">
+               type="password">
             </TextField>
 	        <br/>
 
