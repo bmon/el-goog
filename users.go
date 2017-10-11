@@ -84,10 +84,35 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 
+        db, err := sql.Open("sqlite3", DatabaseFile)
+        row, err :=db.Query("SELECT password FROM users WHERE email = '"+email+"'")
+        if err != nil {
+             fmt.Println(err)
+        }
+
+        var recPassword string
+
+        sltpwd := append([]byte(password), pwdsalt...)
+        hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+
+        hashedPassword := string(hshpwd[:])
+
+        err = row.Scan(&recPassword)
+
+        if recPassword == hashedPassword {
+            fmt.Println("match!")
+        } else {
+            fmt.Println("try again lel")
+        }
+        
+        //check that email address exists
+        //create struct instance
+        //check password
+        //if yes - instance.CreateSession
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
-	cookie := 
+	//cookie := 
 	
 
 }
