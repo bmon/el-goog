@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+        "golang.org/x/crypto/bcrypt"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var pwdsalt []byte = []byte(getEnv("PASSWORD_SALT", "ayy-lmao_top-kek_meme"))
 
 type User struct {
 	ID       int
@@ -47,7 +50,13 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	var isEmail = regexp.MustCompile(`^.+\@.+\..+$`)
 
 	if isEmail.MatchString(email) {
-		user := &User{-1, email, password, username}
+
+                sltpwd := append([]byte(password), pwdsalt...)
+                hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+
+                hashedPassword := string(hshpwd[:])
+
+		user := &User{-1, email, hashedPassword, username}
 		err := user.Insert()
 
 		if err != nil {
