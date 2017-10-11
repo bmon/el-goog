@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-
-	"golang.org/x/crypto/bcrypt"
+        "golang.org/x/crypto/bcrypt"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
@@ -52,10 +51,10 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	if isEmail.MatchString(email) {
 
-		sltpwd := append([]byte(password), pwdsalt...)
-		hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+                sltpwd := append([]byte(password), pwdsalt...)
+                hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
 
-		hashedPassword := string(hshpwd[:])
+                hashedPassword := string(hshpwd[:])
 
 		user := &User{-1, email, hashedPassword, username}
 		err := user.Insert()
@@ -85,6 +84,35 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 
+        db, err := sql.Open("sqlite3", DatabaseFile)
+        row, err :=db.Query("SELECT password FROM users WHERE email = '"+email+"'")
+        if err != nil {
+             fmt.Println(err)
+        }
+
+        var recPassword []byte
+
+        sltpwd := append([]byte(password), pwdsalt...)
+        
+        err = row.Scan(&recPassword)
+
+        if err == nil {
+            fmt.Println("error scanning row")
+        }
+       
+        err = bcrypt.CompareHashAndPassword(recPassword, sltpwd)
+
+
+        if err == nil {
+            fmt.Println("match!")
+        } else {
+            fmt.Println("try again lel")
+        }
+        
+        //check that email address exists
+        //create struct instance
+        //check password
+        //if yes - instance.CreateSession
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
