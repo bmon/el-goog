@@ -97,7 +97,7 @@ render() {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Login"
+        label="Register"
         primary={true}
         onClick={this.sendForm}
       />,
@@ -142,7 +142,7 @@ render() {
              floatingLabelText="Password"
              value={this.state.password}
              onChange={this.handlePassword}
-             type="text">
+             type="password">
           </TextField>
           <br/>
         </Dialog>
