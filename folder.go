@@ -115,3 +115,11 @@ func (f *Folder) Scan(value interface{}) error {
 	}
 	return nil
 }
+func (f *Folder) Path() string {
+	if f.Parent == nil {
+		//DO SELECT LINE TO GET EMAIL ADDRESS
+		return "uploads/" + /*[INSERT EMAIL HERE] +*/ "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
+	} else {
+		return f.Parent.Path() + "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
+	}
+}

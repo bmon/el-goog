@@ -18,6 +18,8 @@ import Register from './Register';
 import HomePage from './Homepage';
 import Login from './Login';
 import FilesPage from './Files';
+import ProfilePage from './Profile';
+
 //import FineUploaderTraditional from 'fine-uploader-wrappers'
 //import Gallery from 'react-fine-uploader'
 
@@ -135,6 +137,13 @@ const Files = () => (
   </MuiThemeProvider>
 );
 
+const UserProfile = () => (
+  <MuiThemeProvider>
+    <ProfilePage />
+  </MuiThemeProvider>
+);
+
+
 //ReactDOM.render(<Home/>, document.getElementById('react-app'));
 
 ReactDOM.render((
@@ -144,6 +153,7 @@ ReactDOM.render((
     <Route path="/login" component={SignIn}/>
     <Route path="/signup" component={NewRegister}/>
     <Route path="/files" component={Files}/>
+    <Route path="/profile" component={UserProfile}/>
     </div>
     </HashRouter>
   ), document.getElementById('react-app'))
