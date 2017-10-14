@@ -12,7 +12,6 @@ CREATE TABLE files (
     parent_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     size INTEGER NOT NULL,
-    checksum TEXT NOT NULL,
     modified INTEGER NOT NULL,
     FOREIGN KEY(parent_id) REFERENCES folders(id)
 );
