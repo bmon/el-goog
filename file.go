@@ -16,12 +16,11 @@ type File struct {
 	Parent   *Folder
 	Name     string
 	Size     int
-	Checksum string
 	Modified time.Time
 }
 
-func CreateFile(name string, size int, checksum string, parent *Folder) *File {
-	f := &File{0, parent, name, size, checksum, time.Now()}
+func CreateFile(name string, size int, parent *Folder) *File {
+	f := &File{0, parent, name, size, time.Now()}
 	f.Insert()
 	return f
 }
@@ -33,8 +32,8 @@ func (f *File) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into files values (NULL, $1, $2, $3, $4, $5)"
-	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Checksum, f.Modified.Unix())
+	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?, ?)"
+	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("file insert error", err)
 	} else {
@@ -55,7 +54,7 @@ func (f *File) Update() {
 	}
 	defer db.Close()
 
-	sqlStmt := "update folders set parent_id=$1, name=$2, size=$3, checksum=$4, modified=$5 where id=$6"
+	sqlStmt := "update folders set parent_id=?, name=?, size=?, modified=? where id=?"
 	_, err = db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix(), f.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
