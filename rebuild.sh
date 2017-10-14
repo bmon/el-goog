@@ -1,3 +1,4 @@
+#!/bin/bash -x
 # whether or not you actually run this, its a nice reminder
 # THIS KILLS THE DATABASE
 dep ensure
