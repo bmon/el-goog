@@ -67,3 +67,12 @@ func (f *Folder) Value() (driver.Value, error) {
 	}
 	return int64(f.ID), nil
 }
+
+func (f *Folder) Path() string {
+	if f.Parent == nil {
+		//DO SELECT LINE TO GET EMAIL ADDRESS
+		return "uploads/" + /*[INSERT EMAIL HERE] +*/ "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
+	} else {
+		return f.Parent.Path() + "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
+	}
+}
