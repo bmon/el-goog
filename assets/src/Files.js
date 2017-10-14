@@ -65,7 +65,7 @@ const uploader = new FineUploaderTraditional ({
             //endpoint: '/upload'
         },
         request: {
-            endpoint: '/upload',
+            endpoint: '/files',
             // using default names:
             //
             // filenameParam: 'qqfilename',

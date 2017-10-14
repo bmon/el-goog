@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -68,4 +69,35 @@ func (f *File) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return int64(f.ID), nil
+}
+
+func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
+
+	/*
+	 * Dont make the same mistake i did:
+	 * Documentation for fine uploader is on their website
+	 * but not in Docs, in API.
+	 *
+	 */
+	user := GetRequestUser(r)
+	if user == nil {
+		fmt.Println("user not authenticated!")
+		http.Error(w, "You must be authenticated to perform this action", 401)
+		return
+	} else {
+		fmt.Println("user authenticated!", user.Email)
+	}
+
+	file, header, err := r.FormFile("qqfile")
+
+	// TODO appropriately utilise these
+	fmt.Println(file)   // multipart.File, which happens to point to an interface?
+	fmt.Println(header) // also has the body
+	fmt.Println(err)
+
+	if err == nil {
+		fmt.Fprintf(w, "{\"success\":true}")
+	} else {
+		fmt.Fprintf(w, "{\"error\":\"%v\"}", err)
+	}
 }
