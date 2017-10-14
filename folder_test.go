@@ -8,6 +8,7 @@ import (
 func TestCreateFolder(t *testing.T) {
 	u := &User{-1, "asd@asd.asd", "passwd", "test", CreateFolder("root", nil)}
 	f := CreateFolder("somenewfolder", u.RootFolder)
+	f = CreateFolder("another folder", f)
 	f1, err := FolderSelectByID(f.ID)
 	if err != nil {
 		fmt.Println(err)
@@ -16,6 +17,8 @@ func TestCreateFolder(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%+v\n", f1)
-	fmt.Printf("%+v\n", f2)
+	fmt.Printf("%+v %s\n", f1, f1.Path())
+	fmt.Printf("%+v %s\n", f2, f2.Path())
+	file := CreateFile("newfile.txt", -1, f1)
+	fmt.Printf("%+v %s\n", file, file.Path())
 }
