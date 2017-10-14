@@ -81,11 +81,8 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 	 */
 	user := GetRequestUser(r)
 	if user == nil {
-		fmt.Println("user not authenticated!")
-		http.Error(w, "You must be authenticated to perform this action", 401)
+		http.Error(w, `{"error": "You must be authenticated to perform this action"}`, 401)
 		return
-	} else {
-		fmt.Println("user authenticated!", user.Email)
 	}
 
 	file, header, err := r.FormFile("qqfile")

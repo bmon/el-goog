@@ -17,21 +17,6 @@ CREATE TABLE files (
     FOREIGN KEY(parent_id) REFERENCES folders(id)
 );
 
-ALTER TABLE users ADD COLUMN root_folder INTEGER REFERENCES folders(id);
-
-
-
 -- +goose Down
 DROP TABLE folders;
 DROP TABLE files;
-
--- no alter table drop column in sqlite :c
-ALTER TABLE users RENAME TO temp_users;
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL,
-    password TEXT NOT NULL
-);
-
-INSERT INTO users SELECT id, email, password FROM temp_users;
-DROP TABLE temp_users;

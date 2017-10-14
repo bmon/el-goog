@@ -23,6 +23,22 @@ func CreateFolder(name string, parent *Folder) *Folder {
 	return f
 }
 
+func FolderSelectByID(folderID int) (*Folder, error) {
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		return nil, err
+	}
+
+	f := &Folder{}
+	var timestamp int64
+	err = db.QueryRow("SELECT id, name, modified, parent_id FROM folders WHERE id=?", folderID).Scan(&f.ID, &f.Name, &timestamp, &f.Parent)
+	if err != nil {
+		return nil, err
+	}
+	f.Modified = time.Unix(timestamp, 0)
+	return f, nil
+}
+
 func (f *Folder) Insert() {
 	db, err := sql.Open("sqlite3", DatabaseFile)
 	if err != nil {
@@ -41,6 +57,21 @@ func (f *Folder) Insert() {
 		} else {
 			f.ID = int(id)
 		}
+	}
+}
+
+func (f *Folder) Delete() {
+	f.Modified = time.Now()
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	sqlStmt := "delete from folders where id=?"
+	_, err = db.Exec(sqlStmt, f.ID)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
@@ -66,4 +97,21 @@ func (f *Folder) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return int64(f.ID), nil
+}
+
+func (f *Folder) Scan(value interface{}) error {
+	if id, ok := value.(int); ok {
+		newf, err := FolderSelectByID(id)
+		if err != nil {
+			f.ID = newf.ID
+			f.Name = newf.Name
+			f.Parent = newf.Parent
+			f.Modified = newf.Modified
+		} else {
+			f.Parent = nil
+		}
+	} else {
+		f.Parent = nil
+	}
+	return nil
 }
