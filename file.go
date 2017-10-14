@@ -32,7 +32,7 @@ func (f *File) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?, ?)"
+	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?)"
 	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("file insert error", err)
@@ -96,4 +96,8 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "{\"error\":\"%v\"}", err)
 	}
+}
+
+func (f *File) Path() string {
+	return f.Parent.Path() + fmt.Sprintf("%s.%d", f.Name, f.ID)
 }

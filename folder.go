@@ -46,7 +46,7 @@ func (f *Folder) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into folders values (NULL, $1, $2, $3)"
+	sqlStmt := "insert into folders values (NULL, ?, ?, ?)"
 	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("insert error", err)
@@ -83,7 +83,7 @@ func (f *Folder) Update() {
 	}
 	defer db.Close()
 
-	sqlStmt := "update folders set parent_id=$1, name=$2, modified=$3 where id=$4"
+	sqlStmt := "update folders set parent_id=?, name=?, modified=? where id=?"
 	_, err = db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix(), f.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
@@ -100,26 +100,36 @@ func (f *Folder) Value() (driver.Value, error) {
 }
 
 func (f *Folder) Scan(value interface{}) error {
-	if id, ok := value.(int); ok {
-		newf, err := FolderSelectByID(id)
-		if err != nil {
-			f.ID = newf.ID
-			f.Name = newf.Name
-			f.Parent = newf.Parent
-			f.Modified = newf.Modified
-		} else {
-			f.Parent = nil
+	if value == nil {
+		fmt.Println("value is nil!!")
+	}
+	if id, err := driver.Int32.ConvertValue(value); err == nil {
+		if v, ok := id.(int64); ok {
+			newf, err := FolderSelectByID(int(v))
+			if err == nil {
+				f.ID = newf.ID
+				f.Name = newf.Name
+				f.Parent = newf.Parent
+				f.Modified = newf.Modified
+			} else {
+				f.Parent = nil
+			}
 		}
 	} else {
-		f.Parent = nil
+		return err
 	}
 	return nil
 }
 func (f *Folder) Path() string {
-	if f.Parent == nil {
-		//DO SELECT LINE TO GET EMAIL ADDRESS
-		return "uploads/" + /*[INSERT EMAIL HERE] +*/ "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
-	} else {
-		return f.Parent.Path() + "/" + f.Name + "." + fmt.Sprintf("%d", f.ID)
+	if f.ID == 0 {
+		fmt.Printf("ERROAR %+v\n", f)
 	}
+	dirname := fmt.Sprintf("%s.%d/", f.Name, f.ID)
+	var parent string
+	if f.Parent != nil {
+		parent = f.Parent.Path()
+	} else {
+		parent = fmt.Sprintf("uploads/userEmailTODO/")
+	}
+	return parent + dirname
 }
