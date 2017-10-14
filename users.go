@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
@@ -14,10 +15,11 @@ import (
 var pwdsalt []byte = []byte(getEnv("PASSWORD_SALT", "ayy-lmao_top-kek_meme"))
 
 type User struct {
-	ID       int
-	Email    string
-	Password string
-	Username string
+	ID         int
+	Email      string
+	Password   string
+	Username   string
+	RootFolder *Folder
 }
 
 func (u *User) Insert() error {
@@ -27,8 +29,8 @@ func (u *User) Insert() error {
 	}
 	defer db.Close()
 
-	sqlStmt := "INSERT INTO users(id, email, password, username) values(?,?,?,?)"
-	res, err := db.Exec(sqlStmt, nil, u.Email, u.Password, u.Username)
+	sqlStmt := "INSERT INTO users(id, email, password, username, root_folder) values(?,?,?,?,?)"
+	res, err := db.Exec(sqlStmt, nil, u.Email, u.Password, u.Username, u.RootFolder.ID)
 	if err != nil {
 		return err
 	} else {
@@ -47,8 +49,14 @@ func UserSelectByID(userID int) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	u := &User{}
-	err = db.QueryRow("SELECT id, email, password, username FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Email)
+	rootID := -1
+	err = db.QueryRow("SELECT id, email, password, username, root_folder FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Email, &rootID)
+	if err != nil {
+		return nil, err
+	}
+	u.RootFolder, err = FolderSelectByID(rootID)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +77,11 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 		hashedPassword := string(hshpwd[:])
 
-		user := &User{-1, email, hashedPassword, username}
+		user := &User{-1, email, hashedPassword, username, CreateFolder("root", nil)}
 		err := user.Insert()
 
 		if err != nil {
+			user.RootFolder.Delete()
 			if err, ok := err.(sqlite3.Error); ok {
 				if err.Code == sqlite3.ErrConstraint {
 					http.Error(w, "Email already in use.", 400)
