@@ -96,6 +96,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		retry = 1
 		errMsg += `,"qqfile": "failed"`
+		fmt.Println(errMsg)
 	} else {
 		// extract
 		// TODO client sends directory value
@@ -127,11 +128,11 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		rootFolder, err := FolderSelectByID(0)
 
 		if err != nil {
-
 			retry = 1
 			errMsg += `,"folder": "failed"`
+			fmt.Println(errMsg)
 		} else {
-			rootFolderDir := "/tmp/testroot"
+			rootFolderDir := "./tmp/testroot"
 
 			/*
 				filePath := "/test2/test3"
@@ -167,6 +168,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				retry = 1
 				errMsg += `,"osfile": "failed"`
+				fmt.Println(errMsg)
 			} else {
 
 				// copy the http file to the os file
@@ -177,12 +179,14 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					retry = 1
 					errMsg += `,"iocopy": "failed"`
+					fmt.Println(errMsg)
 				} else {
 					_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
 
 					if err != nil {
 						retry = 1
 						errMsg += `,"oswrite": "failed"`
+						fmt.Println(errMsg)
 					} else {
 
 						// final chunk: also update database (size, its finished) etc.
