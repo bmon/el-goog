@@ -6,3 +6,4 @@ elgoog.db
 webpack-stats.json
 DavidTODO.txt
 .realize/
+*.out
