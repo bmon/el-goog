@@ -58,7 +58,10 @@ const uploader = new FineUploaderTraditional ({
     options: {
         chunking: {
             // so max 1,2gb files for now
-            enabled: false
+            enabled: true,
+            mandatory: true,
+            // partSize: 2000000,
+            
         },
         deleteFile: {
             enabled: false,

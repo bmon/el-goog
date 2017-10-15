@@ -86,7 +86,13 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	file, header, err := r.FormFile("qqfile")
-
+	/*   = r.PostFormValue("qqpartindex")
+	= r.PostFormValue(   "qqpartbyteoffset")
+	= r.PostFormValue(   "qqtotalfilesize")
+	= r.PostFormValue(   "qqtotalparts")
+	= r.PostFormValue(   "qqfilename")
+	= r.PostFormValue(  "qqchunksize")
+	*/
 	// TODO appropriately utilise these
 	fmt.Println(file)   // multipart.File, which happens to point to an interface?
 	fmt.Println(header) // also has the body
