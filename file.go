@@ -187,6 +187,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 						retry = 1
 						errMsg += `,"oswrite": "failed"`
 						fmt.Println(errMsg)
+						fmt.Println(err)
 					} else {
 
 						// final chunk: also update database (size, its finished) etc.
@@ -198,7 +199,12 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 							}
 							defer db.Close()
 							sqlStmt := "update files set size = ? where id = ?"
-							db.Exec(sqlStmt, totalSize)
+							_, err = db.Exec(sqlStmt, totalSize)
+							if err != nil {
+								retry = 1
+								errMsg += `"db": "failed"`
+								fmt.Println(errMsg)
+							}
 						}
 					}
 				}

@@ -8,3 +8,5 @@ webpack-stats.json
 DavidTODO.txt
 .realize/
 *.out
+/tmp
+/tmp/*
