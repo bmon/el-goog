@@ -36,8 +36,8 @@ func (f *File) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?)"
-	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
+	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?, ?)"
+	res, err := db.Exec(sqlStmt /*f.ID*/, f.Parent, f.Name, f.Size, 0 /*checksum*/, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("file insert error", err)
 	} else {
@@ -149,19 +149,19 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Fatal(err)
 				}
+				defer db.Close()
 				// make a database entry
 				dbFile := CreateFile(fileName,
 					0,          /*size*/
 					rootFolder, /*TODO client path*/
 				)
 				dbFile.Insert()
-				db.Close()
 			}
 
 			// create does return the osFile,
 			// however golang much prefers the types are strict here
-			_, err := os.Create(rootFolderDir + `/` + fileName)
-			osFile, err := os.Open(rootFolderDir + `/` + fileName)
+			//osFile, err := os.Create(rootFolderDir + `/` + fileName)
+			osFile, err := os.OpenFile(rootFolderDir+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
 
 			// =================================================================
 			//  Writing
@@ -170,7 +170,6 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 				errMsg += `,"osfile": "failed"`
 				fmt.Println(errMsg)
 			} else {
-
 				// copy the http file to the os file
 				defer osFile.Close()
 				b := bytes.NewBuffer(nil)
@@ -181,6 +180,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 					errMsg += `,"iocopy": "failed"`
 					fmt.Println(errMsg)
 				} else {
+					// write out to the file
 					_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
 
 					if err != nil {
@@ -189,17 +189,17 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 						fmt.Println(errMsg)
 						fmt.Println(err)
 					} else {
-
 						// final chunk: also update database (size, its finished) etc.
 						if part == totalParts-1 {
-							db, err := sql.Open("sqlite3", DatabaseFile)
 
+							db, err := sql.Open("sqlite3", DatabaseFile)
 							if err != nil {
 								log.Fatal(err)
 							}
 							defer db.Close()
+
 							sqlStmt := "update files set size = ? where id = ?"
-							_, err = db.Exec(sqlStmt, totalSize)
+							_, err = db.Exec(sqlStmt, totalSize, 0)
 							if err != nil {
 								retry = 1
 								errMsg += `"db": "failed"`
