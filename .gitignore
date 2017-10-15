@@ -2,6 +2,7 @@
 /node_modules/
 /assets/dist/
 el-goog
+el-goog.test
 elgoog.db
 webpack-stats.json
 DavidTODO.txt
