@@ -3,24 +3,76 @@ package main
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Folder struct {
-	ID       int
-	Parent   *Folder
-	Name     string
-	Modified time.Time
+	ID       int       `json:"id"`
+	Parent   *Folder   `json:"-"`
+	Name     string    `json:"name"`
+	Modified time.Time `json:"modified"`
+}
+
+type SerialFolder struct {
+	ID           int       `json:"id"`
+	ParentID     int       `json:"parent_id"`
+	Name         string    `json:"name"`
+	Modified     time.Time `json:"modified"`
+	ChildFolders []Folder  `json:"child_folders"`
+	ChildFiles   []File    `json:"child_files"`
 }
 
 func CreateFolder(name string, parent *Folder) *Folder {
 	f := &Folder{0, parent, name, time.Now()}
 	f.Insert()
 	return f
+}
+
+func (f *Folder) MakeSerial() SerialFolder {
+	folder := SerialFolder{f.ID, f.Parent.ID, f.Name, f.Modified, make([]Folder, 0), make([]File, 0)}
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rows, err := db.Query("SELECT id FROM folders WHERE parent_id=?", folder.ID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			child, _ := FolderSelectByID(id)
+			folder.ChildFolders = append(folder.ChildFolders, *child)
+		} else {
+			fmt.Println(err)
+		}
+	}
+
+	rows, err = db.Query("SELECT id FROM files WHERE parent_id=?", folder.ID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			child, _ := FileSelectByID(id)
+			folder.ChildFiles = append(folder.ChildFiles, *child)
+		} else {
+			fmt.Println(err)
+		}
+	}
+	return folder
 }
 
 func FolderSelectByID(folderID int) (*Folder, error) {
@@ -132,4 +184,24 @@ func (f *Folder) Path() string {
 		parent = fmt.Sprintf("uploads/userEmailTODO/")
 	}
 	return parent + dirname
+}
+
+func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	folderID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+	f, err := FolderSelectByID(folderID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	res, err := json.MarshalIndent(f.MakeSerial(), "", "\t")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	w.Write(res)
 }
