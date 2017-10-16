@@ -186,9 +186,10 @@ func (f *Folder) Path() string {
                 if err != nil {
                         return "ERROR"
                 }
-                test := db.QueryRow("SELECT email FROM users WHERE root_folder=?", f.ID)
+		defer db.Close()
+                row := db.QueryRow("SELECT email FROM users WHERE root_folder=?", f.ID)
                 email := ""
-                err = test.Scan(&email)
+                err = row.Scan(&email)
                 parent = fmt.Sprintf("uploads/%s/",email)
         }
         return parent + dirname
