@@ -42,4 +42,10 @@ var routes = Routes{
 		"/folders/{id:[0-9]+}",
 		FolderGetHandler,
 	},
+        Route{
+                "FolderPath",
+                "POST",
+                "/path",
+                FolderPath,
+        },
 }
