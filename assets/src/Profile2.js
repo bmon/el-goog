@@ -8,51 +8,20 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import Paper from 'material-ui/Paper';
-
-import LogoutPU from './LogoutPU';
+import axios from 'axios';
+import qs from 'qs';
 
 
-function handleTouchTap() {
-  alert('onClick triggered on the title component');
-}
+export default class Login extends React.Component {
 
-const styles = {
-  title: {
-    cursor: 'pointer',
-    fontSize: 20
-  },
-  button: {
-    textAlign: 'center',
-    margin: 12
-  },
-  content: {
-    textAlign: 'center',
-    fontSize: 15
-  },
-  body: {
-    textAlign: 'center'
-  },
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  }
-};
-
+render() {
 const Profile = () => (
   <div style={styles.body}>
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={
-      <div>
-      <RaisedButton style={styles.button} href="./#/files" label="Files"/>
-      <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
-      </div>  
-      }
+ //   iconElementRight={<RaisedButton style={styles.button} label="Login" />}
   />
 
   <Card>
@@ -107,6 +76,11 @@ const Profile = () => (
   </div>
 );
 
-
-
-export default Profile;
+    return (
+      <div>
+        <RaisedButton label="Account" onClick={this.handleOpen} />
+        <Profile />
+      </div>
+    );
+  }
+}

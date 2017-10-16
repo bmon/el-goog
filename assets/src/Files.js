@@ -22,6 +22,7 @@ import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
+import LogoutPU from './LogoutPU';
 
 // currently unused
 function handleTouchTap() {
@@ -93,13 +94,17 @@ class UploadComponent extends React.Component {
     }
 }
 
-const HomePage = () => (
+const Files = () => (
   <div style={styles.body}>
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button} label=""><LoginPU /></RaisedButton>
+    iconElementRight={
+      <div>
+      <RaisedButton style={styles.button} href="./#/profile" label="Account" />
+      <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
+      </div>
 	}
   />
 
@@ -151,4 +156,4 @@ const HomePage = () => (
   </div>
 );
 
-export default HomePage;
+export default Files;
