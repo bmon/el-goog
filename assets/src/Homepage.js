@@ -11,6 +11,7 @@ import Dialog from 'material-ui/Dialog';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
+import LogoutPU from './LogoutPU';
 
 // currently unused
 function handleTouchTap() {
@@ -42,7 +43,8 @@ const HomePage = () => (
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
     iconElementLeft={<IconButton href="./"><NavigationClose /></IconButton>}
-    iconElementRight={<RaisedButton style={styles.button}><LoginPU /></RaisedButton>
+    iconElementRight={
+    	<RaisedButton style={styles.button}><LoginPU /></RaisedButton>
 	}
   />
 
