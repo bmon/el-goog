@@ -8,17 +8,27 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
+import FineUploaderTraditional from 'fine-uploader-wrappers'
+import Gallery from 'react-fine-uploader'
+import { Component } from 'react'
 import {List, ListItem} from 'material-ui/List';
+import ActionInfo from 'material-ui/svg-icons/action/info';
 import Subheader from 'material-ui/Subheader';
-import Paper from 'material-ui/Paper';
+import Avatar from 'material-ui/Avatar';
+import FileFolder from 'material-ui/svg-icons/file/folder';
+import ActionAssignment from 'material-ui/svg-icons/action/assignment';
+import {blue500, yellow600} from 'material-ui/styles/colors';
+import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
+import Register from './Register';
 import LogoutPU from './LogoutPU';
 
-
+// currently unused
 function handleTouchTap() {
   alert('onClick triggered on the title component');
 }
 
+// css to be applied to elements
 const styles = {
   title: {
     cursor: 'pointer',
@@ -35,13 +45,16 @@ const styles = {
   body: {
     textAlign: 'center'
   },
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
+  container: {
+    margin: 50,
+    textAlign: 'center'
+  },
+  fileContainer: {
+    margin: 90,
   }
 };
 
-const Profile = () => (
+const HomePage = () => (
   <div style={styles.body}>
   <AppBar
     title={<span style={styles.title}></span>}
@@ -52,61 +65,29 @@ const Profile = () => (
       <RaisedButton style={styles.button} href="./#/files" label="Files"/>
       <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
       </div>  
-      }
+  }
   />
 
-  <Card>
-    <CardTitle style={styles.title} title="Personal Account" />
-      <div style={styles.root}>      
-          <List>
-            <Subheader>My Account</Subheader>
-            <ListItem
-              primaryText="General"
-              secondaryText="Edit and view my information"
-            />
-            <ListItem
-              primaryText="Files"
-              secondaryText="My files and folders"
-            />
-            <ListItem
-              primaryText="Plan"
-              secondaryText="Personal el-goog space"
-            />
-            <ListItem
-              primaryText="Security"
-              secondaryText="Change password"
-            />
-          </List>
-         
-        <Card>
-            <CardTitle
-              title="General"
-              subtitle="Edit and view my information"
-            />
-              <CardText>Name</CardText>
-            <CardActions>
-              <FlatButton label="Edit" primary={true}/>
-            </CardActions>
+  <Card style={styles.container}>
+    <div>
+    <CardTitle title="My Account"/>
+            <CardText>Name</CardText>
+            <FlatButton style={styles.button} label="Edit Name" primary={true}/>
             <Divider />  
-            <CardText>Personal email</CardText>
+            <CardText>Primary Email</CardText>
             <CardActions>
-              <FlatButton label="Edit" primary={true}/>
+              <FlatButton style={styles.button} label="Edit Email" primary={true}/>
             </CardActions>
             <Divider />        
-            <CardText>Delete account</CardText>
+            <CardText>Delete Account</CardText>
             <CardActions>
-              <FlatButton label="Delete account" primary={true}/>
+              <FlatButton style={styles.button} label="Delete Account" primary={true}/>
             </CardActions>
             <Divider /> 
-
-             
-
-        </Card>    
-       </div>
+    </div>
   </Card>
+
   </div>
 );
 
-
-
-export default Profile;
+export default HomePage;
