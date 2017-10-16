@@ -36,8 +36,8 @@ func (f *File) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?, ?)"
-	res, err := db.Exec(sqlStmt /*f.ID*/, f.Parent, f.Name, f.Size, 0 /*checksum*/, f.Modified.Unix())
+	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?)"
+	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("file insert error", err)
 	} else {
