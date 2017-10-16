@@ -172,18 +172,39 @@ func (f *Folder) Scan(value interface{}) error {
 	}
 	return nil
 }
+
 func (f *Folder) Path() string {
-	if f.ID == 0 {
-		fmt.Printf("ERROAR %+v\n", f)
-	}
-	dirname := fmt.Sprintf("%s.%d/", f.Name, f.ID)
-	var parent string
-	if f.Parent != nil {
-		parent = f.Parent.Path()
-	} else {
-		parent = fmt.Sprintf("uploads/userEmailTODO/")
-	}
-	return parent + dirname
+        if f.ID == 0 {
+                fmt.Printf("ERROAR %+v\n", f)
+        }
+        dirname := fmt.Sprintf("%s.%d/", f.Name, f.ID)
+        var parent string
+        if f.Parent != nil {
+                parent = f.Parent.Path()
+        } else {
+                db, err := sql.Open("sqlite3", DatabaseFile)
+                if err != nil {
+                        return "ERROR"
+                }
+                test := db.QueryRow("SELECT email FROM users WHERE root_folder=?", f.ID)
+                email := ""
+                err = test.Scan(&email)
+                parent = fmt.Sprintf("uploads/%s/",email)
+        }
+        return parent + dirname
+}
+
+//Test function for Path()
+func FolderPath(w http.ResponseWriter, r *http.Request) {
+        fID := r.PostFormValue("id")
+        folderID, _ := strconv.Atoi(fID)
+        f, err := FolderSelectByID(folderID)
+        if err != nil {
+                http.NotFound(w, r)
+                return
+        }
+        path := f.Path()
+        fmt.Fprintf(w, path)
 }
 
 func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
