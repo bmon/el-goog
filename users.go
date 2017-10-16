@@ -103,9 +103,11 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
-	var user User
-	user.Email = r.PostFormValue("email")
-	user.Password = r.PostFormValue("password")
+	if GetRequestUser(r) != nil {
+		http.Error(w, "already logged in!", 400)
+	}
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
 
 	// open
 	db, err := sql.Open("sqlite3", DatabaseFile)
@@ -115,68 +117,29 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// run it
-	row := db.QueryRow("SELECT id,password FROM users WHERE email = ?", user.Email)
-
 	var dbPass string
-	err = row.Scan(&user.ID, &dbPass)
+	var userID int
+	err = db.QueryRow("SELECT id,password FROM users WHERE email = ?", email).Scan(&userID, &dbPass)
 	if err != nil {
 		http.Error(w, "bad username or password", 400)
+		return
 	}
 
-	sltpwd := append([]byte(user.Password), pwdsalt...)
-	dbBytepass := []byte(dbPass)
-
-	err = bcrypt.CompareHashAndPassword(dbBytepass, sltpwd)
+	sltpwd := append([]byte(password), pwdsalt...)
+	err = bcrypt.CompareHashAndPassword([]byte(dbPass), sltpwd)
 
 	if err != nil {
 		http.Error(w, "bad username or password", 400)
+		return
+	}
+	user, err := UserSelectByID(userID)
+	if err != nil {
+		//this should never happen -- we just verified the user exists
+		panic(err)
 	}
 	user.CreateSession(w)
 }
 
 func UserLogout(w http.ResponseWriter, r *http.Request) {
-	/*
-				cookie, cookieErr := r.Cookie("session_id")
-				if cookieErr != nil {
-					// the user did not give us a cookie to logout with
-					// they probably typed in the exact url for logout requests
-					// TODO 404 them
-					return
-				}
-
-				// Salt the session and generate checksum
-
-				//saltedChecksum := bytestream the cookie.value
-				// then concat the salt from session.go
-				// TODO a function that literally does this in session.go
-				// then generates either bytestream or string
-				// then we can hand it off to sql
-
-				// find session cookie in database and clear if there
-				db, sqlErr := sql.Open("sqlite3", DatabaseFile)
-				if sqlErr != nil {
-					return sqlErr
-				}
-				defer db.Close()
-				row, dbErr := db.Query("DELETE * FROM sessions WHERE checksum = '" + saltedChecksum + "'")
-		=======
-			// find session cookie in database and clear if there
-			//db, err := sql.Open("sqlite3", DatabaseFile)
-			//if err != nil {
-			//	return err
-			//	http.Error(w, err.Error(), 500)
-			//	return
-			//}
-			//defer db.Close()
-			//err = db.Exec("DELETE FROM sessions WHERE checksum = ?", saltedChecksum)
-			//if err != nil && err != sql.ErrNoRows {
-			//	http.Error(w, err.Error(), 500)
-			//	return
-			//}
-		>>>>>>> Stashed changes
-
-				// tell user to clear cookie regardless
-				cookie.MaxAge = -1
-				http.SetCookie(w, cookie)
-	*/
+	DeleteRequestSession(w, r)
 }
