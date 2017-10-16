@@ -16,17 +16,33 @@ import (
 )
 
 type File struct {
-	ID       int
-	Parent   *Folder
-	Name     string
-	Size     int
-	Modified time.Time
+	ID       int       `json:"id"`
+	Parent   *Folder   `json:"-"`
+	Name     string    `json:"name"`
+	Size     int       `json:"size"`
+	Modified time.Time `json:"modified"`
 }
 
 func CreateFile(name string, size int, parent *Folder) *File {
 	f := &File{0, parent, name, size, time.Now()}
 	f.Insert()
 	return f
+}
+
+func FileSelectByID(fileID int) (*File, error) {
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		return nil, err
+	}
+
+	f := &File{}
+	var timestamp int64
+	err = db.QueryRow("SELECT id, name, size, modified, parent_id FROM files WHERE id=?", fileID).Scan(&f.ID, &f.Name, &f.Size, &timestamp, &f.Parent)
+	if err != nil {
+		return nil, err
+	}
+	f.Modified = time.Unix(timestamp, 0)
+	return f, nil
 }
 
 func (f *File) Insert() {

@@ -135,7 +135,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	user, err := UserSelectByID(userID)
 	if err != nil {
 		//this should never happen -- we just verified the user exists
-		panic(err)
+		http.Error(w, err.Error(), 500)
 	}
 	user.CreateSession(w)
 }

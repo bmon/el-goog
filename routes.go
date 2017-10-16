@@ -36,4 +36,10 @@ var routes = Routes{
 		"/files",
 		FileCreateHandler,
 	},
+	Route{
+		"FolderGetHandler",
+		"GET",
+		"/folders/{id:[0-9]+}",
+		FolderGetHandler,
+	},
 }
