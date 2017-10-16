@@ -11,6 +11,13 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
+// css to be applied to elements
+const styles = {
+  button: {
+    textAlign: 'center',
+    margin: 12
+  }
+};
 
 export default class Login extends React.Component {
   constructor(props) {
