@@ -46,8 +46,8 @@ func (f *Folder) Insert() {
 	}
 	defer db.Close()
 
-	sqlStmt := "insert into folders values (?, ?, ?, ?)"
-	res, err := db.Exec(sqlStmt, f.ID, f.Parent, f.Name, f.Modified.Unix())
+	sqlStmt := "insert into folders values (NULL, ?, ?, ?)"
+	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("insert error", err)
 	} else {

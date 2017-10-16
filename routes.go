@@ -26,7 +26,7 @@ var routes = Routes{
 	},
 	Route{
 		"usersLogout",
-		"POST",
+		"GET",
 		"/logout",
 		UserLogout,
 	},

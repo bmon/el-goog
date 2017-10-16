@@ -54,7 +54,6 @@ func (u *User) CreateSession(w http.ResponseWriter) {
 	}
 
 	newSession.insert()
-	fmt.Println(base64.StdEncoding.EncodeToString(sessionID))
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session_id",
 		Value:  base64.StdEncoding.EncodeToString(sessionID),
@@ -108,6 +107,36 @@ func GetRequestUser(r *http.Request) *User {
 		fmt.Println("ERROR retrieving user sesion:", err)
 		return nil
 	}
+}
+func DeleteRequestSession(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session_id")
+	if err == http.ErrNoCookie {
+		// the cookie session_id was not found, so return a nil user.
+		return
+	}
+
+	sessionBytes, err := base64.StdEncoding.DecodeString(cookie.Value)
+	if err != nil || len(sessionBytes) != keySize {
+		// the cookie value was bad
+		return
+	}
+
+	// tell the browser to delet this cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session_id",
+		Value:  "",
+		MaxAge: -1,
+	})
+
+	saltedSessionID := append(sessionBytes, salt...)
+
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	db.Exec("delete from sessions where checksum=?", fmt.Sprintf("%x", sha256.Sum256(saltedSessionID)))
 }
 
 func getEnv(key, fallback string) string {
