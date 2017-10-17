@@ -102,21 +102,37 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// =======================================================================
+	// Folder Verification
+	vars := mux.Vars(r)
+	folderID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, `{"error": "Malformed folder ID"}`, 400)
+		fmt.Println("bad a to i with folder id:" + vars["id"])
+		return
+	}
+	rootFolder, err := FolderSelectByID(folderID)
+	if err != nil {
+		http.Error(w, `{"error": "Invalid folder ID"}`, 400)
+		fmt.Println("folder select by id failed with id:" + vars["id"])
+		return
+	}
+	rootFolder.GetUserID()
+	if user.ID != rootFolder.GetUserID() {
+		http.Error(w, `{"error": "You must be the owner of this directory to perform this action"}`, 401)
+		return
+	}
+	// =======================================================================
+	// formfile
 	httpFile, _ /*header*/, err := r.FormFile("qqfile")
 	defer httpFile.Close()
 
-	//	fmt.Println(httpFile)   // multipart.File, which happens to point to an interface?
-	//	fmt.Println(header) // also has the body
-	//	fmt.Println(err)
-
-	// =======================================================================
 	if err != nil {
 		retry = 1
 		errMsg += `,"qqfile": "failed"`
 		fmt.Println(errMsg)
 	} else {
 		// extract
-		// TODO client sends directory value
 		part, _ := strconv.ParseInt(r.PostFormValue("qqpartindex"), 10, 64)
 		offset, _ := strconv.ParseInt(r.PostFormValue("qqpartbyteoffset"), 10, 64)
 		//size, _ := strconv.ParseInt(r.PostFormValue("qqchunksize"), 10, 64)
@@ -126,99 +142,88 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 		// =================================================================
 		//  Folder
-
-		// TODO use this version once pathing complete
-		// TODO query database if the funciton doesnt get rootfolder
-
-		vars := mux.Vars(r)
-		folderID, err := strconv.Atoi(vars["id"])
-		if err != nil {
-			retry = 1
-			errMsg += `,"folderid": "failed"`
-		} else {
-
-			// TODO clear this once above works and path
-			rootFolder, err := FolderSelectByID(folderID)
-
+		/*
+				vars := mux.Vars(r)
+				folderID, err := strconv.Atoi(vars["id"])
+				if err != nil {
+					retry = 1
+					errMsg += `,"folderid": "failed"`
+				} else {
 			if err != nil {
 				retry = 1
 				errMsg += `,"rootFolder": "failed"`
 				fmt.Println(errMsg)
 			} else {
-				rootFolderDir := "./tmp/testroot"
 
-				/*
-					filePath := "/test2/test3"
-					os.MkdirAll(rootFolder+filePath, 0755)
-				*/
-				os.MkdirAll(rootFolderDir, 0755)
+		*/
+		// TODO generate recursive filepath OR append to filename awkwardly and unappend on download
+		filePath := "./tmp/" + strconv.Itoa(rootFolder.ID) + `/` + "" // add rest of filepath?..
+		os.MkdirAll(filePath, 0755)
 
-				// =================================================================
-				//  File
-				//var osFile os.File
+		// =================================================================
+		//  File
+		//var osFile os.File
 
-				if part == 0 {
-					db, err := sql.Open("sqlite3", DatabaseFile)
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer db.Close()
-					// make a database entry
-					dbFile := CreateFile(fileName,
-						0,          /*size*/
-						rootFolder, /*TODO client path*/
-					)
-					dbFile.Insert()
-				}
+		if part == 0 {
+			db, err := sql.Open("sqlite3", DatabaseFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer db.Close()
+			// make a database entry
+			dbFile := CreateFile(fileName,
+				0,          /*size*/
+				rootFolder, /*TODO client path*/
+			)
+			dbFile.Insert()
+		}
 
-				// create does return the osFile,
-				// however golang much prefers the types are strict here
-				//osFile, err := os.Create(rootFolderDir + `/` + fileName)
-				osFile, err := os.OpenFile(rootFolderDir+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
+		// create does return the osFile,
+		// however golang much prefers the types are strict here
+		//osFile, err := os.Create(rootFolderDir + `/` + fileName)
+		osFile, err := os.OpenFile(filePath+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
 
-				// =================================================================
-				//  Writing
+		// =================================================================
+		//  Writing
+		if err != nil {
+			retry = 1
+			errMsg += `,"osfile": "failed"`
+			fmt.Println(errMsg)
+		} else {
+			// copy the http file to the os file
+			defer osFile.Close()
+			b := bytes.NewBuffer(nil)
+			_ /*bRead*/, err := io.Copy(b, httpFile)
+
+			if err != nil {
+				retry = 1
+				errMsg += `,"iocopy": "failed"`
+				fmt.Println(errMsg)
+			} else {
+				// write out to the file
+				_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
+
 				if err != nil {
 					retry = 1
-					errMsg += `,"osfile": "failed"`
+					errMsg += `,"oswrite": "failed"`
 					fmt.Println(errMsg)
+					fmt.Println(err)
 				} else {
-					// copy the http file to the os file
-					defer osFile.Close()
-					b := bytes.NewBuffer(nil)
-					_ /*bRead*/, err := io.Copy(b, httpFile)
+					// final chunk: also update database (size, its finished) etc.
+					if part == totalParts-1 {
 
-					if err != nil {
-						retry = 1
-						errMsg += `,"iocopy": "failed"`
-						fmt.Println(errMsg)
-					} else {
-						// write out to the file
-						_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
+						db, err := sql.Open("sqlite3", DatabaseFile)
+						if err != nil {
+							log.Fatal(err)
+						}
+						defer db.Close()
 
+						sqlStmt := "update files set size = ? where id = ?"
+						_, err = db.Exec(sqlStmt, totalSize, 0)
 						if err != nil {
 							retry = 1
-							errMsg += `,"oswrite": "failed"`
+							errMsg += `"db": "failed"`
 							fmt.Println(errMsg)
-							fmt.Println(err)
-						} else {
-							// final chunk: also update database (size, its finished) etc.
-							if part == totalParts-1 {
-
-								db, err := sql.Open("sqlite3", DatabaseFile)
-								if err != nil {
-									log.Fatal(err)
-								}
-								defer db.Close()
-
-								sqlStmt := "update files set size = ? where id = ?"
-								_, err = db.Exec(sqlStmt, totalSize, 0)
-								if err != nil {
-									retry = 1
-									errMsg += `"db": "failed"`
-									fmt.Println(errMsg)
-								}
-							}
 						}
 					}
 				}
