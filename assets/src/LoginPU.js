@@ -67,8 +67,7 @@ export default class Login extends React.Component {
         })
     ).then(function(response) {
         // TODO proper form responses
-      console.log(response)
-      alert(response.data)
+      alert('Logged in')
     }).catch(function (error) {
       alert(error.response.data)
     });
