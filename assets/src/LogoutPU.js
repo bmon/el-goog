@@ -33,8 +33,6 @@ export default class Login extends React.Component {
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleEmail = this.handleEmail.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -45,32 +43,15 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
-  handleEmail (event) {
-    var key = "email"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
-  handlePassword (event) {
-    var key = "password"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
   sendForm() {
-    axios.post(
-        '/login', qs.stringify({
-            email: this.state.email,
-            password: this.state.password,
-        })
+    axios.get(
+        '/logout', qs.stringify({})
     ).then(function(response) {
         // TODO proper form responses
-      console.log(response)
-      alert(response.data)
+        console.log(response)
+        alert(response.data)
     }).catch(function (error) {
-      alert(error.response.data)
+        alert(error.response.data)
     });
 
     // TODO instead have user-friendly response and maintain close button
@@ -85,7 +66,7 @@ render() {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Login"
+        label="Logout"
         primary={true}
         onClick={this.sendForm}
       />,
