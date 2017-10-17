@@ -49,9 +49,8 @@ export default class Login extends React.Component {
     ).then(function(response) {
         // TODO proper form responses
         console.log(response)
-        alert(response.data)
     }).catch(function (error) {
-        alert(error.response.data)
+        console.log(response)
     });
 
     // TODO instead have user-friendly response and maintain close button
