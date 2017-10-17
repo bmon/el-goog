@@ -59,12 +59,13 @@ const styles = {
   }
 };
 
-
+// TODO actually fetch some real folderIDS
+var folderID = 1
 //console.log(uploader)
 
 class UploadComponent extends React.Component {
     render() {
-        uploader = new FineUploaderTraditional ({
+        var uploader = new FineUploaderTraditional ({
             options: {
                 chunking: {
                     // so max 1,2gb files for now
