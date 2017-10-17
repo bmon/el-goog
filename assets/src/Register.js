@@ -73,19 +73,15 @@ export default class Login extends React.Component {
         })
     ).then(function(response) {
         // TODO proper form responses
-      console.log(response.status)
-      console.log(response.statusText)
-      console.log(response.data)
-      alert(response.data)
+
+      alert('Successfully made an account')
+      this.setState({open: false})
     }).catch(function (error) {
       alert(error.response.data)
     });
-
     // TODO instead have user-friendly response and maintain close button
     //this.setState({open: false});
-  };
-
-
+  }
 
 render() {
     const actions = [
