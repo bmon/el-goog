@@ -141,23 +141,10 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		fileName := r.PostFormValue("qqfilename")
 
 		// =================================================================
-		//  Folder
-		/*
-				vars := mux.Vars(r)
-				folderID, err := strconv.Atoi(vars["id"])
-				if err != nil {
-					retry = 1
-					errMsg += `,"folderid": "failed"`
-				} else {
-			if err != nil {
-				retry = 1
-				errMsg += `,"rootFolder": "failed"`
-				fmt.Println(errMsg)
-			} else {
+		//  Folders
+		// was partly validated before the nested if's
 
-		*/
-		// TODO generate recursive filepath OR append to filename awkwardly and unappend on download
-		filePath := "./tmp/" + strconv.Itoa(rootFolder.ID) + `/` + "" // add rest of filepath?..
+		fmt.Println("downloading file to filePath == " + filePath)
 		os.MkdirAll(filePath, 0755)
 
 		// =================================================================
