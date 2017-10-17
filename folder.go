@@ -37,7 +37,12 @@ func CreateFolder(name string, parent *Folder) *Folder {
 }
 
 func (f *Folder) MakeSerial() SerialFolder {
-	folder := SerialFolder{f.ID, f.Parent.ID, f.Name, f.Modified, make([]Folder, 0), make([]File, 0)}
+	parentID := -1
+	if f.Parent != nil {
+		parentID = f.Parent.ID
+	}
+	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, make([]Folder, 0), make([]File, 0)}
+
 	db, err := sql.Open("sqlite3", DatabaseFile)
 	if err != nil {
 		fmt.Println(err)
@@ -143,6 +148,27 @@ func (f *Folder) Update() {
 	}
 }
 
+func (f *Folder) GetUserID() int {
+	root := f
+	for root.Parent != nil {
+		root = root.Parent
+	}
+
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	var userID int
+	err = db.QueryRow("select id from users where root_folder = ?", root.ID).Scan(&userID)
+	if err != nil {
+		fmt.Println(err)
+		return -1
+	}
+	return userID
+}
+
 // This method allows us to do db.exec with a folder instance argument
 func (f *Folder) Value() (driver.Value, error) {
 	if f == nil {
@@ -174,9 +200,6 @@ func (f *Folder) Scan(value interface{}) error {
 }
 
 func (f *Folder) Path() string {
-	if f.ID == 0 {
-		fmt.Printf("ERROAR %+v\n", f)
-	}
 	dirname := fmt.Sprintf("%s.%d/", f.Name, f.ID)
 	var parent string
 	if f.Parent != nil {
@@ -195,20 +218,8 @@ func (f *Folder) Path() string {
 	return parent + dirname
 }
 
-//Test function for Path()
-func FolderPath(w http.ResponseWriter, r *http.Request) {
-	fID := r.PostFormValue("id")
-	folderID, _ := strconv.Atoi(fID)
-	f, err := FolderSelectByID(folderID)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	path := f.Path()
-	fmt.Fprintf(w, path)
-}
-
 func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
 	vars := mux.Vars(r)
 	folderID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -220,6 +231,9 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.NotFound(w, r)
 		return
+	}
+	if user.ID != f.GetUserID() {
+		http.Error(w, "You do not have permission to retrieve this object", 403)
 	}
 	res, err := json.MarshalIndent(f.MakeSerial(), "", "\t")
 	if err != nil {
