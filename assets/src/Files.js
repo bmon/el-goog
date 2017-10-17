@@ -59,39 +59,40 @@ const styles = {
   }
 };
 
-const uploader = new FineUploaderTraditional ({
-    options: {
-        chunking: {
-            // so max 1,2gb files for now
-            enabled: true,
-            mandatory: true,
-            // partSize: 2000000,
-            
-        },
-        deleteFile: {
-            enabled: false,
-            //endpoint: '/upload'
-        },
-        request: {
-            endpoint: '/files',
-            // using default names:
-            //
-            // filenameParam: 'qqfilename',
-            // inputName: 'qqfile',
-            // totalFileSizeName: 'qqtotalfilesize',
-            // uuidName: 'qquuid',
-        },
-        retry: {
-            enableAuto: true
-        }
-
-    }
-})
 
 //console.log(uploader)
 
 class UploadComponent extends React.Component {
     render() {
+        uploader = new FineUploaderTraditional ({
+            options: {
+                chunking: {
+                    // so max 1,2gb files for now
+                    enabled: true,
+                    mandatory: true,
+                    // partSize: 2000000,
+                    
+                },
+                deleteFile: {
+                    enabled: false,
+                    //endpoint: '/upload'
+                },
+                request: {
+                    endpoint: '/folders/'+folderID+'/files',
+                    // using default names:
+                    //
+                    // filenameParam: 'qqfilename',
+                    // inputName: 'qqfile',
+                    // totalFileSizeName: 'qqtotalfilesize',
+                    // uuidName: 'qquuid',
+                },
+                retry: {
+                    enableAuto: true
+                }
+
+            }
+        })
+        
         return (
             <Gallery uploader={ uploader } />
         )

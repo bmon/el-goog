@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -125,101 +126,98 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 		// =================================================================
 		//  Folder
-		/*
-			// TODO use this version once pathing complete
-			// TODO query database if the funciton doesnt get rootfolder
-			if user.RootFolder == nil {
-				retry = 1
-				errMsg += `,"noroot": "failed"`
-			} else {
-				rootFolder := user.RootFolder.Name
 
-				// TODO get unique id of file
+		// TODO use this version once pathing complete
+		// TODO query database if the funciton doesnt get rootfolder
 
-				// fit all the rest of the compounding if statments in here instead
-			}
-		*/
-
-		// TODO clear this once above works and path
-		rootFolder, err := FolderSelectByID(0)
-
+		vars := mux.Vars(r)
+		folderID, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			retry = 1
-			errMsg += `,"folder": "failed"`
-			fmt.Println(errMsg)
+			errMsg += `,"folderid": "failed"`
 		} else {
-			rootFolderDir := "./tmp/testroot"
 
-			/*
-				filePath := "/test2/test3"
-				os.MkdirAll(rootFolder+filePath, 0755)
-			*/
-			os.MkdirAll(rootFolderDir, 0755)
+			// TODO clear this once above works and path
+			rootFolder, err := FolderSelectByID(folderID)
 
-			// =================================================================
-			//  File
-			//var osFile os.File
-
-			if part == 0 {
-				db, err := sql.Open("sqlite3", DatabaseFile)
-				if err != nil {
-					log.Fatal(err)
-				}
-				defer db.Close()
-				// make a database entry
-				dbFile := CreateFile(fileName,
-					0,          /*size*/
-					rootFolder, /*TODO client path*/
-				)
-				dbFile.Insert()
-			}
-
-			// create does return the osFile,
-			// however golang much prefers the types are strict here
-			//osFile, err := os.Create(rootFolderDir + `/` + fileName)
-			osFile, err := os.OpenFile(rootFolderDir+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
-
-			// =================================================================
-			//  Writing
 			if err != nil {
 				retry = 1
-				errMsg += `,"osfile": "failed"`
+				errMsg += `,"rootFolder": "failed"`
 				fmt.Println(errMsg)
 			} else {
-				// copy the http file to the os file
-				defer osFile.Close()
-				b := bytes.NewBuffer(nil)
-				_ /*bRead*/, err := io.Copy(b, httpFile)
+				rootFolderDir := "./tmp/testroot"
 
+				/*
+					filePath := "/test2/test3"
+					os.MkdirAll(rootFolder+filePath, 0755)
+				*/
+				os.MkdirAll(rootFolderDir, 0755)
+
+				// =================================================================
+				//  File
+				//var osFile os.File
+
+				if part == 0 {
+					db, err := sql.Open("sqlite3", DatabaseFile)
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer db.Close()
+					// make a database entry
+					dbFile := CreateFile(fileName,
+						0,          /*size*/
+						rootFolder, /*TODO client path*/
+					)
+					dbFile.Insert()
+				}
+
+				// create does return the osFile,
+				// however golang much prefers the types are strict here
+				//osFile, err := os.Create(rootFolderDir + `/` + fileName)
+				osFile, err := os.OpenFile(rootFolderDir+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
+
+				// =================================================================
+				//  Writing
 				if err != nil {
 					retry = 1
-					errMsg += `,"iocopy": "failed"`
+					errMsg += `,"osfile": "failed"`
 					fmt.Println(errMsg)
 				} else {
-					// write out to the file
-					_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
+					// copy the http file to the os file
+					defer osFile.Close()
+					b := bytes.NewBuffer(nil)
+					_ /*bRead*/, err := io.Copy(b, httpFile)
 
 					if err != nil {
 						retry = 1
-						errMsg += `,"oswrite": "failed"`
+						errMsg += `,"iocopy": "failed"`
 						fmt.Println(errMsg)
-						fmt.Println(err)
 					} else {
-						// final chunk: also update database (size, its finished) etc.
-						if part == totalParts-1 {
+						// write out to the file
+						_ /*bWritten*/, err := osFile.WriteAt(b.Bytes(), offset)
 
-							db, err := sql.Open("sqlite3", DatabaseFile)
-							if err != nil {
-								log.Fatal(err)
-							}
-							defer db.Close()
+						if err != nil {
+							retry = 1
+							errMsg += `,"oswrite": "failed"`
+							fmt.Println(errMsg)
+							fmt.Println(err)
+						} else {
+							// final chunk: also update database (size, its finished) etc.
+							if part == totalParts-1 {
 
-							sqlStmt := "update files set size = ? where id = ?"
-							_, err = db.Exec(sqlStmt, totalSize, 0)
-							if err != nil {
-								retry = 1
-								errMsg += `"db": "failed"`
-								fmt.Println(errMsg)
+								db, err := sql.Open("sqlite3", DatabaseFile)
+								if err != nil {
+									log.Fatal(err)
+								}
+								defer db.Close()
+
+								sqlStmt := "update files set size = ? where id = ?"
+								_, err = db.Exec(sqlStmt, totalSize, 0)
+								if err != nil {
+									retry = 1
+									errMsg += `"db": "failed"`
+									fmt.Println(errMsg)
+								}
 							}
 						}
 					}
@@ -243,13 +241,13 @@ func (f *File) Path() string {
 
 //Test function for Path()
 func FilePath(w http.ResponseWriter, r *http.Request) {
-        fID := r.PostFormValue("id")
-        fileID, _ := strconv.Atoi(fID)
-        f, err := FileSelectByID(fileID)
-        if err != nil {
-                http.NotFound(w, r)
-                return
-        }
-        path := f.Path()
-        fmt.Fprintf(w, path)
+	fID := r.PostFormValue("id")
+	fileID, _ := strconv.Atoi(fID)
+	f, err := FileSelectByID(fileID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	path := f.Path()
+	fmt.Fprintf(w, path)
 }

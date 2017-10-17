@@ -33,7 +33,7 @@ var routes = Routes{
 	Route{
 		"FileCreateHandler",
 		"POST",
-		"/files",
+		"/folders/{id:[0-9]+}/files",
 		FileCreateHandler,
 	},
 	Route{
@@ -42,16 +42,16 @@ var routes = Routes{
 		"/folders/{id:[0-9]+}",
 		FolderGetHandler,
 	},
-        Route{
-                "FolderPath",
-                "POST",
-                "/path",
-                FolderPath,
-        },
-        Route{
-                "FilePath",
-                "POST",
-                "/filepath",
-                FilePath,
-        },
+	Route{
+		"FolderPath",
+		"POST",
+		"/path",
+		FolderPath,
+	},
+	Route{
+		"FilePath",
+		"POST",
+		"/filepath",
+		FilePath,
+	},
 }
