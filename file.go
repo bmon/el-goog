@@ -144,6 +144,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		//  Folders
 		// was partly validated before the nested if's
 
+		filePath := "/tmp" + rootFolder.Path()
 		fmt.Println("downloading file to filePath == " + filePath)
 		os.MkdirAll(filePath, 0755)
 
