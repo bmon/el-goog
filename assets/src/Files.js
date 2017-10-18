@@ -137,8 +137,10 @@ class ObjectList extends Component {
       _this.setState({
         files: result.data.child_files,
         folders: result.data.child_folders,
+        parent_id: result.data.parent_id,
       });
     })
+    this.gotoParent = this.gotoParent.bind(this)
 
   }
 
@@ -150,6 +152,12 @@ class ObjectList extends Component {
     var link = document.createElement("a");
     link.href = "/files/"+id;
     link.click();
+  }
+  gotoParent() {
+    if (this.state.parent_id > 0) {
+      Cookie.set("root_id", this.state.parent_id)
+      location.reload()
+    }
   }
 
   render() {
@@ -178,6 +186,7 @@ class ObjectList extends Component {
     });
     return (
       <div>
+        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Up one folder" />
         <div style={styles.fileContainer}>
         <List style={styles.container}>
           <Subheader inset={false}>Folders</Subheader>
