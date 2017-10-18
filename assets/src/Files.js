@@ -19,6 +19,7 @@ import FileFolder from 'material-ui/svg-icons/file/folder';
 import ActionAssignment from 'material-ui/svg-icons/action/assignment';
 import {blue500, yellow600} from 'material-ui/styles/colors';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
+import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -99,7 +100,7 @@ class UploadComponent extends React.Component {
         )
     }
 }
-
+//
 const Files = () => (
   <div style={styles.body}>
   <AppBar
@@ -116,6 +117,7 @@ const Files = () => (
 
   <Card style={styles.container}>
     <br/>
+    <Fil />
     <br/>
     <UploadComponent/>
     <div style={styles.fileContainer}>
@@ -161,5 +163,43 @@ const Files = () => (
 
   </div>
 );
+
+
+
+class Fil extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+  componentDidMount() {
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {    
+      _this.setState({
+      items: result.data.items
+      });
+    })
+  }
+
+ /* componentWillUnmount() {
+    this.serverRequest.abort();
+  },
+*/
+  render() {
+    const renderItems = this.state.items.map(function(item, i) {
+      return <li key={i}>{item.title}</li>
+    });
+    return (
+      <div>
+        {renderItems}
+        /* Render stuff here */
+      </div>
+    )
+  }
+}
+
 
 export default Files;
