@@ -75,8 +75,8 @@ func (f *File) Update() {
 	}
 	defer db.Close()
 
-	sqlStmt := "update folders set parent_id=?, name=?, size=?, modified=? where id=?"
-	_, err = db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix(), f.ID)
+	sqlStmt := "update files set parent_id=?, name=?, size=?, modified=? where id=?"
+	_, err = db.Exec(sqlStmt, f.Parent.ID, f.Name, f.Size, f.Modified.Unix(), f.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
 		fmt.Println(err)
@@ -102,6 +102,12 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	// =======================================================================
 	// Folder Verification
 	vars := mux.Vars(r)
@@ -111,14 +117,14 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("bad a to i with folder id:" + vars["id"])
 		return
 	}
-	rootFolder, err := FolderSelectByID(folderID)
+	targetFolder, err := FolderSelectByID(folderID)
 	if err != nil {
 		http.Error(w, `{"error": "Invalid folder ID"}`, 400)
 		fmt.Println("folder select by id failed with id:" + vars["id"])
 		return
 	}
-	rootFolder.GetUserID()
-	if user.ID != rootFolder.GetUserID() {
+	targetFolder.GetUserID()
+	if user.ID != targetFolder.GetUserID() {
 		http.Error(w, `{"error": "You must be the owner of this directory to perform this action"}`, 401)
 		return
 	}
@@ -140,36 +146,44 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		totalParts, _ := strconv.ParseInt(r.PostFormValue("qqtotalparts"), 10, 64)
 		fileName := r.PostFormValue("qqfilename")
 
+		//  File
+		//var osFile os.File
+
+		var dbFile *File
+		if part == 0 {
+			// make a database entry
+			dbFile = CreateFile(fileName,
+				-1,           /*size*/
+				targetFolder, /*TODO client path*/
+			)
+		} else {
+			var fileID int
+			err = db.QueryRow("select id from files where size=-1 and parent_id=? and name=?", folderID, fileName).Scan(&fileID)
+			if err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+			dbFile, err = FileSelectByID(fileID)
+			if err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+		}
+
 		// =================================================================
 		//  Folders
 		// was partly validated before the nested if's
 
-		filePath := "./tmp/" + rootFolder.Path()
+		filePath := "./tmp/" + dbFile.Path()
 		fmt.Println("downloading file to filePath == " + filePath)
-		os.MkdirAll(filePath, 0755)
+		os.MkdirAll("./tmp/"+dbFile.Parent.Path(), 0755)
 
 		// =================================================================
-		//  File
-		//var osFile os.File
-
-		if part == 0 {
-			db, err := sql.Open("sqlite3", DatabaseFile)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer db.Close()
-			// make a database entry
-			dbFile := CreateFile(fileName,
-				0,          /*size*/
-				rootFolder, /*TODO client path*/
-			)
-			dbFile.Insert()
-		}
 
 		// create does return the osFile,
 		// however golang much prefers the types are strict here
 		//osFile, err := os.Create(rootFolderDir + `/` + fileName)
-		osFile, err := os.OpenFile(filePath+`/`+fileName, os.O_RDWR|os.O_CREATE, 0755)
+		osFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755)
 
 		// =================================================================
 		//  Writing
@@ -198,21 +212,10 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 					fmt.Println(err)
 				} else {
 					// final chunk: also update database (size, its finished) etc.
+					fmt.Println(part, totalParts, "asdgjksadgafadsjgd")
 					if part == totalParts-1 {
-
-						db, err := sql.Open("sqlite3", DatabaseFile)
-						if err != nil {
-							log.Fatal(err)
-						}
-						defer db.Close()
-
-						sqlStmt := "update files set size = ? where id = ?"
-						_, err = db.Exec(sqlStmt, totalSize, 0)
-						if err != nil {
-							retry = 1
-							errMsg += `"db": "failed"`
-							fmt.Println(errMsg)
-						}
+						dbFile.Size = int(totalSize)
+						dbFile.Update()
 					}
 				}
 			}
@@ -226,6 +229,28 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, `{"error": "%v"`+errMsg+`}`, err)
 	}
+}
+
+func FileGetHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
+	vars := mux.Vars(r)
+	fileID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+	f, err := FileSelectByID(fileID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if user.ID != f.Parent.GetUserID() {
+		http.Error(w, "You do not have permission to retrieve this object", 403)
+	}
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+f.Name)
+	http.ServeFile(w, r, "./tmp/"+f.Path())
 }
 
 func (f *File) Path() string {

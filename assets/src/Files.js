@@ -19,6 +19,8 @@ import FileFolder from 'material-ui/svg-icons/file/folder';
 import ActionAssignment from 'material-ui/svg-icons/action/assignment';
 import {blue500, yellow600} from 'material-ui/styles/colors';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
+import Cookie from 'js-cookie';
+
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -59,12 +61,10 @@ const styles = {
   }
 };
 
-// TODO actually fetch some real folderIDS
-var folderID = 1
-//console.log(uploader)
 
 class UploadComponent extends React.Component {
     render() {
+        window.folderID = Cookie.get("root_id")
         var uploader = new FineUploaderTraditional ({
             options: {
                 chunking: {
@@ -72,7 +72,7 @@ class UploadComponent extends React.Component {
                     enabled: true,
                     mandatory: true,
                     // partSize: 2000000,
-                    
+
                 },
                 deleteFile: {
                     enabled: false,
@@ -93,7 +93,7 @@ class UploadComponent extends React.Component {
 
             }
         })
-        
+
         return (
             <Gallery uploader={ uploader } />
         )
