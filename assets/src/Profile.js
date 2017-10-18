@@ -63,7 +63,7 @@ const HomePage = () => (
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/files" label="Files"/>

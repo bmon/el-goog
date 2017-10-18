@@ -49,6 +49,8 @@ export default class Login extends React.Component {
     ).then(function(response) {
         // TODO proper form responses
         console.log(response)
+        alert('Successfully logged out')
+        window.location = "/";
     }).catch(function (error) {
         console.log(response)
     });
