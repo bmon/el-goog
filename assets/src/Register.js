@@ -74,6 +74,7 @@ export default class Login extends React.Component {
     ).then(function(response) {
         // TODO proper form responses
       alert('Successfully made an account')
+      window.location = "/#/files";
     }).catch(function (error) {
       alert(error.response.data)
     })
