@@ -21,6 +21,7 @@ import {blue500, yellow600} from 'material-ui/styles/colors';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import Cookie from 'js-cookie';
 
+import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -99,13 +100,13 @@ class UploadComponent extends React.Component {
         )
     }
 }
-
+//
 const Files = () => (
   <div style={styles.body}>
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/profile" label="Account" />
@@ -116,6 +117,7 @@ const Files = () => (
 
   <Card style={styles.container}>
     <br/>
+    <Fil />
     <br/>
     <UploadComponent/>
     <div style={styles.fileContainer}>
@@ -161,5 +163,43 @@ const Files = () => (
 
   </div>
 );
+
+
+
+class Fil extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+  componentDidMount() {
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {
+      _this.setState({
+      items: result.data.items
+      });
+    })
+  }
+
+ /* componentWillUnmount() {
+    this.serverRequest.abort();
+  },
+*/
+  render() {
+    const renderItems = this.state.items.map(function(item, i) {
+      return <li key={i}>{item.title}</li>
+    });
+    return (
+      <div>
+        {renderItems}
+        /* Render stuff here */
+      </div>
+    )
+  }
+}
+
 
 export default Files;
