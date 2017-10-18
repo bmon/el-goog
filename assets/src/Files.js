@@ -95,6 +95,7 @@ class UploadComponent extends React.Component {
             }
         })
 
+
         return (
             <Gallery uploader={ uploader } />
         )
@@ -117,54 +118,81 @@ const Files = () => (
 
   <Card style={styles.container}>
     <br/>
-    <Fil />
-    <br/>
     <UploadComponent/>
-    <div style={styles.fileContainer}>
-    <List style={styles.container}>
-      <Subheader inset={false}>Folders</Subheader>
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 9, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 17, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 28, 2014"
-      />
-    </List>
-    <Divider inset={true} />
-    <List style={styles.container}>
-      <Subheader inset={false}>Files</Subheader>
-      <ListItem
-        leftAvatar={<Avatar icon={<ActionAssignment />} backgroundColor={blue500} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFile"
-        secondaryText="Jan 20, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFile"
-        secondaryText="Jan 10, 2014"
-      />
-    </List>
-    </div>
+    <ObjectList/>
   </Card>
-
   </div>
 );
 
+class ObjectList extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      files: [],
+      folders: []
+    }
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {
+      _this.setState({
+        files: result.data.child_files,
+        folders: result.data.child_folders,
+      });
+    })
 
+  }
+
+  updateLoc(id) {
+    Cookie.set("root_id", id)
+    location.reload()
+  }
+  downloadFile(id) {
+    var link = document.createElement("a");
+    link.href = "/files/"+id;
+    link.click();
+  }
+
+  render() {
+    const renderFiles = this.state.files.map(function(item, i) {
+      return (
+        <ListItem
+        leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
+        onClick={function (id) {_this.downloadFile(item.id)}}
+        rightIcon={<ActionInfo />}
+        primaryText={item.name}
+        secondaryText={item.size}
+        />
+      )
+    });
+    const _this = this
+    const renderFolders = this.state.folders.map(function(item, i) {
+      return (
+        <ListItem
+        leftAvatar={<Avatar icon={<FileFolder />} />}
+        onClick={function (id) {_this.updateLoc(item.id)}}
+        rightIcon={<ActionInfo />}
+        primaryText={item.name}
+        secondaryText={item.modified}
+        />
+      )
+    });
+    return (
+      <div>
+        <div style={styles.fileContainer}>
+        <List style={styles.container}>
+          <Subheader inset={false}>Folders</Subheader>
+          {renderFolders}
+        </List>
+        <Divider inset={true} />
+        <List style={styles.container}>
+          <Subheader inset={false}>Files</Subheader>
+          {renderFiles}
+        </List>
+        </div>
+      </div>
+    )
+  }
+}
 
 class Fil extends Component {
   constructor(props){
