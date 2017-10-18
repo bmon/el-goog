@@ -104,7 +104,7 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	if GetRequestUser(r) != nil {
-		http.Error(w, "already logged in!", 400)
+		http.Error(w, "Already logged in", 400)
 	}
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
@@ -121,7 +121,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	var userID int
 	err = db.QueryRow("SELECT id,password FROM users WHERE email = ?", email).Scan(&userID, &dbPass)
 	if err != nil {
-		http.Error(w, "bad username or password", 400)
+		http.Error(w, "Wrong username or password", 400)
 		return
 	}
 
@@ -129,7 +129,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(dbPass), sltpwd)
 
 	if err != nil {
-		http.Error(w, "bad username or password", 400)
+		http.Error(w, "Wrong username or password", 400)
 		return
 	}
 	user, err := UserSelectByID(userID)
