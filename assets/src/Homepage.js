@@ -106,9 +106,12 @@ class AppBarr extends Component {
     return (
       <div>
         <AppBar
-          title={<span style={styles.title}></span>}
+          title={<span style={styles.title}></span>}//
           onTitleTouchTap={handleTouchTap}
-          iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+
+          iconElementLeft={
+            <img src="/assets/transparent_logo.png" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
+          }
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }

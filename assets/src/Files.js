@@ -217,7 +217,7 @@ class ObjectList extends Component {
             }
           >
             <MenuItem primaryText="Size" />
-            <MenuItem primaryText="Date Modified" />
+            <MenuItem primaryText="Name" />
           </IconMenu>
 
         </ToolbarGroup>
