@@ -117,21 +117,6 @@ func (f *Folder) Insert() {
 	}
 }
 
-func (f *Folder) Delete() {
-	f.Modified = time.Now()
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	sqlStmt := "delete from folders where id=?"
-	_, err = db.Exec(sqlStmt, f.ID)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
 func (f *Folder) Update() {
 	f.Modified = time.Now()
 	db, err := sql.Open("sqlite3", DatabaseFile)
@@ -234,10 +219,48 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if user.ID != f.GetUserID() {
 		http.Error(w, "You do not have permission to retrieve this object", 403)
+		return
 	}
 	res, err := json.MarshalIndent(f.MakeSerial(), "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 	w.Write(res)
+}
+
+func FolderDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
+	vars := mux.Vars(r)
+	folderID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+	f, err := FolderSelectByID(folderID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if user.ID != f.GetUserID() {
+		http.Error(w, "You do not have permission to retrieve this object", 403)
+		return
+	}
+	f.Delete()
+}
+
+func (f *Folder) Delete() {
+	serial := f.MakeSerial()
+	for _, file := range serial.ChildFiles {
+		file.Delete()
+	}
+	for _, folder := range serial.ChildFolders {
+		folder.Delete()
+	}
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	db.Exec("DELETE from folders where id=?", f.ID)
 }

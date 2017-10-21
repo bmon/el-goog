@@ -3,6 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import DeleteButton from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
@@ -95,7 +96,10 @@ class UploadComponent extends React.Component {
             }
         })
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
         return (
             <Gallery uploader={ uploader } />
         )
@@ -117,7 +121,11 @@ const Files = () => (
   />
 
   <Card style={styles.container}>
+<<<<<<< HEAD
     <CardTitle title="My Files"/>
+=======
+    <CardTitle title="All Files" />
+>>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
     <br/>
     <UploadComponent/>
     <ObjectList/>
@@ -167,7 +175,7 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
         secondaryText={item.size}
         />
@@ -187,7 +195,8 @@ class ObjectList extends Component {
     });         //
     return (
       <div>
-        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Up one folder" />
+        <RaisedButton style={styles.button} label="New Folder" />
+        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
         <div style={styles.fileContainer}>
         <List style={styles.container}>
           <Subheader inset={false}>Folders</Subheader>
@@ -203,6 +212,44 @@ class ObjectList extends Component {
     )
   }
 }
+<<<<<<< HEAD
+=======
+
+class Fil extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+  componentDidMount() {
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {
+      _this.setState({
+      items: result.data.items
+      });
+    })
+  }
+
+ /* componentWillUnmount() {
+    this.serverRequest.abort();
+  },
+*/
+  render() {
+    const renderItems = this.state.items.map(function(item, i) {
+      return <li key={i}>{item.title}</li>
+    });
+    return (
+      <div>
+        {renderItems}
+        /* Render stuff here */
+      </div>
+    )
+  }
+}
+>>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
 
 
 export default Files;

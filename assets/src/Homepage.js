@@ -26,7 +26,6 @@ function handleTouchTap() {
 // css to be applied to elements
 const styles = {
   title: {
-    cursor: 'pointer',
     fontSize: 20
   },
   button: {
@@ -61,8 +60,17 @@ const Logged = (props) => (
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
    /* <MenuItem 
       linkButton
-      containerElement={<Link to ="/profile" />}
-      primaryText="My Account" />*/
+      containerElement={<Link to ="/#/profile" />}
+      primaryText="My Account" />
+      <MenuItem 
+      linkButton
+      containerElement={<Link to ="/#/files" />}
+      primaryText="My Files" />
+      <MenuItem 
+      linkButton
+      containerElement={<Link to ="/profile" />
+      primaryText="Logout" />
+      */
     <MenuItem primaryText="My Account" />
     <MenuItem primaryText="My Files" />
     <MenuItem primaryText="Logout" />
