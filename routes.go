@@ -66,17 +66,16 @@ var routes = Routes{
 		"/files/{id:[0-9]+}",
 		FileDeleteHandler,
 	},
-        Route{
-                "UserGetDetails",
-                "GET",
-                "/users/{id:[0-9]+}",
-                UserGetDetails,
-        },
-        Route{
-                "UserModifyHandler",
-                "PUT",
-                "/users/{id:[0-9]+}",
-                UserModifyHandler,
-        },
+	Route{
+		"UserGetDetails",
+		"GET",
+		"/users/{id:[0-9]+}",
+		UserGetDetails,
+	},
+	Route{
+		"UserModifyHandler",
+		"PUT",
+		"/users/{id:[0-9]+}",
+		UserModifyHandler,
+	},
 }
-i
