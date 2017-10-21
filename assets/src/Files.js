@@ -3,6 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import DeleteButton from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
@@ -116,6 +117,7 @@ const Files = () => (
   />
 
   <Card style={styles.container}>
+    <CardTitle title="All Files" />
     <br/>
     <UploadComponent/>
     <ObjectList/>
@@ -165,7 +167,7 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
         secondaryText={item.size}
         />
@@ -185,7 +187,8 @@ class ObjectList extends Component {
     });
     return (
       <div>
-        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Up one folder" />
+        <RaisedButton style={styles.button} label="New Folder" />
+        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
         <div style={styles.fileContainer}>
         <List style={styles.container}>
           <Subheader inset={false}>Folders</Subheader>
