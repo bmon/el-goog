@@ -21,7 +21,6 @@ function handleTouchTap() {
 // css to be applied to elements
 const styles = {
   title: {
-    cursor: 'pointer',
     fontSize: 20
   },
   button: {
