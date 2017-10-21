@@ -203,5 +203,28 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
 
+        vars := mux.Vars(r)
+        userID, err := strconv.Atoi(vars["id"])
+
+        if err != nil {
+                fmt.Println(err)
+                http.NotFound(w, r)
+                return
+        }
+
+        if user.ID != userID {
+                http.Error(w, "You do not have permission to view this information", 403)
+                return
+        }
+
+	oldPwd := r.PostFormValue("oldPassword")
+	newPwd := r.PostFormValue("newPassword")
+	username := r.PostFormValue("username")
+
+	if oldPwd == "" || newPwd == "" || username == "" {
+		http.Error(w, "Missing information", 403)
+                return
+	}
 }
