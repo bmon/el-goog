@@ -3,12 +3,14 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import DeleteButton from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FineUploaderTraditional from 'fine-uploader-wrappers'
+
 import Gallery from 'react-fine-uploader'
 import { Component } from 'react'
 import {List, ListItem} from 'material-ui/List';
@@ -25,7 +27,10 @@ import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
-import LogoutPU from './LogoutPU';
+import LogoutPU from './LogoutPU'; 
+
+
+import '../dist/gallery.css'
 
 // currently unused
 function handleTouchTap() {
@@ -35,7 +40,6 @@ function handleTouchTap() {
 // css to be applied to elements
 const styles = {
   title: {
-    cursor: 'pointer',
     fontSize: 20
   },
   button: {
@@ -91,12 +95,14 @@ class UploadComponent extends React.Component {
                 retry: {
                     enableAuto: true
                 }
-
             }
         })
 
+        const fileInputChildren = <span>Upload a File</span>
+//
         return (
-            <Gallery uploader={ uploader } />
+            <Gallery fileInput-children={ fileInputChildren } dropzone-disabled={ true } uploader={ uploader } />
+
         )
     }
 }
@@ -116,8 +122,9 @@ const Files = () => (
   />
 
   <Card style={styles.container}>
+    <CardTitle title="All Files" />
     <br/>
-    <UploadComponent/>
+    <RaisedButton style={styles.button}><UploadComponent /></RaisedButton>
     <ObjectList/>
   </Card>
   </div>
@@ -165,9 +172,9 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
-        secondaryText={item.size}
+        secondaryText={item.size + " bytes"}
         />
       )
     });
@@ -177,7 +184,7 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
         onClick={function (id) {_this.updateLoc(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
         secondaryText={item.modified}
         />
@@ -185,14 +192,15 @@ class ObjectList extends Component {
     });
     return (
       <div>
-        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Up one folder" />
+        <RaisedButton style={styles.button} label="New Folder" />
+        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
         <div style={styles.fileContainer}>
-        <List style={styles.container}>
+        <List>
           <Subheader inset={false}>Folders</Subheader>
           {renderFolders}
         </List>
         <Divider inset={true} />
-        <List style={styles.container}>
+        <List>
           <Subheader inset={false}>Files</Subheader>
           {renderFiles}
         </List>
