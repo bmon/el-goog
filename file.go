@@ -256,3 +256,33 @@ func FileGetHandler(w http.ResponseWriter, r *http.Request) {
 func (f *File) Path() string {
 	return f.Parent.Path() + fmt.Sprintf("%s.%d", f.Name, f.ID)
 }
+
+func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
+	vars := mux.Vars(r)
+	fileID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+	f, err := FileSelectByID(fileID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if user.ID != f.Parent.GetUserID() {
+		http.Error(w, "You do not have permission to retrieve this object", 403)
+		return
+	}
+	f.Delete()
+}
+
+func (f *File) Delete() {
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	db.Exec("DELETE from files where id=?", f.ID)
+}
