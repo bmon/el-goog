@@ -34,6 +34,7 @@ import axios from "axios";
 import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU'; 
+import Header from './Header';
 
 
 import '../dist/gallery.css'
@@ -116,17 +117,7 @@ class UploadComponent extends React.Component {
 //
 const Files = () => (
   <div style={styles.body}>
-  <AppBar
-    title={<span style={styles.title}></span>}
-    onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
-    iconElementRight={
-      <div>
-      <RaisedButton style={styles.button} href="./#/profile" label="Account" />
-      <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
-      </div>
-	}
-  />
+  <Header />
 
   <Card style={styles.container}>
     <CardTitle title="All Files" />
