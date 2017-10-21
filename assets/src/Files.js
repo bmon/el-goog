@@ -10,6 +10,7 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FineUploaderTraditional from 'fine-uploader-wrappers'
+
 import Gallery from 'react-fine-uploader'
 import { Component } from 'react'
 import {List, ListItem} from 'material-ui/List';
@@ -26,7 +27,10 @@ import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
-import LogoutPU from './LogoutPU';
+import LogoutPU from './LogoutPU'; 
+
+
+import '../dist/gallery.css'
 
 // currently unused
 function handleTouchTap() {
@@ -95,8 +99,12 @@ class UploadComponent extends React.Component {
 
             }
         })
+
+        const fileInputChildren = <span>Upload a File</span>
+//
         return (
-            <Gallery uploader={ uploader } />
+            <Gallery fileInput-children={ fileInputChildren } dropzone-disabled={ true } uploader={ uploader } />
+
         )
     }
 }
@@ -106,19 +114,18 @@ const Files = () => (
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/profile" label="Account" />
       <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
       </div>
-  }
+	}
   />
 
   <Card style={styles.container}>
-  <CardTitle title="All Files" />
     <br/>
-    <UploadComponent/>
+    <RaisedButton style={styles.button}><UploadComponent /></RaisedButton>
     <ObjectList/>
   </Card>
   </div>
@@ -168,33 +175,33 @@ class ObjectList extends Component {
         onClick={function (id) {_this.downloadFile(item.id)}}
         rightIcon={<DeleteButton />}
         primaryText={item.name}
-        secondaryText={item.size}
+        secondaryText={item.size + " bytes"}
         />
       )
-    });             //
+    });
     const _this = this
     const renderFolders = this.state.folders.map(function(item, i) {
       return (
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
         onClick={function (id) {_this.updateLoc(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
         secondaryText={item.modified}
         />
       )
-    });         //
+    });
     return (
       <div>
         <RaisedButton style={styles.button} label="New Folder" />
         <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
         <div style={styles.fileContainer}>
-        <List style={styles.container}>
+        <List>
           <Subheader inset={false}>Folders</Subheader>
           {renderFolders}
         </List>
         <Divider inset={true} />
-        <List style={styles.container}>
+        <List>
           <Subheader inset={false}>Files</Subheader>
           {renderFiles}
         </List>
@@ -203,5 +210,41 @@ class ObjectList extends Component {
     )
   }
 }
+
+class Fil extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+  componentDidMount() {
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {
+      _this.setState({
+      items: result.data.items
+      });
+    })
+  }
+
+ /* componentWillUnmount() {
+    this.serverRequest.abort();
+  },
+*/
+  render() {
+    const renderItems = this.state.items.map(function(item, i) {
+      return <li key={i}>{item.title}</li>
+    });
+    return (
+      <div>
+        {renderItems}
+        /* Render stuff here */
+      </div>
+    )
+  }
+}
+
 
 export default Files;

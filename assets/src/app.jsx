@@ -143,6 +143,12 @@ const UserProfile = () => (
   </MuiThemeProvider>
 );
 
+function requireAuth() {
+  if (!loggedIn()) {
+    alert('You are not authorised')
+  }
+  alert('did the thing')
+};
 
 //ReactDOM.render(<Home/>, document.getElementById('react-app'));
 
@@ -152,7 +158,7 @@ ReactDOM.render((
       <Route exact path="/" component={NewHome}/>
     <Route path="/login" component={SignIn}/>
     <Route path="/signup" component={NewRegister}/>
-    <Route path="/files" component={Files}/>
+    <Route path="/files" component={Files} onEnter={requireAuth}/>
     <Route path="/profile" component={UserProfile}/>
     </div>
     </HashRouter>
