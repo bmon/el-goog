@@ -83,6 +83,10 @@ func (f *File) Update() {
 	}
 }
 
+func (f *File) GetUserID() int {
+        return f.Parent.GetUserID()
+}
+
 // This method allows us to do db.exec with a folder instance argument
 func (f *File) Value() (driver.Value, error) {
 	if f == nil {
