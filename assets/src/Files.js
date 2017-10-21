@@ -95,11 +95,6 @@ class UploadComponent extends React.Component {
 
             }
         })
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
         return (
             <Gallery uploader={ uploader } />
         )
@@ -121,11 +116,7 @@ const Files = () => (
   />
 
   <Card style={styles.container}>
-<<<<<<< HEAD
-    <CardTitle title="My Files"/>
-=======
-    <CardTitle title="All Files" />
->>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
+  <CardTitle title="All Files" />
     <br/>
     <UploadComponent/>
     <ObjectList/>
@@ -212,44 +203,5 @@ class ObjectList extends Component {
     )
   }
 }
-<<<<<<< HEAD
-=======
-
-class Fil extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      items: []
-    }
-  }
-
-  componentDidMount() {
-    var _this = this;
-    axios.get("/folders/"+folderID)
-    .then(function(result) {
-      _this.setState({
-      items: result.data.items
-      });
-    })
-  }
-
- /* componentWillUnmount() {
-    this.serverRequest.abort();
-  },
-*/
-  render() {
-    const renderItems = this.state.items.map(function(item, i) {
-      return <li key={i}>{item.title}</li>
-    });
-    return (
-      <div>
-        {renderItems}
-        /* Render stuff here */
-      </div>
-    )
-  }
-}
->>>>>>> 407516bf7576aefcbe992f89e5771a0c10442263
-
 
 export default Files;

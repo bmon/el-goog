@@ -58,19 +58,7 @@ const Logged = (props) => (
     iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
-   /* <MenuItem 
-      linkButton
-      containerElement={<Link to ="/#/profile" />}
-      primaryText="My Account" />
-      <MenuItem 
-      linkButton
-      containerElement={<Link to ="/#/files" />}
-      primaryText="My Files" />
-      <MenuItem 
-      linkButton
-      containerElement={<Link to ="/profile" />
-      primaryText="Logout" />
-      */
+
     <MenuItem primaryText="My Account" />
     <MenuItem primaryText="My Files" />
     <MenuItem primaryText="Logout" />
