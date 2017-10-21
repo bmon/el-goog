@@ -1,4 +1,5 @@
 import React from 'react';
+import {Component} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
@@ -8,6 +9,10 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Cookie from 'js-cookie';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -24,15 +29,15 @@ const styles = {
     fontSize: 20
   },
   button: {
-  	textAlign: 'center',
-  	margin: 12
+    textAlign: 'center',
+    margin: 12
   },
   content: {
-  	textAlign: 'center',
-  	fontSize: 15
+    textAlign: 'center',
+    fontSize: 15
   },
   body: {
-  	textAlign: 'center'
+    textAlign: 'center'
   },
   mediumIcon: {
     width: 35,
@@ -40,16 +45,84 @@ const styles = {
   }
 };
 
+class Login extends Component {
+  render() {
+    return (
+      <FlatButton style={styles.button}><LoginPU /></FlatButton>
+    );
+  }
+}
+//
+const Logged = (props) => (
+  <IconMenu {...props}
+    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+    anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
+
+    <MenuItem primaryText="My Account" />
+    <MenuItem primaryText="My Files" />
+    <MenuItem primaryText="Logout" />
+  </IconMenu>
+);
+  //
+class AppBarr extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      logged: false,
+      userEmail: "",
+    }
+    this.handleLoggedIn = this.handleLoggedIn.bind(this);
+    this.handleLoggedOut = this.handleLoggedOut.bind(this);
+    this.checkLogged = this.checkLogged.bind(this);
+  }
+  
+  handleLoggedIn () {    
+    this.setState({logged: true});
+  };
+  handleLoggedOut () {    
+    this.setState({logged: false});
+  };
+
+  checkLogged(){
+    axios.post(
+      '/login', qs.stringify({
+        userEmail: this.state.email,
+    })
+    ).then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    if (userEmail == "") {
+      this.handleLoggedOut;
+    } else {
+      this.handleLoggedIn;
+    }
+  }
+
+  render() { 
+    return (
+      <div>
+        <AppBar
+          title={<span style={styles.title}></span>}
+          onTitleTouchTap={handleTouchTap}
+          iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+          iconElementRight={
+            this.state.logged ? <Logged /> : <Login />
+          }
+        />
+      </div>
+    );
+  }
+}
+
+
+//
 const HomePage = () => (
   <div style={styles.body}>
-  <AppBar
-    title={<span style={styles.title}></span>}
-    onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
-    iconElementRight={
-    	<RaisedButton style={styles.button}><LoginPU /></RaisedButton>
-	}
-  />
+  <AppBarr />
 
   <Card>
     <CardMedia>
@@ -69,8 +142,6 @@ const HomePage = () => (
     <CardTitle titleStyle={styles.content} title="product plan: FREE. GETCHA FILES ON 'ERE" />
 
   </Card>
-
-
 
   </div>
 );

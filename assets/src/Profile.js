@@ -58,12 +58,38 @@ const styles = {
   }
 };
 
-const HomePage = () => (
+class UserDetails extends Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      name,
+      email,
+      password
+    }
+    var _this = this;
+    axios.get("/users/"+userID)
+    .then(function(result) {
+      _this.setState({
+        name: result.data.username,
+        email: result.data.email,
+        password: result.data.password,
+      });
+    })
+  }
+
+  render(){
+    return(
+       <CardTitle titleStyle={styles.content} title="test: {this.state.name}" />
+    )
+  }
+}
+
+const Account = () => (
   <div style={styles.body}>
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/files" label="Files"/>
@@ -74,24 +100,25 @@ const HomePage = () => (
 
   <Card style={styles.container}>
     <div>
-    <CardTitle title="My Account"/>
-            <CardText>Name</CardText>
-            <FlatButton style={styles.button} label="Edit Name" primary={true}/>
-            <Divider />  
-            <CardText>Primary Email</CardText>
-            <CardActions>
-              <FlatButton style={styles.button} label="Edit Email" primary={true}/>
-            </CardActions>
-            <Divider />        
-            <CardText>Delete Account</CardText>
-            <CardActions>
-              <FlatButton style={styles.button} label="Delete Account" primary={true}/>
-            </CardActions>
-            <Divider /> 
+      <CardTitle title="Personal account"/>
+      <Divider />
+      <CardText>Name</CardText>
+      <FlatButton style={styles.button} label="Edit Name" primary={true}/>
+      <Divider />  
+      <CardText>Primary Email</CardText>
+      <CardActions>
+        <FlatButton style={styles.button} label="Edit Email" primary={true}/>
+      </CardActions>
+      <Divider />        
+      <CardText>Delete Account</CardText>
+      <CardActions>
+        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
+      </CardActions>
+      <Divider /> 
     </div>
   </Card>
 
   </div>
 );
 
-export default HomePage;
+export default Account;

@@ -10,6 +10,7 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FineUploaderTraditional from 'fine-uploader-wrappers'
+
 import Gallery from 'react-fine-uploader'
 import { Component } from 'react'
 import {List, ListItem} from 'material-ui/List';
@@ -32,7 +33,10 @@ import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
-import LogoutPU from './LogoutPU';
+import LogoutPU from './LogoutPU'; 
+
+
+import '../dist/gallery.css'
 
 // currently unused
 function handleTouchTap() {
@@ -45,15 +49,15 @@ const styles = {
     fontSize: 20
   },
   button: {
-  	textAlign: 'center',
-  	margin: 12
+    textAlign: 'center',
+    margin: 12
   },
   content: {
-  	textAlign: 'center',
-  	fontSize: 15
+    textAlign: 'center',
+    fontSize: 15
   },
   body: {
-  	textAlign: 'center'
+    textAlign: 'center'
   },
   container: {
     margin: 50,

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-        "strconv"
+	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 
-        "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -146,38 +146,45 @@ func UserLogout(w http.ResponseWriter, r *http.Request) {
 	DeleteRequestSession(w, r)
 }
 
-
 func UserDelete(w http.ResponseWriter, r *http.Request) {
-        thisUser := GetRequestUser(r)
-        
-        vars := mux.Vars(r)
-        userID, err := strconv.Atoi(vars["id"])
+	thisUser := GetRequestUser(r)
 
-        if err != nil {
-                fmt.Println(err)
-                http.NotFound(w, r)
-                return
-        }
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["id"])
 
-        if thisUser.ID != userID {
-            http.Error(w, "You do not have permission to modify this account", 403)
-            return
-        }
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
 
-        thisUser.RootFolder.Delete()
+	if thisUser.ID != userID {
+		http.Error(w, "You do not have permission to modify this account", 403)
+		return
+	}
 
-        DeleteRequestSession(w, r)
+	thisUser.RootFolder.Delete()
 
-        db, err := sql.Open("sqlite3", DatabaseFile)
-        if err != nil {
-            return
-        }
-        defer db.Close()
-        
-        sqlStmt := "DELETE FROM users WHERE id=?"
-        _, err = db.Exec(sqlStmt, thisUser.ID)
-        if err != nil {
-                fmt.Println(sqlStmt, err)
-                fmt.Println(err)
-        }
+	DeleteRequestSession(w, r)
+
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	sqlStmt := "DELETE FROM users WHERE id=?"
+	_, err = db.Exec(sqlStmt, thisUser.ID)
+	if err != nil {
+		fmt.Println(sqlStmt, err)
+		fmt.Println(err)
+	}
+}
+
+func UserGetDetails(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
+
 }
