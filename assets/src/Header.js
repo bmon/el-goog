@@ -11,33 +11,32 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import Cookie from 'js-cookie';
+import {white, black} from 'material-ui/styles/colors';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 
-// currently unused
 function handleTouchTap() {
   alert('onClick triggered on the title component');
 }
 
-// css to be applied to elements
 const styles = {
   title: {
     fontSize: 20
   },
   button: {
-  	textAlign: 'center',
-  	margin: 12
+    textAlign: 'center',
+    margin: 12
   },
   content: {
-  	textAlign: 'center',
-  	fontSize: 15
+    textAlign: 'center',
+    fontSize: 15
   },
   body: {
-  	textAlign: 'center'
+    textAlign: 'center'
   },
   mediumIcon: {
     width: 35,
@@ -45,31 +44,24 @@ const styles = {
   }
 };
 
-class Login extends Component {
-  render() {
-    return (
-      <FlatButton style={styles.button}><LoginPU /></FlatButton>
-    );
-  }
-}
-//
-const Logged = (props) => (
+const Logged = (props) => (  
   <IconMenu {...props}
-    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+    iconButtonElement={<IconButton iconStyle={styles.mediumIcon} ><AccountIcon /></IconButton>}
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
+    <MenuItem primaryText="My Account"  href="/#/profile" />
+    <MenuItem primaryText="My Files" href="/#/files" />
+    <MenuItem disabled href="/#/"><LogoutPU /></MenuItem>
+  </IconMenu> 
 
-    <MenuItem primaryText="My Account" />
-    <MenuItem primaryText="My Files" />
-    <MenuItem primaryText="Logout" />
-  </IconMenu>
 );
-  //
-class AppBarr extends Component {
+  
+class AppBarHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logged: false,
+      logged: true,
+      userName: "",
       userEmail: "",
     }
     this.handleLoggedIn = this.handleLoggedIn.bind(this);
@@ -88,6 +80,7 @@ class AppBarr extends Component {
     axios.post(
       '/login', qs.stringify({
         userEmail: this.state.email,
+        userName: this.state.name,
     })
     ).then(function (response) {
       console.log(response);
@@ -106,15 +99,10 @@ class AppBarr extends Component {
     return (
       <div>
         <AppBar
-          title={<span style={styles.title}></span>}//
+          title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
-
-          iconElementLeft={
-            <img src="/assets/transparent_logo.png" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
-          }
-          iconElementRight={
-            this.state.logged ? <Logged /> : <Login />
-          }
+          iconElementLeft={<IconButton color={black} iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+          iconElementRight={<Logged />}
         />
       </div>
     );
@@ -122,31 +110,4 @@ class AppBarr extends Component {
 }
 
 
-//
-const HomePage = () => (
-  <div style={styles.body}>
-  <AppBarr />
-
-  <Card>
-    <CardMedia>
-      <img src="/assets/logo.png" alt="el-goog logo" />
-    </CardMedia>
-    <CardTitle style={styles.title} title="Ethical File Sync and Backup" />
-    <CardActions>
-      <RaisedButton style={styles.button}><Register /></RaisedButton>
-    </CardActions>
-
-    <Divider />
-    <br/>
-    <CardTitle titleStyle={styles.content} title="The elegant way to store your files and access them anytime, anywhere" />
-    <br/>
-    <CardTitle titleStyle={styles.content} title="[insert visual instructions on how to use el-goog]" />
-    <br/>
-    <CardTitle titleStyle={styles.content} title="product plan: FREE. GETCHA FILES ON 'ERE" />
-
-  </Card>
-
-  </div>
-);
-
-export default HomePage;
+export default AppBarHeader;

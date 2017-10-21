@@ -22,6 +22,7 @@ import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
 import Register from './Register';
 import LogoutPU from './LogoutPU';
+import Header from './Header';
 
 // currently unused
 function handleTouchTap() {
@@ -86,22 +87,11 @@ class UserDetails extends Component {
 
 const Account = () => (
   <div style={styles.body}>
-  <AppBar
-    title={<span style={styles.title}></span>}
-    onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/"><ActionHome /></IconButton>}
-    iconElementRight={
-      <div>
-      <RaisedButton style={styles.button} href="./#/files" label="Files"/>
-      <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
-      </div>  
-  }
-  />
-
+  <Header />
+  
   <Card style={styles.container}>
     <div>
       <CardTitle title="Personal account"/>
-      <Divider />
       <CardText>Name</CardText>
       <FlatButton style={styles.button} label="Edit Name" primary={true}/>
       <Divider />  
