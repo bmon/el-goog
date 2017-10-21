@@ -84,7 +84,7 @@ func (f *File) Update() {
 }
 
 func (f *File) GetUserID() int {
-        return f.Parent.GetUserID()
+	return f.Parent.GetUserID()
 }
 
 // This method allows us to do db.exec with a folder instance argument
