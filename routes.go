@@ -48,12 +48,12 @@ var routes = Routes{
 		"/folders/{id:[0-9]+}",
 		FolderGetHandler,
 	},
-        Route{
-                "usersDelete",
-                "DELETE",
-                "/users/{id:[0-9]+}",
-                UserDelete,
-        },
+	Route{
+		"usersDelete",
+		"DELETE",
+		"/users/{id:[0-9]+}",
+		UserDelete,
+	},
 	Route{
 		"FolderDeleteHandler",
 		"DELETE",
@@ -66,16 +66,16 @@ var routes = Routes{
 		"/files/{id:[0-9]+}",
 		FileDeleteHandler,
 	},
-        Route{
-                "UserGetDetails",
-                "GET",
-                "/users/{id:[0-9]+}",
-                UserGetDetails,
-        },
-        Route{
-                "UserModifyHandler",
-                "PUT",
-                "/users/{id:[0-9]+}",
-                UserModifyHandler,
-        },
+	Route{
+		"UserGetDetails",
+		"GET",
+		"/users/{id:[0-9]+}",
+		UserGetDetails,
+	},
+	Route{
+		"UserModifyHandler",
+		"PUT",
+		"/users/{id:[0-9]+}",
+		UserModifyHandler,
+	},
 }

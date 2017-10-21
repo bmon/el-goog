@@ -10,10 +10,10 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FineUploaderTraditional from 'fine-uploader-wrappers'
+
 import Gallery from 'react-fine-uploader'
 import { Component } from 'react'
 import {List, ListItem} from 'material-ui/List';
-import ActionInfo from 'material-ui/svg-icons/action/info';
 import Subheader from 'material-ui/Subheader';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
@@ -22,15 +22,24 @@ import {blue500, yellow600} from 'material-ui/styles/colors';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import Cookie from 'js-cookie';
 
+import IconMenu from 'material-ui/IconMenu';
+import FontIcon from 'material-ui/FontIcon';
+import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
+import MenuItem from 'material-ui/MenuItem';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+
 import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
-import LogoutPU from './LogoutPU';
+import LogoutPU from './LogoutPU'; 
+
+
+import '../dist/gallery.css'
 
 // currently unused
 function handleTouchTap() {
-  alert('onClick triggered on the title component');
 }
 
 // css to be applied to elements
@@ -55,11 +64,14 @@ const styles = {
     textAlign: 'center'
   },
   fileContainer: {
-    margin: 90,
+    margin: 55,
   },
   mediumIcon: {
     width: 35,
     height: 35,
+  },
+  fileList: {
+    textAlign: 'left'
   }
 };
 
@@ -95,6 +107,7 @@ class UploadComponent extends React.Component {
 
             }
         })
+
         return (
             <Gallery uploader={ uploader } />
         )
@@ -106,17 +119,17 @@ const Files = () => (
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/profile" label="Account" />
       <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
       </div>
-  }
+	}
   />
 
   <Card style={styles.container}>
-  <CardTitle title="All Files" />
+    <CardTitle title="All Files" />
     <br/>
     <UploadComponent/>
     <ObjectList/>
@@ -168,33 +181,51 @@ class ObjectList extends Component {
         onClick={function (id) {_this.downloadFile(item.id)}}
         rightIcon={<DeleteButton />}
         primaryText={item.name}
-        secondaryText={item.size}
+        secondaryText={item.size + " bytes"}
         />
       )
-    });             //
+    });
     const _this = this
     const renderFolders = this.state.folders.map(function(item, i) {
       return (
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
         onClick={function (id) {_this.updateLoc(item.id)}}
-        rightIcon={<ActionInfo />}
+        rightIcon={<DeleteButton />}
         primaryText={item.name}
         secondaryText={item.modified}
         />
       )
-    });         //
+    });
     return (
       <div>
-        <RaisedButton style={styles.button} label="New Folder" />
+        
         <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
         <div style={styles.fileContainer}>
-        <List style={styles.container}>
-          <Subheader inset={false}>Folders</Subheader>
-          {renderFolders}
-        </List>
-        <Divider inset={true} />
-        <List style={styles.container}>
+        <Toolbar>
+        <ToolbarGroup firstChild={true}>
+          <RaisedButton style={styles.button} label="New Folder" />
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarSeparator />
+          
+          <IconMenu
+            iconButtonElement={
+              <IconButton touch={true}>
+                <NavigationExpandMoreIcon />
+              </IconButton>
+            }
+          >
+            <MenuItem primaryText="Size" />
+            <MenuItem primaryText="Date Modified" />
+          </IconMenu>
+
+        </ToolbarGroup>
+      </Toolbar>
+
+
+
+        <List style={styles.fileList}>
           <Subheader inset={false}>Files</Subheader>
           {renderFiles}
         </List>
@@ -203,5 +234,41 @@ class ObjectList extends Component {
     )
   }
 }
+
+class Fil extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
+
+  componentDidMount() {
+    var _this = this;
+    axios.get("/folders/"+folderID)
+    .then(function(result) {
+      _this.setState({
+      items: result.data.items
+      });
+    })
+  }
+
+ /* componentWillUnmount() {
+    this.serverRequest.abort();
+  },
+*/
+  render() {
+    const renderItems = this.state.items.map(function(item, i) {
+      return <li key={i}>{item.title}</li>
+    });
+    return (
+      <div>
+        {renderItems}
+        /* Render stuff here */
+      </div>
+    )
+  }
+}
+
 
 export default Files;

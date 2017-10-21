@@ -21,6 +21,10 @@ var config = {
           presets:['env', 'react']
         }
       }, // to transform JSX into JS
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
     ],
   },
 
