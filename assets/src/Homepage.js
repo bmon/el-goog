@@ -11,13 +11,13 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import Cookie from 'js-cookie';
+import { Link } from 'react-router-dom';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
-
 // currently unused
 function handleTouchTap() {
   alert('onClick triggered on the title component');
@@ -55,21 +55,21 @@ class Login extends Component {
 //
 const Logged = (props) => (
   <IconMenu {...props}
-    iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+    iconButtonElement={<IconButton iconStyle={styles.mediumIcon}><AccountIcon /></IconButton>}
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
-
-    <MenuItem primaryText="My Account" />
-    <MenuItem primaryText="My Files" />
-    <MenuItem primaryText="Logout" />
+    <MenuItem primaryText="My Account"  href="/#/profile" />
+    <MenuItem primaryText="My Files" href="/#/files" />
+    <MenuItem disabled href="/#/"><LogoutPU /></MenuItem>
   </IconMenu>
+
 );
   //
 class AppBarr extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logged: false,
+      logged: true,
       userEmail: "",
     }
     this.handleLoggedIn = this.handleLoggedIn.bind(this);
