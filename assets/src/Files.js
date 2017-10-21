@@ -39,15 +39,15 @@ const styles = {
     fontSize: 20
   },
   button: {
-  	textAlign: 'center',
-  	margin: 12
+    textAlign: 'center',
+    margin: 12
   },
   content: {
-  	textAlign: 'center',
-  	fontSize: 15
+    textAlign: 'center',
+    fontSize: 15
   },
   body: {
-  	textAlign: 'center'
+    textAlign: 'center'
   },
   container: {
     margin: 50,
@@ -95,6 +95,7 @@ class UploadComponent extends React.Component {
             }
         })
 
+
         return (
             <Gallery uploader={ uploader } />
         )
@@ -106,96 +107,98 @@ const Files = () => (
   <AppBar
     title={<span style={styles.title}></span>}
     onTitleTouchTap={handleTouchTap}
-    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/files"><ActionHome /></IconButton>}
+    iconElementLeft={<IconButton iconStyle={styles.mediumIcon} href="./#/"><ActionHome /></IconButton>}
     iconElementRight={
       <div>
       <RaisedButton style={styles.button} href="./#/profile" label="Account" />
       <RaisedButton style={styles.button}><LogoutPU /></RaisedButton>
       </div>
-	}
+  }
   />
 
   <Card style={styles.container}>
-    <br/>
-    <Fil />
+    <CardTitle title="My Files"/>
     <br/>
     <UploadComponent/>
-    <div style={styles.fileContainer}>
-    <List style={styles.container}>
-      <Subheader inset={false}>Folders</Subheader>
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 9, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 17, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<FileFolder />} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFolder"
-        secondaryText="Jan 28, 2014"
-      />
-    </List>
-    <Divider inset={true} />
-    <List style={styles.container}>
-      <Subheader inset={false}>Files</Subheader>
-      <ListItem
-        leftAvatar={<Avatar icon={<ActionAssignment />} backgroundColor={blue500} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFile"
-        secondaryText="Jan 20, 2014"
-      />
-      <ListItem
-        leftAvatar={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />}
-        rightIcon={<ActionInfo />}
-        primaryText="SampleFile"
-        secondaryText="Jan 10, 2014"
-      />
-    </List>
-    </div>
+    <ObjectList/>
   </Card>
-
   </div>
 );
 
-
-
-class Fil extends Component {
+class ObjectList extends Component {
   constructor(props){
     super(props);
     this.state = {
-      items: []
+      files: [],
+      folders: []
     }
-  }
-
-  componentDidMount() {
     var _this = this;
     axios.get("/folders/"+folderID)
     .then(function(result) {
       _this.setState({
-      items: result.data.items
+        files: result.data.child_files,
+        folders: result.data.child_folders,
+        parent_id: result.data.parent_id,
       });
     })
+    this.gotoParent = this.gotoParent.bind(this)
+
   }
 
- /* componentWillUnmount() {
-    this.serverRequest.abort();
-  },
-*/
+  updateLoc(id) {
+    Cookie.set("root_id", id)
+    location.reload()
+  }
+  downloadFile(id) {
+    var link = document.createElement("a");
+    link.href = "/files/"+id;
+    link.click();
+  }
+  gotoParent() {
+    if (this.state.parent_id > 0) {
+      Cookie.set("root_id", this.state.parent_id)
+      location.reload()
+    }
+  }
+
   render() {
-    const renderItems = this.state.items.map(function(item, i) {
-      return <li key={i}>{item.title}</li>
-    });
+    const renderFiles = this.state.files.map(function(item, i) {
+      return (
+        <ListItem
+        leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
+        onClick={function (id) {_this.downloadFile(item.id)}}
+        rightIcon={<ActionInfo />}
+        primaryText={item.name}
+        secondaryText={item.size}
+        />
+      )
+    });             //
+    const _this = this
+    const renderFolders = this.state.folders.map(function(item, i) {
+      return (
+        <ListItem
+        leftAvatar={<Avatar icon={<FileFolder />} />}
+        onClick={function (id) {_this.updateLoc(item.id)}}
+        rightIcon={<ActionInfo />}
+        primaryText={item.name}
+        secondaryText={item.modified}
+        />
+      )
+    });         //
     return (
       <div>
-        {renderItems}
-        /* Render stuff here */
+        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Up one folder" />
+        <div style={styles.fileContainer}>
+        <List style={styles.container}>
+          <Subheader inset={false}>Folders</Subheader>
+          {renderFolders}
+        </List>
+        <Divider inset={true} />
+        <List style={styles.container}>
+          <Subheader inset={false}>Files</Subheader>
+          {renderFiles}
+        </List>
+        </div>
       </div>
     )
   }
