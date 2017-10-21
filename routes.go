@@ -48,4 +48,10 @@ var routes = Routes{
 		"/folders/{id:[0-9]+}",
 		FolderGetHandler,
 	},
+        Route{
+                "usersDelete",
+                "DELETE",
+                "/users/{id:[0-9]+}",
+                UserDelete,
+        },
 }
