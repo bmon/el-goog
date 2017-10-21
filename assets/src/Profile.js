@@ -63,10 +63,55 @@ class UserDetails extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      name,
-      email,
-      password
+      name: "",
+      email: "",
+      password: "",
     }
+    this.handleName = this.handleName.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
+    this.handlePassword = this.handlePassword.bind(this);
+    this.sendForm = this.sendForm.bind(this);
+  }
+  handleName (event) {
+    var key = "email"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
+
+  handleEmail (event) {
+    var key = "email"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
+  handlePassword (event) {
+    var key = "password"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
+
+  sendForm() {
+    axios.post(
+        '/users', qs.stringify({
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+        })
+    ).then(function(response) {
+        _this.setState({
+        name: result.data.username,
+        email: result.data.email,
+        password: result.data.password,
+      })
+    }).catch(function (error) {
+      alert(error.response.data)
+    });
+/*
     var _this = this;
     axios.get("/users/"+userID)
     .then(function(result) {
@@ -74,13 +119,41 @@ class UserDetails extends Component {
         name: result.data.username,
         email: result.data.email,
         password: result.data.password,
+    }).catch(function (error) {
+      alert(error.response.data)
       });
-    })
-  }
+    })*/
+  };
+  
 
   render(){
     return(
-       <CardTitle titleStyle={styles.content} title="test: {this.state.name}" />
+      <div style={styles.body}>
+      <Header />
+      
+      <Card style={styles.container}>
+        <div>
+          <CardTitle title="Personal account"/>
+          <CardText>Name: {this.state.name}</CardText>
+          <FlatButton style={styles.button} label="Edit Name" primary={true}/>
+          <Divider />  
+          <CardText>Primary Email: {this.state.email}</CardText>
+          <CardActions>
+            <FlatButton style={styles.button} label="Edit Email" primary={true}/>
+          </CardActions>
+          <Divider />        
+          <CardText>Delete Account: {this.state.password}</CardText>
+          <CardActions>
+            <FlatButton style={styles.button} label="Delete Account" primary={true}/>
+          </CardActions>
+          <Divider /> 
+        </div>
+      </Card>
+
+      </div>
+
+
+
     )
   }
 }
@@ -111,4 +184,4 @@ const Account = () => (
   </div>
 );
 
-export default Account;
+export default UserDetails;

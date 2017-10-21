@@ -62,8 +62,7 @@ export default class Login extends React.Component {
 render() {
     const actions = [
       <FlatButton
-        label="Cancel"
-        primary={true}
+        label="Cancel"        
         onClick={this.handleClose}
       />,
       <FlatButton
@@ -75,7 +74,7 @@ render() {
 
     return (
       <div>
-        <RaisedButton label="Logout" onClick={this.handleOpen} />
+        <RaisedButton label="Logout" disableTouchRipple= {true} onClick={this.handleOpen} />
         <Dialog
           title="Are you sure you want to logout?"
           actions={actions}

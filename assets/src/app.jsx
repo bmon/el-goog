@@ -71,28 +71,6 @@ var Content = React.createClass({
     }
 })
 
-/*var Login = React.createClass({
-  render() {
-      return (
-        <div style={homeStyle}>
-          <h1>Login</h1>
-          <p>To Do!!!!</p>
-        </div>
-      )
-    }
-})
-*/
-var SignUp = React.createClass({
-  render() {
-    return (
-      <div style={homeStyle}>
-        <h1>Sign Up</h1>
-        <p>to do</p>
-      </div>
-    )
-  }
-})
-
 var Home = React.createClass({
   render() {
     return (
@@ -159,7 +137,7 @@ ReactDOM.render((
     <Route path="/login" component={SignIn}/>
     <Route path="/signup" component={NewRegister}/>
     <Route path="/files" component={Files} onEnter={requireAuth}/>
-    <Route path="/profile" component={UserProfile}/>
+    <Route path="/profile" component={UserProfile} onEnter={requireAuth}/>
     </div>
     </HashRouter>
   ), document.getElementById('react-app'))

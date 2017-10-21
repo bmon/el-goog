@@ -85,7 +85,6 @@ render() {
     const actions = [
       <FlatButton
         label="Cancel"
-        primary={true}
         onClick={this.handleClose}
       />,
       <FlatButton
