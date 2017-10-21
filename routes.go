@@ -54,4 +54,16 @@ var routes = Routes{
                 "/users/{id:[0-9]+}",
                 UserDelete,
         },
+	Route{
+		"FolderDeleteHandler",
+		"DELETE",
+		"/folders/{id:[0-9]+}",
+		FolderDeleteHandler,
+	},
+	Route{
+		"FileGetHandler",
+		"DELETE",
+		"/files/{id:[0-9]+}",
+		FileDeleteHandler,
+	},
 }
