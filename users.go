@@ -181,3 +181,12 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
                 fmt.Println(err)
         }
 }
+
+func UserGetDetails(w http.ResponseWriter, r *http.Request) {
+        
+}
+
+
+func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
+
+}
