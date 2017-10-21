@@ -54,7 +54,7 @@ func UserSelectByID(userID int) (*User, error) {
 
 	u := &User{}
 	rootID := -1
-	err = db.QueryRow("SELECT id, email, password, username, root_folder FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Email, &rootID)
+	err = db.QueryRow("SELECT id, email, password, username, root_folder FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Username, &rootID)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,24 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserGetDetails(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
 
+	vars := mux.Vars(r)
+        userID, err := strconv.Atoi(vars["id"])
+
+	if err != nil {
+		fmt.Println(err)
+                http.NotFound(w, r)
+                return
+	}
+
+	if user.ID != userID {
+                http.Error(w, "You do not have permission to view this information", 403)
+                return
+        }
+
+        fmt.Fprintf(w, "username:%s\n", user.Username)
+        fmt.Fprintf(w, "email:%s", user.Email)
 }
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
