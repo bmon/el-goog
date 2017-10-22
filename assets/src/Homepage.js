@@ -14,6 +14,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Cookie from 'js-cookie';
 import {blueGrey100} from 'material-ui/styles/colors';
+import {cyan400, yellow600} from 'material-ui/styles/colors';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -111,12 +112,12 @@ class AppBarr extends Component {
           onTitleTouchTap={handleTouchTap}
 
           iconElementLeft={
-            <img src="/assets/transparent_logo.png" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
+            <img src="/assets/vector.gif" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
           }
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }
-          style={{backgroundColor: blueGrey100}}
+          style={{backgroundColor: cyan400}}
         />
       </div>
     );

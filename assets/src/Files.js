@@ -35,6 +35,7 @@ import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
+import NewFolderPU from './NewFolderPU';
 
 
 import '../dist/gallery.css'
@@ -211,7 +212,7 @@ class ObjectList extends Component {
         <div style={styles.fileContainer}>
         <Toolbar>
         <ToolbarGroup firstChild={true}>
-          <RaisedButton style={styles.button} label="New Folder" />
+          <RaisedButton style={styles.button}><NewFolderPU /></RaisedButton>
         </ToolbarGroup>
         <ToolbarGroup>
           <ToolbarSeparator />
