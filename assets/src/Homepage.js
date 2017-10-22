@@ -143,9 +143,6 @@ const HomePage = () => (
     <br/>
     <CardTitle titleStyle={styles.content} title="The elegant way to store your files and access them anytime, anywhere" />
     <br/>
-    <CardTitle titleStyle={styles.content} title="[insert visual instructions on how to use el-goog]" />
-    <br/>
-    <CardTitle titleStyle={styles.content} title="product plan: FREE. GETCHA FILES ON 'ERE" />
 
   </Card>
 

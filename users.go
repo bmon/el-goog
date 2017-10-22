@@ -210,15 +210,8 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	oldPwd := r.PostFormValue("oldPassword")
-	newPwd := r.PostFormValue("newPassword")
+	newPwd := r.PostFormValue("password")
 	username := r.PostFormValue("username")
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), append([]byte(oldPwd), pwdsalt...))
-	if err != nil {
-		http.Error(w, "Current password is not correct", 400)
-		return
-	}
 
 	hshNewPwd, err := bcrypt.GenerateFromPassword(append([]byte(newPwd), pwdsalt...), 10)
 	if err != nil {

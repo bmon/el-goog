@@ -30,8 +30,9 @@ import SecurityIcon from 'material-ui/svg-icons/hardware/security';
 import Register from './Register';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
-
-
+import EditName from './EditName';
+import ChangePW from './ChangePW';
+import DeleteAccount from './DeleteAccount';
 
 // currently unused
 function handleTouchTap() {
@@ -134,34 +135,6 @@ class UserDetails extends Component {
     }))
   }
 
-  changeName (){
-    const actions = [
-      <FlatButton
-        label="OK"
-        primary={true}
-    //    onClick={this.sendForm}
-      />,
-    ]; //
-    return (
-      <Dialog
-        title="Change Name"
-        actions={actions}
-        modal={true}
-      >
-      <TextField ref='New name'
-        name='New name'
-        required={true}
-        hintText="name"
-        floatingLabelText="name"
-  //      value={this.state.Username}
-  //      onChange={this.handleName}
-        type="text">
-      </TextField>
-        <br/>
-      </Dialog>
-    );
-  }
-//
   render(){
     return(
       <div style={styles.body}>
@@ -176,11 +149,8 @@ class UserDetails extends Component {
                     <Card style={styles.containerCard}>
                     <div>
                       <CardTitle>NAME: {this.state.Username}</CardTitle>
-                      <CardActions>
-                        <FlatButton style={styles.button} 
-                        label="Edit Name" primary={true}
-                        onClick= {this.changeName}/>
-                      </CardActions>
+                      <EditName />
+                      <br />
                       <Divider />  
                       <br />
                       <CardTitle>EMAIL: {this.state.email}</CardTitle>
@@ -196,16 +166,13 @@ class UserDetails extends Component {
                     <div>     
                       <CardTitle>Password</CardTitle> 
                       <CardTitle subtitle="Set a unique password to protect your personal account."/>
-                      <CardActions>
-                        <FlatButton style={styles.button} label="Change Password" primary={true}/>
-                      </CardActions>
+                      <ChangePW />
+                      <br />
                       <Divider />
                       <br /> 
                       <CardTitle>Delete Account</CardTitle>
                       <CardTitle subtitle="If you delete your account, you data will be gone forever."/>
-                      <CardActions>
-                        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
-                      </CardActions>
+                      <DeleteAccount />
                       <Divider /> 
                     </div>
                     </Card>

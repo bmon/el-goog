@@ -11,6 +11,7 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
+
 var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
@@ -23,20 +24,21 @@ const styles = {
   }
 };
 
-export default class Login extends React.Component {
+export default class ChangePW extends React.Component {
   constructor(props) {
     super(props);
 
-    // Initial state
     this.state = {
       open: false,
-      name: "",
+      oldPassword: "",
+      NewPassword: "",
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleName = this.handleName.bind(this);
+    this.handleOldPassword = this.handleOldPassword.bind(this);
+    this.handleNewPassword = this.handleNewPassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -48,8 +50,16 @@ export default class Login extends React.Component {
     this.setState({open: false});
   };
 
-  handleName (event) {
-    var key = "name"
+  handleOldPassword (event) {
+    var key = "oldPassword"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
+
+  handleNewPassword (event) {
+    var key = "NewPassword"
     var val = event.target.value
     var rel = {}
     rel[key] = val
@@ -58,13 +68,14 @@ export default class Login extends React.Component {
 
   // need to change this stuff for a new folder
   sendForm() {
+    window.userID = Cookie.get("user_id");
+    console.log(userID);
     axios.post(
-        '/folders/', qs.stringify({
-            name: this.state.name,
-            parent: window.folderID,
+        ('/users/'+userID), qs.stringify({
+          password: this.state.password,
         })
     ).then(function(response) {
-      window.location = "/#/files";
+      window.location = "/#/profile";
       location.reload()
     }).catch(function (error) {
       alert(error.response.data)
@@ -81,7 +92,7 @@ export default class Login extends React.Component {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Make Folder"
+        label="Save"
         primary={true}
         onClick={this.sendForm}
       />,
@@ -89,21 +100,29 @@ export default class Login extends React.Component {
 
     return (
       <div>
-        <RaisedButton label="New Folder" onClick={this.handleOpen} />
+        <FlatButton label="Change Password" onClick={this.handleOpen} primary={true} />
         <Dialog
-          title="Make a New Folder"
+          title="Change Password" subtitle="Enter your old and new passwords."
           actions={actions}
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='folderName'
-             name='name'
+          <TextField ref='Old password'
+             name='Old password'
              required={true}
-           hintText="Folder Name"
-               floatingLabelText="Folder Name"
-                value={this.state.name}
-                onChange={this.handleName}
-               type="text">
+             floatingLabelText="Old password"
+             value={this.state.OldPassword}
+             onChange={this.handleOldPassword}
+             type="password">
+            </TextField>
+          <br />
+          <TextField ref='New password'
+             name='password'
+             required={true}
+             floatingLabelText="New password"
+             value={this.state.NewPassword}
+             onChange={this.handleNewPassword}
+             type="password">
             </TextField>
             <br/>
         </Dialog>
