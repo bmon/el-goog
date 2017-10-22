@@ -27,6 +27,7 @@ export default class Login extends React.Component {
 
     // Initial state
     this.state = {
+
       open: false,
       email: "",
       password: "",
@@ -46,19 +47,24 @@ export default class Login extends React.Component {
     this.setState({open: false});
   };
   sendForm() {
-    axios.delete(
-        '/files/'+this.props.target, qs.stringify({})
-    ).then(() => {
-      this.handleClose()
-      this.props.onDelete()
+    axios.get(
+        '/logout', qs.stringify({})
+    ).then(function(response) {
+        // TODO proper form responses
+        console.log(response)
+        window.location = "/";
+    }).catch(function (error) {
+        console.log(response)
     });
 
+    // TODO instead have user-friendly response and maintain close button
+    //this.setState({open: false});
   };
 
 render() {
     const actions = [
       <FlatButton
-        label="Cancel"
+        label="Cancel"        
         onClick={this.handleClose}
       />,//
       <FlatButton
@@ -74,7 +80,7 @@ render() {
             <DeleteButton onClick={this.handleOpen} />
           </IconButton>
         <Dialog
-          title="Are you sure you want to delete this file?"
+          title="Are you sure you want to delete this?"
           actions={actions}
           modal={true}
           open={this.state.open}
