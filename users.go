@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
 
 	"encoding/json"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/mux"
@@ -42,14 +42,8 @@ func CreateUser(name, email, password string) (*User, error) {
 }
 
 func (u *User) Insert() error {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
 	sqlStmt := "INSERT INTO users(id, email, password, username, root_folder) values(?,?,?,?,?)"
-	res, err := db.Exec(sqlStmt, nil, u.Email, u.Password, u.Username, u.RootFolder.ID)
+	res, err := DB.Exec(sqlStmt, nil, u.Email, u.Password, u.Username, u.RootFolder.ID)
 	if err != nil {
 		return err
 	} else {
@@ -64,14 +58,9 @@ func (u *User) Insert() error {
 }
 
 func UserSelectByID(userID int) (*User, error) {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return nil, err
-	}
-
 	u := &User{}
 	rootID := -1
-	err = db.QueryRow("SELECT id, email, password, username, root_folder FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Username, &rootID)
+	err := DB.QueryRow("SELECT id, email, password, username, root_folder FROM users WHERE id=?", userID).Scan(&u.ID, &u.Email, &u.Password, &u.Username, &rootID)
 	if err != nil {
 		return nil, err
 	}
@@ -115,17 +104,10 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 
-	// open
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
-
 	// run it
 	var dbPass string
 	var userID int
-	err = db.QueryRow("SELECT id,password FROM users WHERE email = ?", email).Scan(&userID, &dbPass)
+	err := DB.QueryRow("SELECT id,password FROM users WHERE email = ?", email).Scan(&userID, &dbPass)
 	if err != nil {
 		http.Error(w, "Wrong username or password", 400)
 		return
@@ -175,15 +157,8 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 	thisUser.RootFolder.Delete()
 
 	DeleteRequestSession(w, r)
-
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return
-	}
-	defer db.Close()
-
 	sqlStmt := "DELETE FROM users WHERE id=?"
-	_, err = db.Exec(sqlStmt, thisUser.ID)
+	_, err = DB.Exec(sqlStmt, thisUser.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
 		fmt.Println(err)
@@ -305,6 +280,13 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(sqlStmt, err)
 				fmt.Println(err)
 			}
+		}
+		hashedNewPassword := string(hshNewPwd[:])
+		sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
+		_, err = DB.Exec(sqlStmt, username, hashedNewPassword, user.ID)
+		if err != nil {
+			fmt.Println(sqlStmt, err)
+			fmt.Println(err)
 		}
 	}
 }

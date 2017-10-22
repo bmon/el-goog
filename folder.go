@@ -1,11 +1,9 @@
 package main
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -44,12 +42,7 @@ func (f *Folder) MakeSerial() SerialFolder {
 	}
 	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, f.Path(), make([]Folder, 0), make([]File, 0)}
 
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rows, err := db.Query("SELECT id FROM folders WHERE parent_id=?", folder.ID)
+	rows, err := DB.Query("SELECT id FROM folders WHERE parent_id=?", folder.ID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -64,7 +57,7 @@ func (f *Folder) MakeSerial() SerialFolder {
 		}
 	}
 
-	rows, err = db.Query("SELECT id FROM files WHERE parent_id=?", folder.ID)
+	rows, err = DB.Query("SELECT id FROM files WHERE parent_id=?", folder.ID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -82,14 +75,9 @@ func (f *Folder) MakeSerial() SerialFolder {
 }
 
 func FolderSelectByID(folderID int) (*Folder, error) {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return nil, err
-	}
-
 	f := &Folder{}
 	var timestamp int64
-	err = db.QueryRow("SELECT id, name, modified, parent_id FROM folders WHERE id=?", folderID).Scan(&f.ID, &f.Name, &timestamp, &f.Parent)
+	err := DB.QueryRow("SELECT id, name, modified, parent_id FROM folders WHERE id=?", folderID).Scan(&f.ID, &f.Name, &timestamp, &f.Parent)
 	if err != nil {
 		return nil, err
 	}
@@ -98,14 +86,8 @@ func FolderSelectByID(folderID int) (*Folder, error) {
 }
 
 func (f *Folder) Insert() {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	sqlStmt := "insert into folders values (NULL, ?, ?, ?)"
-	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix())
+	res, err := DB.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("insert error", err)
 	} else {
@@ -120,14 +102,8 @@ func (f *Folder) Insert() {
 
 func (f *Folder) Update() {
 	f.Modified = time.Now()
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	sqlStmt := "update folders set parent_id=?, name=?, modified=? where id=?"
-	_, err = db.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix(), f.ID)
+	_, err := DB.Exec(sqlStmt, f.Parent, f.Name, f.Modified.Unix(), f.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
 		fmt.Println(err)
@@ -140,14 +116,8 @@ func (f *Folder) GetUserID() int {
 		root = root.Parent
 	}
 
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	var userID int
-	err = db.QueryRow("select id from users where root_folder = ?", root.ID).Scan(&userID)
+	err := DB.QueryRow("select id from users where root_folder = ?", root.ID).Scan(&userID)
 	if err != nil {
 		fmt.Println(err)
 		return -1
@@ -283,10 +253,5 @@ func (f *Folder) Delete() {
 	for _, folder := range serial.ChildFolders {
 		folder.Delete()
 	}
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-	db.Exec("DELETE from folders where id=?", f.ID)
+	DB.Exec("DELETE from folders where id=?", f.ID)
 }

@@ -11,6 +11,7 @@ import (
 func main() {
 	r := NewRouter()
 
+	initDB()
 	r.PathPrefix("/assets").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/dist"))))
 
 	// handlers for index.html and bundle.js
