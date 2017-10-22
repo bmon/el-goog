@@ -205,12 +205,12 @@ class ObjectList extends Component {
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
         rightIconButton={
-        
+
           // icon button clickable but no function yet to delete file
           <div>
-          <DeleteFile />
+          <DeleteFile target={item.id} onDelete={() => _this.refreshServer()}/>
         </div>
-        
+
         }
         primaryText={item.name}
         secondaryText={sectext}
@@ -272,8 +272,8 @@ class ObjectList extends Component {
         </ToolbarGroup>
         <ToolbarGroup>
           <SearchBar
-            onChange={(value) => this.setState({ query: value })}
-            onRequestSearch={() => this.setQuery(this.state.query)}
+            onChange={(value) => window.query=value}
+            onRequestSearch={() => this.setQuery(window.query)}
             style={{margin: '0 auto',maxWidth: 800}}
           />
 
