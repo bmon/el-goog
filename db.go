@@ -9,7 +9,7 @@ var databaseFile string = "elgoog.db"
 
 var DB *sql.DB
 
-func initDB() {
+func InitDB() {
 	var err error
 	DB, err = sql.Open("sqlite3", databaseFile)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 )
 
 func TestCreateFolder(t *testing.T) {
+	InitDB()
 	u, _ := CreateUser("a", "a@a.a", "a")
 	f := CreateFolder("somenewfolder", u.RootFolder)
 	f = CreateFolder("another folder", f)

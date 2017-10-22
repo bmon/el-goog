@@ -197,21 +197,14 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 
-	if user == nil {
-		http.Error(w, "User is not logged in", 403)
-		return
-	}
-
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["id"])
-
 	if err != nil {
-		fmt.Println(err)
 		http.NotFound(w, r)
 		return
 	}
 
-	if user.ID != userID {
+	if user == nil || user.ID != userID {
 		http.Error(w, "You do not have permission to modify this account", 403)
 		return
 	}
@@ -220,73 +213,21 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 	newPwd := r.PostFormValue("newPassword")
 	username := r.PostFormValue("username")
 
-	pwdChange := false
-
-	if oldPwd != "" && newPwd != "" {
-		pwdChange = true
-	} else if oldPwd != "" || newPwd != "" {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), append([]byte(oldPwd), pwdsalt...))
+	if err != nil {
 		http.Error(w, "Current password is not correct", 400)
 		return
 	}
 
-	if pwdChange {
-		sltOldPwd := append([]byte(oldPwd), pwdsalt...)
-		err = bcrypt.CompareHashAndPassword([]byte(user.Password), sltOldPwd)
+	hshNewPwd, err := bcrypt.GenerateFromPassword(append([]byte(newPwd), pwdsalt...), 10)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	hashedNewPassword := string(hshNewPwd[:])
 
-		if err != nil {
-			http.Error(w, "Current password is not correct", 400)
-			return
-		}
-
-		sltNewPwd := append([]byte(newPwd), pwdsalt...)
-		hshNewPwd, _ := bcrypt.GenerateFromPassword(sltNewPwd, 10) //salting and hashing the password
-
-		hashedNewPassword := string(hshNewPwd[:])
-
-		db, err := sql.Open("sqlite3", DatabaseFile)
-		if err != nil {
-			fmt.Println(err)
-		}
-		defer db.Close()
-
-		if username == "" {
-			sqlStmt := "UPDATE users SET password = ? WHERE id = ?"
-			_, err = db.Exec(sqlStmt, hashedNewPassword, user.ID)
-			if err != nil {
-				fmt.Println(sqlStmt, err)
-				fmt.Println(err)
-			}
-		} else {
-			sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
-			_, err = db.Exec(sqlStmt, username, hashedNewPassword, user.ID)
-			if err != nil {
-				fmt.Println(sqlStmt, err)
-				fmt.Println(err)
-			}
-		}
-	} else {
-		if username == "" {
-			w.Write([]byte("No details changed"))
-		} else {
-			db, err := sql.Open("sqlite3", DatabaseFile)
-			if err != nil {
-				fmt.Println(err)
-			}
-			defer db.Close()
-
-			sqlStmt := "UPDATE users SET username = ? WHERE id = ?"
-			_, err = db.Exec(sqlStmt, username, user.ID)
-			if err != nil {
-				fmt.Println(sqlStmt, err)
-				fmt.Println(err)
-			}
-		}
-		hashedNewPassword := string(hshNewPwd[:])
-		sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
-		_, err = DB.Exec(sqlStmt, username, hashedNewPassword, user.ID)
-		if err != nil {
-			fmt.Println(sqlStmt, err)
-			fmt.Println(err)
-		}
+	_, err = DB.Exec("UPDATE users SET username = ?, password = ? WHERE id = ?", username, hashedNewPassword, user.ID)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
 	}
 }

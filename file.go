@@ -278,48 +278,35 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := r.URL.Query()
-	search := query.Get("q")
+	search := fmt.Sprintf("%%%s%%", query.Get("q"))
 
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
+	results := make([]File, 0)
 
-	root := user.RootFolder
-	sFolder := SerialFolder{root.ID, -1, root.Name, root.Modified, root.Path(), make([]Folder, 0), make([]File, 0)}
-
-	toSearch := "%" + search + "%"
-
-	rows, err := db.Query("SELECT * FROM files WHERE name LIKE ?", toSearch)
+	rows, err := DB.Query("SELECT id FROM files WHERE name LIKE ?", search)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer rows.Close()
-
 	for rows.Next() {
-		f := &File{}
-		var pid int
-		var timeStamp int64
-		if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &timeStamp); err == nil {
-			f.Parent, err = FolderSelectByID(pid)
-			f.Modified = time.Unix(timeStamp, 0)
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			f, err := FileSelectByID(id)
 			if err != nil {
-				http.NotFound(w, r)
-				fmt.Println(err)
+				http.Error(w, err.Error(), 500)
 				return
 			}
-			if f.GetUserID() == user.ID {
-				sFolder.ChildFiles = append(sFolder.ChildFiles, *f)
+			if f.Parent.GetUserID() == user.ID {
+				results = append(results, *f)
 			}
 		} else {
 			fmt.Println(err)
 			return
 		}
 	}
-	res, err := json.MarshalIndent(sFolder, "", "\t")
+	res, err := json.MarshalIndent(results, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 	w.Write(res)
 }
