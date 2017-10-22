@@ -62,6 +62,12 @@ var routes = Routes{
 		},
 	},
 	Resource{
+		"/files",
+		[]Op{
+			{"GET", FileGetHandler},
+		},
+	},
+	Resource{
 		"/folders/{id:[0-9]+}/files",
 		[]Op{
 			{"POST", FileCreateHandler},
@@ -82,10 +88,4 @@ var routes = Routes{
 		"/logout",
 		[]Op{{"GET", UserLogout}},
 	},
-        Route{
-                "FilesGetHandler",
-                "GET",
-                "/files/",
-                FilesGetHandler,
-        },
 }
