@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
+import Cookie from 'js-cookie';
 
 
 var HashRouter = require('react-router-dom').HashRouter
@@ -70,7 +71,7 @@ export default class ChangePW extends React.Component {
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
-    axios.post(
+    axios.put(
         ('/users/'+userID), qs.stringify({
           password: this.state.password,
         })

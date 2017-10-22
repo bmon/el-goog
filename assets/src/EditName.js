@@ -32,7 +32,6 @@ export default class EditName extends React.Component {
       open: false,
       Username: "",
       password: "",
-      oldpassword: "",
     }
 
     // Bind methods
@@ -61,11 +60,9 @@ export default class EditName extends React.Component {
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
-    axios.put('/users/'+userID, {
+    axios.put('/users/'+userID, qs.stringify({
           username: this.state.Username,
-          newPassword: this.state.password,
-          oldPassword: this.state.oldpassword,
-        }
+        })
     ).then(function(response) {
    //   window.location = "/#/profile";
    //   location.reload()

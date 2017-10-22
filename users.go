@@ -210,15 +210,31 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newPwd := r.PostFormValue("password")
-	username := r.PostFormValue("username")
+	r.ParseForm()
+	fmt.Printf("%+v\n", r.Body)
 
-	hshNewPwd, err := bcrypt.GenerateFromPassword(append([]byte(newPwd), pwdsalt...), 10)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+	newPwd := r.FormValue("password")
+	username := r.FormValue("username")
+
+	fmt.Println(username)
+	fmt.Println(newPwd)
+
+	var hashedNewPassword string
+
+	if newPwd != "" {
+		hshNewPwd, err := bcrypt.GenerateFromPassword(append([]byte(newPwd), pwdsalt...), 10)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		hashedNewPassword = string(hshNewPwd[:])
+	} else {
+		hashedNewPassword = user.Password
 	}
-	hashedNewPassword := string(hshNewPwd[:])
+
+	if username == "" {
+		username = user.Username
+	}
 
 	_, err = DB.Exec("UPDATE users SET username = ?, password = ? WHERE id = ?", username, hashedNewPassword, user.ID)
 	if err != nil {
