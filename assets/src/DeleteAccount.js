@@ -91,7 +91,7 @@ export default class DeleteAccount extends React.Component {
 
     return (
       <div>
-        <FlatButton label="Change Password" onClick={this.handleOpen} primary={true} />
+        <FlatButton label="Delete Account" onClick={this.handleOpen} primary={true} />
         <Dialog
           title="Are you sure you want to delete your el-goog account?" 
           actions={actions}

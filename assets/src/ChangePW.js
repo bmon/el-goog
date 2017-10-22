@@ -35,7 +35,6 @@ export default class ChangePW extends React.Component {
       NewPassword: "",
     }
 
-    // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleOldPassword = this.handleOldPassword.bind(this);
@@ -67,7 +66,6 @@ export default class ChangePW extends React.Component {
     this.setState( rel );
   }
 
-  // need to change this stuff for a new folder
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
@@ -81,8 +79,6 @@ export default class ChangePW extends React.Component {
     }).catch(function (error) {
       alert(error.response.data)
     });
-
-    // TODO instead have user-friendly response and maintain close button
     this.setState({open: false});
   };
 

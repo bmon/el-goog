@@ -23,7 +23,6 @@ import FontIcon from 'material-ui/FontIcon';
 import Cookie from 'js-cookie';
 import {cyan400} from 'material-ui/styles/colors';
 import axios from "axios";
-
 import SettingIcon from 'material-ui/svg-icons/action/settings';
 import SecurityIcon from 'material-ui/svg-icons/hardware/security';
 
@@ -34,11 +33,9 @@ import EditName from './EditName';
 import ChangePW from './ChangePW';
 import DeleteAccount from './DeleteAccount';
 
-// currently unused
 function handleTouchTap() {
 }
 
-// css to be applied to elements
 const styles = {
   title: {
     cursor: 'pointer',
@@ -173,6 +170,8 @@ class UserDetails extends Component {
                       <CardTitle>Delete Account</CardTitle>
                       <CardTitle subtitle="If you delete your account, you data will be gone forever."/>
                       <DeleteAccount />
+                      <br />
+                      <br />
                       <Divider /> 
                     </div>
                     </Card>
@@ -181,11 +180,7 @@ class UserDetails extends Component {
               </Tabs>          
         </div>
       </Card>
-
       </div>
-
-
-
     )
   }
 }
