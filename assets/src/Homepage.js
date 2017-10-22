@@ -78,7 +78,7 @@ class AppBarr extends Component {
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
 
-      if(Cookie.get("session_id")) window.location = "/files";
+      if(Cookie.get("session_id")) window.location = "/#/files";
   }
 
   handleLoggedIn () {

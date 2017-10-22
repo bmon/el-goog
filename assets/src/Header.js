@@ -73,7 +73,7 @@ class AppBarHeader extends Component {
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
 	
-	if(!Cookie.get("session_id")) window.location = "/";
+	if(!Cookie.get("session_id")) window.location = "/#/";
   }
 
   handleLoggedIn () {
