@@ -290,3 +290,7 @@ func (f *File) Delete() {
 	defer db.Close()
 	db.Exec("DELETE from files where id=?", f.ID)
 }
+
+func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
+	return
+}
