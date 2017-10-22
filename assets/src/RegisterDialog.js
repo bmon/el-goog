@@ -11,46 +11,45 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
-import RegisterDialog from './RegisterDialog';
+
+var HashRouter = require('react-router-dom').HashRouter
+var Route = require('react-router-dom').Route
+var Link = require('react-router-dom').Link
+
+// css to be applied to elements
+const styles = {
+  button: {
+    textAlign: 'center',
+    margin: 12
+  }
+};
 
 export default class Login extends React.Component {
-
   constructor(props) {
     super(props);
 
     // Initial state
     this.state = {
       open: false,
-      username: '',
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleUsername = this.handleUsername.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
-  handleOpen () {
+  handleOpen (){
     this.setState({open: true});
   };
 
   handleClose () {
     this.setState({open: false});
-
   };
-
-  handleUsername (event) {
-    var key = "username"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
   handleEmail (event) {
     var key = "email"
     var val = event.target.value
@@ -65,11 +64,9 @@ export default class Login extends React.Component {
     rel[key] = val
     this.setState( rel );
   }
-
   sendForm() {
     axios.post(
-        '/users', qs.stringify({
-            username: this.state.username,
+        '/login', qs.stringify({
             email: this.state.email,
             password: this.state.password,
         })
@@ -78,10 +75,11 @@ export default class Login extends React.Component {
       window.location = "/#/files";
     }).catch(function (error) {
       alert(error.response.data)
-    })
+    });
+
     // TODO instead have user-friendly response and maintain close button
-    handleClose()
-  }
+    this.setState({open: false});
+  };
 
 render() {
     const actions = [
@@ -90,7 +88,7 @@ render() {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Register"
+        label="Login"
         primary={true}
         onClick={this.sendForm}
       />,
@@ -98,47 +96,35 @@ render() {
 
     return (
       <div>
-        <RaisedButton label="Sign Up" onClick={this.handleOpen} />
+        
         <Dialog
-          title="Sign Up"
+          title="Login"
           actions={actions}
           modal={true}
           open={this.state.open}
-          onRequestClose={<RegisterDialog />}
         >
-          <TextField ref='fullname'
-             name='fullname'
-             required={true}
-             hintText="Full Name"
-             //errorText={"error"}
-             floatingLabelText="Full Name"
-             value={this.state.username}
-             onChange={this.handleUsername}
-             type="text">
-          </TextField>
-          <br/>
           <TextField ref='email'
              name='email'
              required={true}
-             hintText="Email"
-             //errorText={"error"}
-             floatingLabelText="Email"
-             value={this.state.email}
-             onChange={this.handleEmail}
-             type="text">
-          </TextField>
-          <br/>
-          <TextField ref='password'
+           hintText="Email"
+         //  errorText={"error"}
+               floatingLabelText="Email"
+                value={this.state.email}
+                onChange={this.handleEmail}
+               type="text">
+            </TextField>
+            <br/>
+            <TextField ref='password'
              name='password'
              required={true}
-             hintText="Password"
-             //errorText={"errorrr"}
-             floatingLabelText="Password"
-             value={this.state.password}
-             onChange={this.handlePassword}
-             type="password">
-          </TextField>
-          <br/>
+           hintText="Password"
+         //  errorText={"errorrr"}
+               floatingLabelText="Password"
+                value={this.state.password}
+                onChange={this.handlePassword}
+               type="password">
+            </TextField>
+            <br/>
         </Dialog>
       </div>
     );
