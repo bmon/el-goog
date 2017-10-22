@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/mux"
@@ -17,11 +18,11 @@ import (
 var pwdsalt []byte = []byte(getEnv("PASSWORD_SALT", "ayy-lmao_top-kek_meme"))
 
 type User struct {
-	ID         int
-	Email      string
-	Password   string
-	Username   string
-	RootFolder *Folder
+	ID         int     `json:"id"`
+	Email      string  `json:"email"`
+	Password   string  `json:"-"`
+	Username   string  `josn:"username"`
+	RootFolder *Folder `json:"root_folder"`
 }
 
 func (u *User) Insert() error {
@@ -206,8 +207,11 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "username:%s\n", user.Username)
-	fmt.Fprintf(w, "email:%s", user.Email)
+	res, err := json.MarshalIndent(user, "", "\t")
+	if err != nil {
+                http.Error(w, err.Error(), 500)
+        }
+        w.Write(res)
 }
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
