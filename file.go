@@ -289,26 +289,25 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 	root := user.RootFolder
 	sFolder := SerialFolder{root.ID, -1, root.Name, root.Modified, root.Path(), make([]Folder, 0), make([]File, 0)}
 
-
-	toSearch := "%"+search+"%"
+	toSearch := "%" + search + "%"
 
 	rows, err := db.Query("SELECT * FROM files WHERE name LIKE ?", toSearch)
-        if err != nil {
-                fmt.Println(err)
-        }
-        defer rows.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
 
-        for rows.Next() {
-                f := &File{}
+	for rows.Next() {
+		f := &File{}
 		var pid int
 		var timeStamp int64
-                if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &timeStamp); err == nil {
+		if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &timeStamp); err == nil {
 			f.Parent, err = FolderSelectByID(pid)
 			f.Modified = time.Unix(timeStamp, 0)
-			if err != nil{
+			if err != nil {
 				http.NotFound(w, r)
 				fmt.Println(err)
-		                return
+				return
 			}
 			if f.GetUserID() == user.ID {
 				sFolder.ChildFiles = append(sFolder.ChildFiles, *f)
