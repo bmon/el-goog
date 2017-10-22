@@ -223,6 +223,37 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+func FolderCreateHandler(w http.ResponseWriter, r *http.Request) {
+	user := GetRequestUser(r)
+	r.ParseForm()
+	name := r.Form.Get("name")
+	parent := r.Form.Get("parent")
+
+	folderID, err := strconv.Atoi(parent)
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+	f, err := FolderSelectByID(folderID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if user == nil || user.ID != f.GetUserID() {
+		http.Error(w, "You do not have permission to retrieve this object", 403)
+		return
+	}
+	new := CreateFolder(name, f)
+	res, err := json.MarshalIndent(new, "", "\t")
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	w.Write(res)
+
+	return
+}
+
 func FolderDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 	vars := mux.Vars(r)

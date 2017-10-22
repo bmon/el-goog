@@ -14,6 +14,7 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Cookie from 'js-cookie';
 import {blueGrey100} from 'material-ui/styles/colors';
+import {cyan400, yellow600} from 'material-ui/styles/colors';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -77,11 +78,11 @@ class AppBarr extends Component {
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
   }
-  
-  handleLoggedIn () {    
+
+  handleLoggedIn () {
     this.setState({logged: true});
   };
-  handleLoggedOut () {    
+  handleLoggedOut () {
     this.setState({logged: false});
   };
 
@@ -103,20 +104,21 @@ class AppBarr extends Component {
     }
   }
 
-  render() { 
+  render() {
     return (
       <div>
         <AppBar
           title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
 
+          iconElementLeft={<IconButton> </IconButton>}
           iconElementLeft={
-            <img src="/assets/transparent_logo.png" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
+            <img src="/assets/transparent_logo.png" width="auto" height="auto" alt="Johnson Pond" onClick="image()"/>
           }
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }
-          style={{backgroundColor: blueGrey100}}
+          style={{backgroundColor: cyan400}}
         />
       </div>
     );

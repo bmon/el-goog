@@ -10,7 +10,11 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
-import MenuItem from 'material-ui/MenuItem';
+
+
+var HashRouter = require('react-router-dom').HashRouter
+var Route = require('react-router-dom').Route
+var Link = require('react-router-dom').Link
 
 // css to be applied to elements
 const styles = {
@@ -34,6 +38,8 @@ export default class Login extends React.Component {
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
+    this.handlePassword = this.handlePassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -44,30 +50,45 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
+  handleEmail (event) {
+    var key = "email"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
+  handlePassword (event) {
+    var key = "password"
+    var val = event.target.value
+    var rel = {}
+    rel[key] = val
+    this.setState( rel );
+  }
   sendForm() {
-    axios.get(
-        '/logout', qs.stringify({})
+    axios.post(
+        '/login', qs.stringify({
+            email: this.state.email,
+            password: this.state.password,
+        })
     ).then(function(response) {
         // TODO proper form responses
-        console.log(response)
-        alert('Successfully logged out')
-        window.location = "/";
+      window.location = "/#/files";
     }).catch(function (error) {
-        console.log(response)
+      alert(error.response.data)
     });
 
     // TODO instead have user-friendly response and maintain close button
-    //this.setState({open: false});
+    this.setState({open: false});
   };
 
 render() {
     const actions = [
       <FlatButton
-        label="Cancel"        
+        label="Cancel"
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Logout"
+        label="Make Folder"
         primary={true}
         onClick={this.sendForm}
       />,
@@ -75,13 +96,24 @@ render() {
 
     return (
       <div>
-        <MenuItem primaryText="Logout" onClick={this.handleOpen}></MenuItem>
+        <RaisedButton label="New Folder" onClick={this.handleOpen} />
         <Dialog
-          title="Are you sure you want to logout?"
+          title="Make a New Folder"
           actions={actions}
           modal={true}
           open={this.state.open}
         >
+          <TextField ref='folderName'
+             name='name'
+             required={true}
+           hintText="Folder Name"
+               floatingLabelText="Folder Name"
+               // need to change this stuff for the new folder name stuff
+                value={this.state.email}
+                onChange={this.handleEmail}
+               type="text">
+            </TextField>
+            <br/>
         </Dialog>
       </div>
     );
