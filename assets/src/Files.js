@@ -75,6 +75,9 @@ const styles = {
   },
   fileList: {
     textAlign: 'left'
+  },
+  folderPath: {
+    textAlign: 'left'
   }
 };
 
@@ -192,21 +195,21 @@ class ObjectList extends Component {
         />
       )
     });
+    console.log(this.state.path)
     const renderPath = this.state.path.map(function(item, i) {
       var parts = item.split('.')
       var id = parts.pop()
       var name = parts.join()
-      if (id == folderID) {
+      if (i == 0 ) {
         return (
-          <IconButton touch={true}
+          <RaisedButton
           style={styles.button}
           onClick={function() {_this.updateLoc(id)}}
-          label="Home"
           >
-            <FolderIcon />
-          </IconButton>
-        )
+            <FolderIcon style={styles.rootIcon}/>
+          </RaisedButton>
 
+        )
       } else {
         return (
           <span>/
@@ -245,7 +248,10 @@ class ObjectList extends Component {
 
         </ToolbarGroup>
       </Toolbar>
-
+        <List style={styles.fileList}>
+          <Subheader inset={false}>Folders</Subheader>
+          {renderFolders}
+        </List>
         <List style={styles.fileList}>
           <Subheader inset={false}>Files</Subheader>
           {renderFiles}
