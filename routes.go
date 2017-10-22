@@ -64,7 +64,7 @@ var routes = Routes{
 	Resource{
 		"/files",
 		[]Op{
-			{"GET", FileGetHandler},
+			{"GET", FilesGetHandler},
 		},
 	},
 	Resource{
