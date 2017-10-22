@@ -47,14 +47,11 @@ export default class Login extends React.Component {
     this.setState({open: false});
   };
   sendForm() {
-    axios.get(
-        '/logout', qs.stringify({})
-    ).then(function(response) {
-        // TODO proper form responses
-        console.log(response)
-        window.location = "/";
-    }).catch(function (error) {
-        console.log(response)
+    axios.delete(
+        '/'+this.props.type+'/'+this.props.target, qs.stringify({})
+    ).then(() => {
+        this.handleClose() 
+        this.props.onDelete()
     });
 
     // TODO instead have user-friendly response and maintain close button

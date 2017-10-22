@@ -239,6 +239,10 @@ func FolderCreateHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 	r.ParseForm()
 	name := r.Form.Get("name")
+	if name == "" {
+		http.Error(w, "Name cannot be empty", 400)
+		return
+	}
 	parent := r.Form.Get("parent")
 
 	folderID, err := strconv.Atoi(parent)
@@ -260,6 +264,7 @@ func FolderCreateHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := json.MarshalIndent(new, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 	w.Write(res)
 

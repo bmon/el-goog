@@ -208,7 +208,7 @@ class ObjectList extends Component {
 
           // icon button clickable but no function yet to delete file
           <div>
-          <DeleteFile target={item.id} onDelete={() => _this.refreshServer()}/>
+          <DeleteFile type={"files"} target={item.id} onDelete={() => _this.refreshServer()}/>
         </div>
 
         }
@@ -226,7 +226,7 @@ class ObjectList extends Component {
         rightIconButton={
           // icon button clickable but no function yet to delete file
           <div>
-          <DeleteFile target={item.id} />
+          <DeleteFile type={"folders"} target={item.id} onDelete={() => _this.refreshServer()}/>
         </div>
         }
         primaryText={item.name}
