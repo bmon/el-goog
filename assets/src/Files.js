@@ -186,7 +186,9 @@ class ObjectList extends Component {
   updateLoc(id) {
     Cookie.set("root_id", id)
     folderID = id
-    this.refreshServer()
+    //this.refreshServer()
+    location.reload()
+
   }
 
   downloadFile(id) {
