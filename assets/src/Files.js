@@ -39,6 +39,10 @@ import LogoutPU from './LogoutPU';
 import Header from './Header';
 import NewFolderPU from './NewFolderPU';
 
+var filesize = require('file-size');
+var ta = require('time-ago')();  // node.js
+
+
 
 import '../dist/gallery.css'
 
@@ -174,6 +178,8 @@ class ObjectList extends Component {
   render() {
     const _this = this
     const renderFiles = this.state.files.map(function(item, i) {
+      var sectext = filesize(item.size).human() + " " + ta.ago(item.modified)
+
       return (
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
@@ -185,11 +191,12 @@ class ObjectList extends Component {
           </IconButton>
         }
         primaryText={item.name}
-        secondaryText={item.size + " bytes"}
+        secondaryText={sectext}
         />
       )
     });
     const renderFolders = this.state.folders.map(function(item, i) {
+      var sectext = ta.ago(item.modified)
       return (
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
@@ -201,11 +208,10 @@ class ObjectList extends Component {
           </IconButton>
         }
         primaryText={item.name}
-        secondaryText={item.modified}
+        secondaryText={sectext}
         />
       )
     });
-    console.log(this.state.path)
     const renderPath = this.state.path.map(function(item, i) {
       var parts = item.split('.')
       var id = parts.pop()

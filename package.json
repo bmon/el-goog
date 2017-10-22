@@ -21,6 +21,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.7",
     "dom-helpers": "^3.2.1",
+    "file-size": "^1.0.0",
     "fine-uploader": "^5.15.0",
     "js-cookie": "^2.1.4",
     "material-ui": "^0.19.3",
@@ -31,6 +32,7 @@
     "react-router-dom": "^4.2.2",
     "react-transition-group": "^1.2.1",
     "style-loader": "^0.19.0",
+    "time-ago": "^0.1.0",
     "webpack": "^3.6.0",
     "webpack-bundle-tracker": "^0.2.0"
   },
