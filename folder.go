@@ -190,6 +190,21 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
+	vals := r.URL.Query()
+	sortVal, ok := vals["sort"]
+	fmt.Println(sortVal)
+	if ok {
+		fmt.Println("got sort query")
+		/*
+
+			if sortVal == "name" {
+
+			}
+			if sortVal == "size" {
+
+			}
+		*/
+	}
 	w.Write(res)
 }
 
