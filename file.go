@@ -297,6 +297,8 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			if f.Parent.GetUserID() == user.ID {
 				results = append(results, *f)
+			}else{
+				fmt.Println(fmt.Sprintf("%s vs %s", f.Parent.GetUserID(), user.ID))
 			}
 		} else {
 			fmt.Println(err)
