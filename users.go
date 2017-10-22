@@ -149,6 +149,10 @@ func UserLogout(w http.ResponseWriter, r *http.Request) {
 func UserDelete(w http.ResponseWriter, r *http.Request) {
 	thisUser := GetRequestUser(r)
 
+	if thisUser == nil {
+		http.Error(w, "User is not logged in", 403)
+	}
+
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["id"])
 
@@ -184,6 +188,10 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 
+	if user == nil {
+                http.Error(w, "User is not logged in", 403)
+        }
+
 	vars := mux.Vars(r)
         userID, err := strconv.Atoi(vars["id"])
 
@@ -204,6 +212,10 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
+
+        if user == nil {
+                http.Error(w, "User is not logged in", 403)
+        }
 
         vars := mux.Vars(r)
         userID, err := strconv.Atoi(vars["id"])
