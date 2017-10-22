@@ -31,15 +31,13 @@ export default class Login extends React.Component {
     // Initial state
     this.state = {
       open: false,
-      email: "",
-      password: "",
+      name: "",
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleEmail = this.handleEmail.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
+    this.handleName = this.handleName.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -50,30 +48,24 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
-  handleEmail (event) {
-    var key = "email"
+  handleName (event) {
+    var key = "name"
     var val = event.target.value
     var rel = {}
     rel[key] = val
     this.setState( rel );
   }
-  handlePassword (event) {
-    var key = "password"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
+
   // need to change this stuff for a new folder
   sendForm() {
     axios.post(
-        '/login', qs.stringify({
-            email: this.state.email,
-            password: this.state.password,
+        '/folders/', qs.stringify({
+            name: this.state.name,
+            parent: window.folderID,
         })
     ).then(function(response) {
-        // TODO proper form responses
       window.location = "/#/files";
+      location.reload()
     }).catch(function (error) {
       alert(error.response.data)
     });
@@ -82,7 +74,7 @@ export default class Login extends React.Component {
     this.setState({open: false});
   };
 
-render() {
+  render() {
     const actions = [
       <FlatButton
         label="Cancel"
@@ -109,9 +101,8 @@ render() {
              required={true}
            hintText="Folder Name"
                floatingLabelText="Folder Name"
-               // need to change this stuff for the new folder name stuff
-                value={this.state.email}
-                onChange={this.handleEmail}
+                value={this.state.name}
+                onChange={this.handleName}
                type="text">
             </TextField>
             <br/>

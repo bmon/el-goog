@@ -91,6 +91,7 @@ func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		user.CreateSession(w)
 		fmt.Fprintf(w, "Success! ID is: %d", user.ID)
+		return
 	}
 	http.Error(w, "ERROR: invalid email address. Received address: "+email, 400)
 	return
