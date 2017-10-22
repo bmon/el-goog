@@ -23,6 +23,7 @@ import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import Cookie from 'js-cookie';
 
 import IconMenu from 'material-ui/IconMenu';
+import FolderIcon from 'material-ui/svg-icons/file/folder';
 import FontIcon from 'material-ui/FontIcon';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import MenuItem from 'material-ui/MenuItem';
@@ -138,7 +139,6 @@ class ObjectList extends Component {
       files: [],
       folders: [],
       path: [],
-      parent_id: -1,
     }
     var _this = this;
     axios.get("/folders/"+folderID)
@@ -146,7 +146,6 @@ class ObjectList extends Component {
       _this.setState({
         files: result.data.child_files,
         folders: result.data.child_folders,
-        parent_id: result.data.parent_id,
         path: result.data.path.slice(0,-1).split("/").slice(2),
       });
     })
@@ -197,19 +196,35 @@ class ObjectList extends Component {
       var parts = item.split('.')
       var id = parts.pop()
       var name = parts.join()
+      if (id == folderID) {
+        return (
+          <IconButton touch={true}
+          style={styles.button}
+          onClick={function() {_this.updateLoc(id)}}
+          label="Home"
+          >
+            <FolderIcon />
+          </IconButton>
+        )
 
-      return (
-        <RaisedButton
-        style={styles.button}
-        label={name}
-        onClick={function() {_this.updateLoc(item.id)}}
-        />
-      )
+      } else {
+        return (
+          <span>/
+          <RaisedButton
+          style={styles.button}
+          label={name}
+          onClick={function() {_this.updateLoc(id)}}
+          />
+          </span>
+        )
+      }
     });
     return (
       <div>
-        {renderPath}
         <div style={styles.fileContainer}>
+        <div style={styles.folderPath}>
+          {renderPath}
+        </div>
         <Toolbar>
         <ToolbarGroup firstChild={true}>
           <RaisedButton style={styles.button}><NewFolderPU /></RaisedButton>
