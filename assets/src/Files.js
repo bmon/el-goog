@@ -205,7 +205,7 @@ class ObjectList extends Component {
           style={styles.button}
           onClick={function() {_this.updateLoc(id)}}
           >
-            <FolderIcon style={styles.rootIcon}/>
+            <FolderIcon style={{verticalAlign: 'middle', lineHeight: '36px'}}/>
           </RaisedButton>
 
         )
@@ -237,7 +237,7 @@ class ObjectList extends Component {
           <IconMenu
             iconButtonElement={
               <FlatButton label="Sort By" icon={<NavigationExpandMoreIcon />} ></FlatButton>
-            } 
+            }
 
           >
             <MenuItem primaryText="Size" />
