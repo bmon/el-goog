@@ -7,6 +7,7 @@ import (
 
 func TestCreateFolder(t *testing.T) {
 	u := &User{-1, "asd@asd.asd", "passwd", "test", CreateFolder("root", nil)}
+	u.Insert()
 	f := CreateFolder("somenewfolder", u.RootFolder)
 	f = CreateFolder("another folder", f)
 	f1, err := FolderSelectByID(f.ID)

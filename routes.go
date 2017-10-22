@@ -78,4 +78,10 @@ var routes = Routes{
 		"/users/{id:[0-9]+}",
 		UserModifyHandler,
 	},
+        Route{
+                "FilesGetHandler",
+                "GET",
+                "/files/",
+                FilesGetHandler,
+        },
 }

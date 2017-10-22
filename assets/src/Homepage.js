@@ -13,6 +13,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Cookie from 'js-cookie';
+import {blueGrey100} from 'material-ui/styles/colors';
 
 import Register from './Register';
 import LoginPU from './LoginPU';
@@ -106,7 +107,7 @@ class AppBarr extends Component {
     return (
       <div>
         <AppBar
-          title={<span style={styles.title}></span>}//
+          title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
 
           iconElementLeft={
@@ -115,6 +116,7 @@ class AppBarr extends Component {
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }
+          style={{backgroundColor: blueGrey100}}
         />
       </div>
     );
