@@ -210,14 +210,8 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.ParseForm()
-	fmt.Printf("%+v\n", r.Body)
-
 	newPwd := r.FormValue("password")
 	username := r.FormValue("username")
-
-	fmt.Println(username)
-	fmt.Println(newPwd)
 
 	var hashedNewPassword string
 

@@ -71,7 +71,7 @@ export default class ChangePW extends React.Component {
     console.log(userID);
     axios.put(
         ('/users/'+userID), qs.stringify({
-          password: this.state.password,
+          password: this.state.NewPassword,
         })
     ).then(function(response) {
       window.location = "/#/profile";
@@ -104,15 +104,6 @@ export default class ChangePW extends React.Component {
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='Old password'
-             name='Old password'
-             required={true}
-             floatingLabelText="Old password"
-             value={this.state.OldPassword}
-             onChange={this.handleOldPassword}
-             type="password">
-            </TextField>
-          <br />
           <TextField ref='New password'
              name='password'
              required={true}

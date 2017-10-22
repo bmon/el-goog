@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
+import Cookie from 'js-cookie';
 
 
 var HashRouter = require('react-router-dom').HashRouter
@@ -60,15 +61,14 @@ export default class DeleteAccount extends React.Component {
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
-    axios.post(
-        ('/users/'+userID), qs.stringify({
-          password: this.state.password,
-        })
+    axios.delete(
+        ('/users/'+userID)
     ).then(function(response) {
-      window.location = "/#/profile";
+      Cookie.remove("session_id")
+      Cookie.remove("root_id")
+      Cookie.remove("user_id")
+      window.location = "/";
       location.reload()
-    }).catch(function (error) {
-      alert(error.response.data)
     });
 
     // TODO instead have user-friendly response and maintain close button
@@ -85,7 +85,6 @@ export default class DeleteAccount extends React.Component {
         label="Delete"
         primary={true}
         onClick={this.sendForm}
-        href = "/#/"
       />,
     ];
 
@@ -93,7 +92,7 @@ export default class DeleteAccount extends React.Component {
       <div>
         <FlatButton label="Delete Account" onClick={this.handleOpen} primary={true} />
         <Dialog
-          title="Are you sure you want to delete your el-goog account?" 
+          title="Are you sure you want to delete your el-goog account?"
           actions={actions}
           modal={true}
           open={this.state.open}

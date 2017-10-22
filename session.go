@@ -118,6 +118,7 @@ func DeleteRequestSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("DELET THIS")
 	// tell the browser to delet this cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session_id",
