@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -25,14 +24,8 @@ type Session struct {
 }
 
 func (s *Session) insert() {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	sqlStmt := fmt.Sprintf("insert into sessions values (NULL, %d, %d, '%x')", s.UserID, s.Expires.Unix(), s.Checksum)
-	_, err = db.Exec(sqlStmt)
+	_, err := DB.Exec(sqlStmt)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -86,16 +79,10 @@ func GetRequestUser(r *http.Request) *User {
 
 	saltedSessionID := append(sessionBytes, salt...)
 
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	var userID int
 
 	stmt := fmt.Sprintf("select user_id from sessions where checksum='%x' and expires > %d", sha256.Sum256(saltedSessionID), time.Now().Unix())
-	row := db.QueryRow(stmt)
+	row := DB.QueryRow(stmt)
 	switch err := row.Scan(&userID); err {
 	case sql.ErrNoRows:
 		// no such session id exists, or it's expired.
@@ -135,13 +122,7 @@ func DeleteRequestSession(w http.ResponseWriter, r *http.Request) {
 
 	saltedSessionID := append(sessionBytes, salt...)
 
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	db.Exec("delete from sessions where checksum=?", fmt.Sprintf("%x", sha256.Sum256(saltedSessionID)))
+	DB.Exec("delete from sessions where checksum=?", fmt.Sprintf("%x", sha256.Sum256(saltedSessionID)))
 }
 
 func getEnv(key, fallback string) string {

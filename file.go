@@ -2,11 +2,9 @@ package main
 
 import (
 	"bytes"
-	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -32,14 +30,9 @@ func CreateFile(name string, size int, parent *Folder) *File {
 }
 
 func FileSelectByID(fileID int) (*File, error) {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		return nil, err
-	}
-
 	f := &File{}
 	var timestamp int64
-	err = db.QueryRow("SELECT id, name, size, modified, parent_id FROM files WHERE id=?", fileID).Scan(&f.ID, &f.Name, &f.Size, &timestamp, &f.Parent)
+	err := DB.QueryRow("SELECT id, name, size, modified, parent_id FROM files WHERE id=?", fileID).Scan(&f.ID, &f.Name, &f.Size, &timestamp, &f.Parent)
 	if err != nil {
 		return nil, err
 	}
@@ -48,14 +41,8 @@ func FileSelectByID(fileID int) (*File, error) {
 }
 
 func (f *File) Insert() {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	sqlStmt := "insert into files values (NULL, ?, ?, ?, ?)"
-	res, err := db.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
+	res, err := DB.Exec(sqlStmt, f.Parent, f.Name, f.Size, f.Modified.Unix())
 	if err != nil {
 		fmt.Println("file insert error", err)
 	} else {
@@ -70,14 +57,8 @@ func (f *File) Insert() {
 
 func (f *File) Update() {
 	f.Modified = time.Now()
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
 	sqlStmt := "update files set parent_id=?, name=?, size=?, modified=? where id=?"
-	_, err = db.Exec(sqlStmt, f.Parent.ID, f.Name, f.Size, f.Modified.Unix(), f.ID)
+	_, err := DB.Exec(sqlStmt, f.Parent.ID, f.Name, f.Size, f.Modified.Unix(), f.ID)
 	if err != nil {
 		fmt.Println(sqlStmt, err)
 		fmt.Println(err)
@@ -88,7 +69,7 @@ func (f *File) GetUserID() int {
 	return f.Parent.GetUserID()
 }
 
-// This method allows us to do db.exec with a folder instance argument
+// This method allows us to do DB.exec with a folder instance argument
 func (f *File) Value() (driver.Value, error) {
 	if f == nil {
 		return nil, nil
@@ -106,12 +87,6 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "You must be authenticated to perform this action"}`, 401)
 		return
 	}
-
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 
 	// =======================================================================
 	// Folder Verification
@@ -163,7 +138,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 			)
 		} else {
 			var fileID int
-			err = db.QueryRow("select id from files where size=-1 and parent_id=? and name=?", folderID, fileName).Scan(&fileID)
+			err = DB.QueryRow("select id from files where size=-1 and parent_id=? and name=?", folderID, fileName).Scan(&fileID)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -238,10 +213,10 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func FileGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -268,10 +243,10 @@ func (f *File) Path() string {
 
 func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -292,32 +267,28 @@ func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (f *File) Delete() {
-	db, err := sql.Open("sqlite3", DatabaseFile)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-	db.Exec("DELETE from files where id=?", f.ID)
+	DB.Exec("DELETE from files where id=?", f.ID)
 }
 
 func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 
 	query := r.URL.Query()
 	search := query.Get("q")
 
 	db, err := sql.Open("sqlite3", DatabaseFile)
-        if err != nil {
-                fmt.Println(err)
-        }
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer db.Close()
 
 	root := user.RootFolder
 	sFolder := SerialFolder{root.ID, -1, root.Name, root.Modified, root.Path(), make([]Folder, 0), make([]File, 0)}
+
 
 	toSearch := "%"+search+"%"
 
@@ -339,17 +310,17 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(err)
 		                return
 			}
-                        if f.GetUserID() == user.ID {
+			if f.GetUserID() == user.ID {
 				sFolder.ChildFiles = append(sFolder.ChildFiles, *f)
 			}
-                } else {
-                        fmt.Println(err)
+		} else {
+			fmt.Println(err)
 			return
-                }
-        }
+		}
+	}
 	res, err := json.MarshalIndent(sFolder, "", "\t")
-        if err != nil {
-                http.Error(w, err.Error(), 500)
-        }
-        w.Write(res)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	w.Write(res)
 }
