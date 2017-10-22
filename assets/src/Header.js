@@ -48,7 +48,7 @@ const Logged = (props) => (
 
   <IconMenu {...props}
     iconButtonElement={
-      <FlatButton label='user' icon={<AccountIcon />}></FlatButton>
+      <FlatButton label={userName} icon={<AccountIcon />}></FlatButton>
     }
 
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
@@ -99,8 +99,9 @@ class AppBarHeader extends Component {
       this.handleLoggedIn;
     }
   }
-
+//
   render() {
+    window.userName = Cookie.get("username")
     return (
       <div>
         <AppBar

@@ -226,7 +226,7 @@ class ObjectList extends Component {
         rightIconButton={
           // icon button clickable but no function yet to delete file
           <div>
-          <DeleteFile />
+          <DeleteFile target={item.id} />
         </div>
         }
         primaryText={item.name}
