@@ -119,6 +119,7 @@ class UploadComponent extends React.Component {
 
             }
         })
+        window.uploader = uploader
         const fileInputChildren = <span>Upload File</span>
 
         return (
@@ -186,9 +187,8 @@ class ObjectList extends Component {
   updateLoc(id) {
     Cookie.set("root_id", id)
     folderID = id
-    //this.refreshServer()
-    location.reload()
-
+    window.uploader.methods.setEndpoint('/folders/'+id+'/files')
+    this.refreshServer()
   }
 
   downloadFile(id) {
