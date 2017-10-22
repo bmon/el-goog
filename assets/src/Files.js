@@ -42,7 +42,7 @@ import DeleteFile from './DeleteFile'
 
 var filesize = require('file-size');
 var ta = require('time-ago')();  // node.js
-
+var folderID = Cookie.get("root_id")
 
 
 import '../dist/gallery.css'
