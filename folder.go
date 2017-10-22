@@ -26,6 +26,7 @@ type SerialFolder struct {
 	ParentID     int       `json:"parent_id"`
 	Name         string    `json:"name"`
 	Modified     time.Time `json:"modified"`
+	Path         string    `json:"path"`
 	ChildFolders []Folder  `json:"child_folders"`
 	ChildFiles   []File    `json:"child_files"`
 }
@@ -41,7 +42,7 @@ func (f *Folder) MakeSerial() SerialFolder {
 	if f.Parent != nil {
 		parentID = f.Parent.ID
 	}
-	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, make([]Folder, 0), make([]File, 0)}
+	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, f.Path(), make([]Folder, 0), make([]File, 0)}
 
 	db, err := sql.Open("sqlite3", DatabaseFile)
 	if err != nil {
@@ -190,15 +191,10 @@ func (f *Folder) Path() string {
 	if f.Parent != nil {
 		parent = f.Parent.Path()
 	} else {
-		db, err := sql.Open("sqlite3", DatabaseFile)
-		if err != nil {
-			return "ERROR"
+		user, err := UserSelectByID(f.GetUserID())
+		if err == nil {
+			parent = fmt.Sprintf("uploads/%s/", user.Email)
 		}
-		defer db.Close()
-		row := db.QueryRow("SELECT email FROM users WHERE root_folder=?", f.ID)
-		email := ""
-		err = row.Scan(&email)
-		parent = fmt.Sprintf("uploads/%s/", email)
 	}
 	return parent + dirname
 }
@@ -217,9 +213,8 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	if user.ID != f.GetUserID() {
+	if user == nil || user.ID != f.GetUserID() {
 		http.Error(w, "You do not have permission to retrieve this object", 403)
-		return
 	}
 	res, err := json.MarshalIndent(f.MakeSerial(), "", "\t")
 	if err != nil {

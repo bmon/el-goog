@@ -149,6 +149,10 @@ func UserLogout(w http.ResponseWriter, r *http.Request) {
 func UserDelete(w http.ResponseWriter, r *http.Request) {
 	thisUser := GetRequestUser(r)
 
+	if thisUser == nil {
+		http.Error(w, "User is not logged in", 403)
+	}
+
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["id"])
 
@@ -184,40 +188,48 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
+	}
+
 	vars := mux.Vars(r)
-        userID, err := strconv.Atoi(vars["id"])
+	userID, err := strconv.Atoi(vars["id"])
 
 	if err != nil {
 		fmt.Println(err)
-                http.NotFound(w, r)
-                return
+		http.NotFound(w, r)
+		return
 	}
 
 	if user.ID != userID {
-                http.Error(w, "You do not have permission to view this information", 403)
-                return
-        }
+		http.Error(w, "You do not have permission to view this information", 403)
+		return
+	}
 
-        fmt.Fprintf(w, "username:%s\n", user.Username)
-        fmt.Fprintf(w, "email:%s", user.Email)
+	fmt.Fprintf(w, "username:%s\n", user.Username)
+	fmt.Fprintf(w, "email:%s", user.Email)
 }
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 
-        vars := mux.Vars(r)
-        userID, err := strconv.Atoi(vars["id"])
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
+	}
 
-        if err != nil {
-                fmt.Println(err)
-                http.NotFound(w, r)
-                return
-        }
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["id"])
 
-        if user.ID != userID {
-                http.Error(w, "You do not have permission to view this information", 403)
-                return
-        }
+	if err != nil {
+		fmt.Println(err)
+		http.NotFound(w, r)
+		return
+	}
+
+	if user.ID != userID {
+		http.Error(w, "You do not have permission to modify this account", 403)
+		return
+	}
 
 	oldPwd := r.PostFormValue("oldPassword")
 	newPwd := r.PostFormValue("newPassword")
@@ -225,6 +237,32 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	if oldPwd == "" || newPwd == "" || username == "" {
 		http.Error(w, "Missing information", 403)
-                return
+		return
+	}
+
+	sltOldPwd := append([]byte(oldPwd), pwdsalt...)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), sltOldPwd)
+
+	if err != nil {
+		http.Error(w, "Current password is not correct", 400)
+		return
+	}
+
+	sltNewPwd := append([]byte(newPwd), pwdsalt...)
+	hshNewPwd, _ := bcrypt.GenerateFromPassword(sltNewPwd, 10) //salting and hashing the password
+
+	hashedNewPassword := string(hshNewPwd[:])
+
+	db, err := sql.Open("sqlite3", DatabaseFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+
+	sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
+	_, err = db.Exec(sqlStmt, username, hashedNewPassword, user.ID)
+	if err != nil {
+		fmt.Println(sqlStmt, err)
+		fmt.Println(err)
 	}
 }

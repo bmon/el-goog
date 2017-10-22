@@ -17,13 +17,14 @@ import Subheader from 'material-ui/Subheader';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
 import ActionAssignment from 'material-ui/svg-icons/action/assignment';
-import {blue500, yellow600} from 'material-ui/styles/colors';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
+import Cookie from 'js-cookie';
 import Register from './Register';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
 
+import axios from "axios";
 // currently unused
 function handleTouchTap() {
   alert('onClick triggered on the title component');
@@ -70,7 +71,22 @@ class UserDetails extends Component {
     this.handleName = this.handleName.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
-    this.sendForm = this.sendForm.bind(this);
+    this.render = this.render.bind(this);
+
+    var _this = this;
+    window.userID = Cookie.get("user_id");
+    console.log(userID);
+    axios.get("/users/"+userID)
+    .then(function(result) {
+      console.log(result.data.username)
+      _this.setState({
+        name: result.data.username,
+        email: result.data.email,
+        password: result.data.password,
+    }).catch(function (error) {
+      alert(error.response.data)
+      });
+    })
   }
   handleName (event) {
     var key = "email"
@@ -95,36 +111,6 @@ class UserDetails extends Component {
     this.setState( rel );
   }
 
-  sendForm() {
-    axios.post(
-        '/users', qs.stringify({
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password,
-        })
-    ).then(function(response) {
-        _this.setState({
-        name: result.data.username,
-        email: result.data.email,
-        password: result.data.password,
-      })
-    }).catch(function (error) {
-      alert(error.response.data)
-    });
-/*
-    var _this = this;
-    axios.get("/users/"+userID)
-    .then(function(result) {
-      _this.setState({
-        name: result.data.username,
-        email: result.data.email,
-        password: result.data.password,
-    }).catch(function (error) {
-      alert(error.response.data)
-      });
-    })*/
-  };
-  
 
   render(){
     return(
