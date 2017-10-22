@@ -64,6 +64,11 @@ func (u *User) CreateSession(w http.ResponseWriter) {
 		Value:  fmt.Sprintf("%d", u.RootFolder.ID),
 		MaxAge: expiryDays * 24 * 60 * 60,
 	})
+	http.SetCookie(w, &http.Cookie{
+		Name:   "user_id",
+		Value:  fmt.Sprintf("%d", u.ID),
+		MaxAge: expiryDays * 24 * 60 * 60,
+	})
 }
 
 func GetRequestUser(r *http.Request) *User {
