@@ -97,7 +97,7 @@ class UploadComponent extends React.Component {
                     // so max 1,2gb files for now
                     enabled: true,
                     mandatory: true,
-                    // partSize: 2000000,
+                    partSize: 1000000,
 
                 },
                 deleteFile: {
