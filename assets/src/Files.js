@@ -109,8 +109,10 @@ class UploadComponent extends React.Component {
             }
         })
 
+        const fileInputChildren = <span>Upload File</span>
+
         return (
-            <Gallery uploader={ uploader } />
+            <Gallery fileInput-children={ fileInputChildren } uploader={ uploader } />
         )
     }
 }
@@ -213,8 +215,6 @@ class ObjectList extends Component {
 
         </ToolbarGroup>
       </Toolbar>
-
-
 
         <List style={styles.fileList}>
           <Subheader inset={false}>Files</Subheader>
