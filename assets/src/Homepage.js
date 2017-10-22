@@ -111,7 +111,7 @@ class AppBarr extends Component {
           title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
 
-          iconElementLeft={<IconButton color={black} iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+          iconElementLeft={<IconButton> </IconButton>}
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }
