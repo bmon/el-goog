@@ -37,14 +37,19 @@ func CreateFolder(name string, parent *Folder) *Folder {
 	return f
 }
 
-func (f *Folder) MakeSerial() SerialFolder {
+func (f *Folder) MakeSerial(query string) SerialFolder {
+	if query == "" {
+		query = "%"
+	} else {
+		query = fmt.Sprintf("%%%s%%", query)
+	}
 	parentID := -1
 	if f.Parent != nil {
 		parentID = f.Parent.ID
 	}
 	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, f.Path(), make([]Folder, 0), make([]File, 0)}
 
-	rows, err := DB.Query("SELECT id FROM folders WHERE parent_id=?", folder.ID)
+	rows, err := DB.Query("SELECT id FROM folders WHERE parent_id=? and name like ?", folder.ID, query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -59,7 +64,7 @@ func (f *Folder) MakeSerial() SerialFolder {
 		}
 	}
 
-	rows, err = DB.Query("SELECT id FROM files WHERE parent_id=?", folder.ID)
+	rows, err = DB.Query("SELECT id FROM files WHERE parent_id=? and name like ?", folder.ID, query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -191,9 +196,8 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "You do not have permission to retrieve this object", 403)
 	}
 
-	s := f.MakeSerial()
-
 	sortVal := vals.Get("sort")
+	s := f.MakeSerial(vals.Get("q"))
 	// pick the appropriate sort function
 	switch sortVal {
 
@@ -284,7 +288,7 @@ func FolderDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (f *Folder) Delete() {
-	serial := f.MakeSerial()
+	serial := f.MakeSerial("")
 	for _, file := range serial.ChildFiles {
 		file.Delete()
 	}
