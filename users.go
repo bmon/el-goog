@@ -110,6 +110,7 @@ func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	if GetRequestUser(r) != nil {
 		http.Error(w, "Already logged in", 400)
+		return
 	}
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
@@ -154,6 +155,7 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 
 	if thisUser == nil {
 		http.Error(w, "User is not logged in", 403)
+		return
 	}
 
 	vars := mux.Vars(r)
@@ -193,6 +195,7 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		http.Error(w, "User is not logged in", 403)
+		return
 	}
 
 	vars := mux.Vars(r)
@@ -221,6 +224,7 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		http.Error(w, "User is not logged in", 403)
+		return
 	}
 
 	vars := mux.Vars(r)

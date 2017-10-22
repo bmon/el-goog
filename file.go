@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"time"
 
+	"encoding/json"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -239,6 +240,7 @@ func FileGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
         if user == nil {
                 http.Error(w, "User is not logged in", 403)
+		return
         }
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
@@ -268,6 +270,7 @@ func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
         if user == nil {
                 http.Error(w, "User is not logged in", 403)
+		return
         }
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
@@ -301,6 +304,7 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
         if user == nil {
                 http.Error(w, "User is not logged in", 403)
+		return
         }
 
 	query := r.URL.Query()
@@ -312,12 +316,34 @@ func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
         }
 	defer db.Close()
 
-	//sFolder := SerialFolder{
+	root := user.RootFolder
+	sFolder := SerialFolder{root.ID, -1, root.Name, root.Modified, root.Path(), make([]Folder, 0), make([]File, 0)}
 
-        //vars := mux.Vars(r)
-        //fileID, err := strconv.Atoi(vars["id"])
-
-
-	fmt.Sprintf("ayy + %s",search)
-	
+	rows, err := db.Query("SELECT * FROM files WHERE name LIKE '%?%'", search)
+        if err != nil {
+                fmt.Println(err)
+        }
+        defer rows.Close()
+        for rows.Next() {
+                f := &File{}
+		var pid int
+                if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &f.Modified); err == nil {
+			f.Parent, err = FolderSelectByID(pid)
+			if err != nil{
+				http.NotFound(w, r)
+		                return
+			}
+                        if f.GetUserID() == user.ID {
+				sFolder.ChildFiles = append(sFolder.ChildFiles, *f)
+			}
+                } else {
+                        fmt.Println(err)
+			return
+                }
+        }
+	res, err := json.MarshalIndent(sFolder, "", "\t")
+        if err != nil {
+                http.Error(w, err.Error(), 500)
+        }
+        w.Write(res)
 }
