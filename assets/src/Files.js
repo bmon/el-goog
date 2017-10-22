@@ -29,6 +29,7 @@ import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-mo
 import MenuItem from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import SearchBar from 'material-ui-search-bar'
 
 import axios from "axios";
 
@@ -177,7 +178,12 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
-        rightIcon={<DeleteButton />}
+        rightIconButton={
+          // icon button clickable but no function yet to delete file
+          <IconButton>
+            <DeleteButton />
+          </IconButton>
+        }
         primaryText={item.name}
         secondaryText={item.size + " bytes"}
         />
@@ -188,7 +194,12 @@ class ObjectList extends Component {
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
         onClick={function (id) {_this.updateLoc(item.id)}}
-        rightIcon={<DeleteButton />}
+        rightIconButton={
+          // icon button clickable but no function yet to delete file
+          <IconButton>
+            <DeleteButton />
+          </IconButton>
+        }
         primaryText={item.name}
         secondaryText={item.modified}
         />
@@ -232,6 +243,15 @@ class ObjectList extends Component {
           <RaisedButton style={styles.button}><NewFolderPU /></RaisedButton>
         </ToolbarGroup>
         <ToolbarGroup>
+           <SearchBar
+            onChange={() => console.log('onChange')}
+            onRequestSearch={() => console.log('onRequestSearch')}
+            style={{
+              margin: '0 auto',
+              maxWidth: 800
+      }}
+    />
+
           <ToolbarSeparator />
 
           <IconMenu

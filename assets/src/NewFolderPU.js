@@ -64,6 +64,7 @@ export default class Login extends React.Component {
     rel[key] = val
     this.setState( rel );
   }
+  // need to change this stuff for a new folder
   sendForm() {
     axios.post(
         '/login', qs.stringify({
