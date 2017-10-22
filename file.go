@@ -237,6 +237,9 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func FileGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
+        if user == nil {
+                http.Error(w, "User is not logged in", 403)
+        }
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -263,6 +266,9 @@ func (f *File) Path() string {
 
 func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
+        if user == nil {
+                http.Error(w, "User is not logged in", 403)
+        }
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -292,20 +298,26 @@ func (f *File) Delete() {
 }
 
 func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
-	//user := GetRequestUser(r)
+	user := GetRequestUser(r)
+        if user == nil {
+                http.Error(w, "User is not logged in", 403)
+        }
+
 	query := r.URL.Query()
-	search = query.Get("q")
+	search := query.Get("q")
 
 	db, err := sql.Open("sqlite3", DatabaseFile)
         if err != nil {
                 fmt.Println(err)
         }
-	defer db.close()
+	defer db.Close()
+
+	//sFolder := SerialFolder{
 
         //vars := mux.Vars(r)
         //fileID, err := strconv.Atoi(vars["id"])
 
 
-	fmt.Sprintf("ayy + %s",)
+	fmt.Sprintf("ayy + %s",search)
 	
 }
