@@ -78,11 +78,11 @@ class AppBarr extends Component {
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
   }
-  
-  handleLoggedIn () {    
+
+  handleLoggedIn () {
     this.setState({logged: true});
   };
-  handleLoggedOut () {    
+  handleLoggedOut () {
     this.setState({logged: false});
   };
 
@@ -104,16 +104,14 @@ class AppBarr extends Component {
     }
   }
 
-  render() { 
+  render() {
     return (
       <div>
         <AppBar
           title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
 
-          iconElementLeft={
-            <img src="/assets/vector.gif" width="auto" height="auto" alt="Johnson Pond" onclick="image()"/>
-          }
+          iconElementLeft={<IconButton> </IconButton>}
           iconElementRight={
             this.state.logged ? <Logged /> : <Login />
           }

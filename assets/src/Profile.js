@@ -21,9 +21,11 @@ import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import FontIcon from 'material-ui/FontIcon';
 import Cookie from 'js-cookie';
+import {cyan400} from 'material-ui/styles/colors';
 import axios from "axios";
 
 import SettingIcon from 'material-ui/svg-icons/action/settings';
+import SecurityIcon from 'material-ui/svg-icons/hardware/security';
 
 import Register from './Register';
 import LogoutPU from './LogoutPU';
@@ -33,7 +35,6 @@ import Header from './Header';
 
 // currently unused
 function handleTouchTap() {
-  alert('onClick triggered on the title component');
 }
 
 // css to be applied to elements
@@ -55,7 +56,12 @@ const styles = {
   },
   container: {
     margin: 50,
-    textAlign: 'center'
+    textAlign: 'center',
+  },
+  containerCard: {
+    margin: 50,
+    textAlign: 'center',
+    boxShadow: 'none'
   },
   fileContainer: {
     margin: 90,
@@ -66,9 +72,9 @@ const styles = {
   },
   tabs: {
     fontSize: 16,
-    paddingTop: 16,
-    marginBottom: 12,
     fontWeight: 400,
+    height: 80,
+    backgroundColor: cyan400,
   }
 };
 
@@ -78,7 +84,6 @@ class UserDetails extends Component {
     this.state = {
       name: "",
       email: "",
-      password: "",
     }
     this.handleName = this.handleName.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
@@ -90,14 +95,11 @@ class UserDetails extends Component {
     console.log(userID);
     axios.get("/users/"+userID)
     .then(function(result) {
-     // console.log(result.data.username);
+      console.log(result.data.username);
       _this.setState({
-        name: result.data.username,
+        name: result.data.Username,
         email: result.data.email,
-        password: result.data.password,
-    });
-        console.log(this.state.name);
-
+      });
     })
   }
   handleName (event) {
@@ -123,7 +125,6 @@ class UserDetails extends Component {
     this.setState( rel );
   }
 
-
   render(){
     return(
       <div style={styles.body}>
@@ -133,28 +134,37 @@ class UserDetails extends Component {
         <div>
           <CardTitle title="Personal account"/>
               <Tabs>
-                <Tab style={styles.tabs} label="General" icon={<IconButton><SettingIcon /></IconButton>} >
-    
+                <Tab style={styles.tabs} label="General" icon={<IconButton ><SettingIcon /></IconButton>} >
                   <div>
-                    <h2 style={styles.tabs}>Tab One</h2>
-                    <p>
-                      This is an example tab.
-                    </p>
-                    <p>
-                      You can put any sort of HTML or react component in here. It even keeps the component state!
-                    </p>
+                    <Card style={styles.containerCard}>
+                    <div>
+                      <CardText>Basic</CardText>
+                      <Divider />
+                      <CardText>Name:  {this.state.name}</CardText>
+                      <FlatButton style={styles.button} label="Edit Name" primary={true}/>
+                      <Divider />  
+                      <CardText>Email: {this.state.email}</CardText>
+                      <Divider />        
+                      <CardText>Delete Account</CardText>
+                      <CardActions>
+                        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
+                      </CardActions>
+                      <Divider /> 
+                    </div>
+                    </Card>
                   </div>
+
                 </Tab>
-                <Tab icon={<FontIcon className="material-icons">phone</FontIcon>} label="Security" >
+                <Tab style={styles.tabs} label="Security" icon={<IconButton><SecurityIcon /></IconButton>} >
                   <div>
-                    <h2 style={styles.tabs}>Tab Two</h2>
+                    <h2>Tab One: {this.state.name} - {this.state.email}</h2>
                     <p>
-                      This is another example tab.
+                      Name: {this.state.name}
                     </p>
+
                   </div>
                 </Tab>
               </Tabs>
-
 
           
         </div>

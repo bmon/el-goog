@@ -25,6 +25,22 @@ type User struct {
 	RootFolder *Folder `json:"root_folder"`
 }
 
+func CreateUser(name, email, password string) (*User, error) {
+	sltpwd := append([]byte(password), pwdsalt...)
+	hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
+
+	hashedPassword := string(hshpwd[:])
+
+	user := &User{-1, email, hashedPassword, name, CreateFolder("root", nil)}
+	err := user.Insert()
+
+	if err != nil {
+		user.RootFolder.Delete()
+		return nil, err
+	}
+	return user, nil
+}
+
 func (u *User) Insert() error {
 	db, err := sql.Open("sqlite3", DatabaseFile)
 	if err != nil {
@@ -66,43 +82,29 @@ func UserSelectByID(userID int) (*User, error) {
 	return u, nil
 }
 
-func UserCreate(w http.ResponseWriter, r *http.Request) {
+func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.PostFormValue("email")
 	password := r.PostFormValue("password")
 	username := r.PostFormValue("username")
 
 	var isEmail = regexp.MustCompile(`^.+\@.+\..+$`)
-
 	if isEmail.MatchString(email) {
-
-		sltpwd := append([]byte(password), pwdsalt...)
-		hshpwd, _ := bcrypt.GenerateFromPassword(sltpwd, 10) //salting and hashing the password
-
-		hashedPassword := string(hshpwd[:])
-
-		user := &User{-1, email, hashedPassword, username, CreateFolder("root", nil)}
-		err := user.Insert()
-
+		user, err := CreateUser(username, email, password)
 		if err != nil {
-			user.RootFolder.Delete()
 			if err, ok := err.(sqlite3.Error); ok {
 				if err.Code == sqlite3.ErrConstraint {
 					http.Error(w, "Email already in use.", 400)
 					return
 				}
 			}
-
-			fmt.Println("ERROR:", err)
 			http.Error(w, err.Error(), 500)
 			return
 		}
 		user.CreateSession(w)
-
 		fmt.Fprintf(w, "Success! ID is: %d", user.ID)
-	} else {
-		http.Error(w, "ERROR: invalid email address. Received address: "+email, 400)
-		return
 	}
+	http.Error(w, "ERROR: invalid email address. Received address: "+email, 400)
+	return
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
