@@ -1,87 +1,91 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
 
 type Route struct {
-	Name        string
 	Method      string
-	Pattern     string
+	Resource    string
 	HandlerFunc http.HandlerFunc
 }
 
-type Routes []Route
+type Op struct {
+	Method  string
+	Handler http.HandlerFunc
+}
+
+type Resource struct {
+	URI string
+	Ops []Op
+}
+
+type Routes []Resource
+
+func NewRouter() *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	for _, resource := range routes {
+		for _, op := range resource.Ops {
+			router.
+				Path(resource.URI).
+				Methods(op.Method).
+				Handler(op.Handler)
+		}
+	}
+	return router
+}
 
 var routes = Routes{
-	Route{
-		"usersCreate",
-		"POST",
+	Resource{
 		"/users",
-		UserCreate,
+		[]Op{{"POST", UserCreateHandler}},
 	},
-	Route{
-		"usersLogin",
-		"POST",
+	Resource{
+		"/users/{id:[0-9]+}",
+		[]Op{
+			{"GET", UserGetDetails},
+			{"DELETE", UserDelete},
+			{"PUT", UserModifyHandler},
+		},
+	},
+	Resource{
+		"/folders/",
+		[]Op{{"POST", FolderCreateHandler}},
+	},
+	Resource{
+		"/folders/{id:[0-9]+}",
+		[]Op{
+			{"GET", FolderGetHandler},
+			{"DELETE", FolderDeleteHandler},
+		},
+	},
+	Resource{
+		"/files",
+		[]Op{
+			{"GET", FileGetHandler},
+		},
+	},
+	Resource{
+		"/folders/{id:[0-9]+}/files",
+		[]Op{
+			{"POST", FileCreateHandler},
+		},
+	},
+	Resource{
+		"/files/{id:[0-9]+}",
+		[]Op{
+			{"GET", FileGetHandler},
+			{"DELETE", FileDeleteHandler},
+		},
+	},
+	Resource{
 		"/login",
-		UserLogin,
+		[]Op{{"POST", UserLogin}},
 	},
-	Route{
-		"usersLogout",
-		"GET",
+	Resource{
 		"/logout",
-		UserLogout,
+		[]Op{{"GET", UserLogout}},
 	},
-	Route{
-		"FileCreateHandler",
-		"POST",
-		"/folders/{id}/files",
-		FileCreateHandler,
-	},
-	Route{
-		"FileGetHandler",
-		"GET",
-		"/files/{id:[0-9]+}",
-		FileGetHandler,
-	},
-	Route{
-		"FolderGetHandler",
-		"GET",
-		"/folders/{id:[0-9]+}",
-		FolderGetHandler,
-	},
-	Route{
-		"usersDelete",
-		"DELETE",
-		"/users/{id:[0-9]+}",
-		UserDelete,
-	},
-	Route{
-		"FolderDeleteHandler",
-		"DELETE",
-		"/folders/{id:[0-9]+}",
-		FolderDeleteHandler,
-	},
-	Route{
-		"FileDeleteHandler",
-		"DELETE",
-		"/files/{id:[0-9]+}",
-		FileDeleteHandler,
-	},
-	Route{
-		"UserGetDetails",
-		"GET",
-		"/users/{id:[0-9]+}",
-		UserGetDetails,
-	},
-	Route{
-		"UserModifyHandler",
-		"PUT",
-		"/users/{id:[0-9]+}",
-		UserModifyHandler,
-	},
-        Route{
-                "FilesGetHandler",
-                "GET",
-                "/files/",
-                FilesGetHandler,
-        },
 }
