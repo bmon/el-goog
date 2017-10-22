@@ -33,7 +33,6 @@ import Header from './Header';
 
 // currently unused
 function handleTouchTap() {
-  alert('onClick triggered on the title component');
 }
 
 // css to be applied to elements

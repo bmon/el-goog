@@ -20,7 +20,6 @@ import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 
 function handleTouchTap() {
-  alert('onClick triggered on the title component');
 }
 
 const styles = {
@@ -101,7 +100,9 @@ class AppBarHeader extends Component {
         <AppBar
           title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
-          iconElementLeft={<IconButton color={black} iconStyle={styles.mediumIcon} href="./"><ActionHome /></IconButton>}
+          iconElementLeft={
+            <img src="/assets/transparent_logo.gif" width="auto" height="auto" alt="el-goog logo" onclick="image()"/>
+          }
           iconElementRight={<Logged />}
         />
       </div>
