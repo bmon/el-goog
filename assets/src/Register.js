@@ -11,7 +11,6 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
-
 export default class Login extends React.Component {
 
   constructor(props) {
@@ -73,13 +72,16 @@ export default class Login extends React.Component {
         })
     ).then(function(response) {
         // TODO proper form responses
-      alert('Successfully made an account')
-      window.location = "/#/files";
+
+      
     }).catch(function (error) {
       alert(error.response.data)
     })
     // TODO instead have user-friendly response and maintain close button
+
     this.setState({open: false});
+
+
   }
 
 render() {
