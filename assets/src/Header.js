@@ -86,7 +86,6 @@ class AppBarHeader extends Component {
 			'/users/'+this.uid,
 			  qs.stringify({})
 		  ).then( (response) => {
-console.log(response)
 			  this.setState({userName: response.data.username})
 		  }).then(function(response){})
 
@@ -119,7 +118,6 @@ console.log(response)
   }
 //
   render() {
-	  console.log(this.state)
     return (
       <div>
         <AppBar

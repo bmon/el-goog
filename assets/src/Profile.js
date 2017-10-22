@@ -32,6 +32,7 @@ import Header from './Header';
 import EditName from './EditName';
 import ChangePW from './ChangePW';
 import DeleteAccount from './DeleteAccount';
+import qs from 'qs';
 
 function handleTouchTap() {
 }
@@ -90,14 +91,15 @@ class UserDetails extends Component {
     this.render = this.render.bind(this);
 
     var _this = this;
-    window.userID = Cookie.get("user_id");
-    axios.get("/users/"+userID)
+    var userID = Cookie.get("user_id");
+    axios.get("/users/"+userID, qs.stringify({}))
     .then(function(result) {
       _this.setState({
-        Username: result.data.Username,
+        Username: result.data.username,
         email: result.data.email,
-      });
+      })
     })
+      console.log(this.state)
   }
 
   handleName (event) {
@@ -124,13 +126,6 @@ class UserDetails extends Component {
     this.setState( rel );
   }
 
-  sendForm() {
-    window.userID = Cookie.get("user_id");
-    axios.post(
-      '/users/'+userID, qs.stringify({
-        Username: this.state.Username,
-    }))
-  }
 
   render(){
     return(
