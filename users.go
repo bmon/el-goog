@@ -214,9 +214,9 @@ func UserGetDetails(w http.ResponseWriter, r *http.Request) {
 
 	res, err := json.MarshalIndent(user, "", "\t")
 	if err != nil {
-                http.Error(w, err.Error(), 500)
-        }
-        w.Write(res)
+		http.Error(w, err.Error(), 500)
+	}
+	w.Write(res)
 }
 
 func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
@@ -247,64 +247,64 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	pwdChange := false
 
-        if oldPwd != "" && newPwd != "" {
+	if oldPwd != "" && newPwd != "" {
 		pwdChange = true
 	} else if oldPwd != "" || newPwd != "" {
 		http.Error(w, "Current password is not correct", 400)
-                return
+		return
 	}
 
 	if pwdChange {
 		sltOldPwd := append([]byte(oldPwd), pwdsalt...)
-	        err = bcrypt.CompareHashAndPassword([]byte(user.Password), sltOldPwd)
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), sltOldPwd)
 
-        	if err != nil {
-	                http.Error(w, "Current password is not correct", 400)
-                	return
-        	}
+		if err != nil {
+			http.Error(w, "Current password is not correct", 400)
+			return
+		}
 
-	        sltNewPwd := append([]byte(newPwd), pwdsalt...)
-        	hshNewPwd, _ := bcrypt.GenerateFromPassword(sltNewPwd, 10) //salting and hashing the password
+		sltNewPwd := append([]byte(newPwd), pwdsalt...)
+		hshNewPwd, _ := bcrypt.GenerateFromPassword(sltNewPwd, 10) //salting and hashing the password
 
-	        hashedNewPassword := string(hshNewPwd[:])
+		hashedNewPassword := string(hshNewPwd[:])
 
-        	db, err := sql.Open("sqlite3", DatabaseFile)
-	        if err != nil {
-                	fmt.Println(err)
-        	}
-	        defer db.Close()
+		db, err := sql.Open("sqlite3", DatabaseFile)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer db.Close()
 
 		if username == "" {
-                        sqlStmt := "UPDATE users SET password = ? WHERE id = ?"
-                        _, err = db.Exec(sqlStmt, hashedNewPassword, user.ID)
-                        if err != nil {
-                                fmt.Println(sqlStmt, err)
-                                fmt.Println(err)
-                        }
-                } else {
+			sqlStmt := "UPDATE users SET password = ? WHERE id = ?"
+			_, err = db.Exec(sqlStmt, hashedNewPassword, user.ID)
+			if err != nil {
+				fmt.Println(sqlStmt, err)
+				fmt.Println(err)
+			}
+		} else {
 			sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
-		        _, err = db.Exec(sqlStmt, username, hashedNewPassword, user.ID)
-		        if err != nil {
-                		fmt.Println(sqlStmt, err)
-        	        	fmt.Println(err)
-	        	}
-                }
+			_, err = db.Exec(sqlStmt, username, hashedNewPassword, user.ID)
+			if err != nil {
+				fmt.Println(sqlStmt, err)
+				fmt.Println(err)
+			}
+		}
 	} else {
 		if username == "" {
 			w.Write([]byte("No details changed"))
 		} else {
 			db, err := sql.Open("sqlite3", DatabaseFile)
-	        	if err != nil {
-        	        	fmt.Println(err)
-        		}
-	        	defer db.Close()
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer db.Close()
 
-		        sqlStmt := "UPDATE users SET username = ? WHERE id = ?"
-        		_, err = db.Exec(sqlStmt, username, user.ID)
-        		if err != nil {
-                		fmt.Println(sqlStmt, err)
-                		fmt.Println(err)
-	        	}
+			sqlStmt := "UPDATE users SET username = ? WHERE id = ?"
+			_, err = db.Exec(sqlStmt, username, user.ID)
+			if err != nil {
+				fmt.Println(sqlStmt, err)
+				fmt.Println(err)
+			}
 		}
 	}
 }

@@ -238,10 +238,10 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func FileGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -268,10 +268,10 @@ func (f *File) Path() string {
 
 func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 	vars := mux.Vars(r)
 	fileID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -302,48 +302,48 @@ func (f *File) Delete() {
 
 func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
-        if user == nil {
-                http.Error(w, "User is not logged in", 403)
+	if user == nil {
+		http.Error(w, "User is not logged in", 403)
 		return
-        }
+	}
 
 	query := r.URL.Query()
 	search := query.Get("q")
 
 	db, err := sql.Open("sqlite3", DatabaseFile)
-        if err != nil {
-                fmt.Println(err)
-        }
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer db.Close()
 
 	root := user.RootFolder
 	sFolder := SerialFolder{root.ID, -1, root.Name, root.Modified, root.Path(), make([]Folder, 0), make([]File, 0)}
 
 	rows, err := db.Query("SELECT * FROM files WHERE name LIKE '%?%'", search)
-        if err != nil {
-                fmt.Println(err)
-        }
-        defer rows.Close()
-        for rows.Next() {
-                f := &File{}
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		f := &File{}
 		var pid int
-                if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &f.Modified); err == nil {
+		if err := rows.Scan(&f.ID, &pid, &f.Name, &f.Size, &f.Modified); err == nil {
 			f.Parent, err = FolderSelectByID(pid)
-			if err != nil{
+			if err != nil {
 				http.NotFound(w, r)
-		                return
+				return
 			}
-                        if f.GetUserID() == user.ID {
+			if f.GetUserID() == user.ID {
 				sFolder.ChildFiles = append(sFolder.ChildFiles, *f)
 			}
-                } else {
-                        fmt.Println(err)
+		} else {
+			fmt.Println(err)
 			return
-                }
-        }
+		}
+	}
 	res, err := json.MarshalIndent(sFolder, "", "\t")
-        if err != nil {
-                http.Error(w, err.Error(), 500)
-        }
-        w.Write(res)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	w.Write(res)
 }
