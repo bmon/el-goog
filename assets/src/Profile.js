@@ -138,18 +138,14 @@ class UserDetails extends Component {
                   <div>
                     <Card style={styles.containerCard}>
                     <div>
-                      <CardText>Basic</CardText>
-                      <Divider />
-                      <CardText>Name:  {this.state.name}</CardText>
-                      <FlatButton style={styles.button} label="Edit Name" primary={true}/>
-                      <Divider />  
-                      <CardText>Email: {this.state.email}</CardText>
-                      <Divider />        
-                      <CardText>Delete Account</CardText>
+                      <CardTitle>NAME: {this.state.name}</CardTitle>
                       <CardActions>
-                        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
+                        <FlatButton style={styles.button} label="Edit Name" primary={true}/>
                       </CardActions>
-                      <Divider /> 
+                      <Divider />  
+                      <br />
+                      <CardTitle>EMAIL: {this.state.email}</CardTitle>
+                      <CardTitle subtitle="E-mail cannot be changed after account is created."/>
                     </div>
                     </Card>
                   </div>
@@ -157,16 +153,26 @@ class UserDetails extends Component {
                 </Tab>
                 <Tab style={styles.tabs} label="Security" icon={<IconButton><SecurityIcon /></IconButton>} >
                   <div>
-                    <h2>Tab One: {this.state.name} - {this.state.email}</h2>
-                    <p>
-                      Name: {this.state.name}
-                    </p>
-
+                    <Card style={styles.containerCard}>
+                    <div>     
+                      <CardTitle>Password</CardTitle> 
+                      <CardTitle subtitle="Set a unique password to protect your personal account."/>
+                      <CardActions>
+                        <FlatButton style={styles.button} label="Change Password" primary={true}/>
+                      </CardActions>
+                      <Divider />
+                      <br /> 
+                      <CardTitle>Delete Account</CardTitle>
+                      <CardTitle subtitle="If you delete your account, you data will be gone forever."/>
+                      <CardActions>
+                        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
+                      </CardActions>
+                      <Divider /> 
+                    </div>
+                    </Card>
                   </div>
                 </Tab>
-              </Tabs>
-
-          
+              </Tabs>          
         </div>
       </Card>
 
@@ -178,30 +184,5 @@ class UserDetails extends Component {
   }
 }
 
-const Account = () => (
-  <div style={styles.body}>
-  <Header />
-  
-  <Card style={styles.container}>
-    <div>
-      <CardTitle title="Personal account"/>
-      <CardText>Name</CardText>
-      <FlatButton style={styles.button} label="Edit Name" primary={true}/>
-      <Divider />  
-      <CardText>Primary Email</CardText>
-      <CardActions>
-        <FlatButton style={styles.button} label="Edit Email" primary={true}/>
-      </CardActions>
-      <Divider />        
-      <CardText>Delete Account</CardText>
-      <CardActions>
-        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
-      </CardActions>
-      <Divider /> 
-    </div>
-  </Card>
-
-  </div>
-);
 
 export default UserDetails;
