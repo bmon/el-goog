@@ -187,7 +187,7 @@ func FileCreateHandler(w http.ResponseWriter, r *http.Request) {
 		// create does return the osFile,
 		// however golang much prefers the types are strict here
 		//osFile, err := os.Create(rootFolderDir + `/` + fileName)
-		osFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755)
+		osFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0644)
 
 		// =================================================================
 		//  Writing

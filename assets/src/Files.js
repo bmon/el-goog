@@ -33,7 +33,7 @@ import axios from "axios";
 
 import Register from './Register';
 import LoginPU from './LoginPU';
-import LogoutPU from './LogoutPU'; 
+import LogoutPU from './LogoutPU';
 import Header from './Header';
 
 
@@ -133,7 +133,9 @@ class ObjectList extends Component {
     super(props);
     this.state = {
       files: [],
-      folders: []
+      folders: [],
+      path: [],
+      parent_id: -1,
     }
     var _this = this;
     axios.get("/folders/"+folderID)
@@ -142,10 +144,10 @@ class ObjectList extends Component {
         files: result.data.child_files,
         folders: result.data.child_folders,
         parent_id: result.data.parent_id,
+        path: result.data.path.slice(0,-1).split("/").slice(2),
       });
     })
     this.gotoParent = this.gotoParent.bind(this)
-
   }
 
   updateLoc(id) {
@@ -165,6 +167,7 @@ class ObjectList extends Component {
   }
 
   render() {
+    const _this = this
     const renderFiles = this.state.files.map(function(item, i) {
       return (
         <ListItem
@@ -176,7 +179,6 @@ class ObjectList extends Component {
         />
       )
     });
-    const _this = this
     const renderFolders = this.state.folders.map(function(item, i) {
       return (
         <ListItem
@@ -188,10 +190,22 @@ class ObjectList extends Component {
         />
       )
     });
+    const renderPath = this.state.path.map(function(item, i) {
+      var parts = item.split('.')
+      var id = parts.pop()
+      var name = parts.join()
+
+      return (
+        <RaisedButton
+        style={styles.button}
+        label={name}
+        onClick={function() {_this.updateLoc(item.id)}}
+        />
+      )
+    });
     return (
       <div>
-        
-        <RaisedButton style={styles.button} onClick={function(id) {_this.gotoParent()}} label="Previous Folder" />
+        {renderPath}
         <div style={styles.fileContainer}>
         <Toolbar>
         <ToolbarGroup firstChild={true}>
@@ -199,7 +213,7 @@ class ObjectList extends Component {
         </ToolbarGroup>
         <ToolbarGroup>
           <ToolbarSeparator />
-          
+
           <IconMenu
             iconButtonElement={
               <IconButton touch={true}>
