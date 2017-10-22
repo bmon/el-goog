@@ -1,4 +1,9 @@
-hi! 
+Welcome to el-goog!
+
+DESCRIPTION:
+el-goog allows you to create, login, edit and delete an account
+with your account, you own a file directory and can create and delete folders
+within each folder, you can upload and delete files!
 
 TO RUN THE PROJECT:
 just run ./el-goog 
@@ -11,16 +16,9 @@ then simply run ./rebuild.sh
 rebuild.sh does all the necessary steps after your golang environment is
 configured
 
-
+TECH:
 golang backend files are in the root directory to package main
-
 web assets are in assets/static, and webpack also copies them to assets/dist
 javascript jsx files are in assets/src
-
-
-
-el-goog allows you to create, login, edit and delete an account
-with your account, you own a file directory and can create and delete folders
-within each folder, you can upload and delete files!
-
+database migrations are in migrations, each one adds to the final schema
 
