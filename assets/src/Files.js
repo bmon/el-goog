@@ -147,8 +147,13 @@ class ObjectList extends Component {
       folders: [],
       path: [],
     }
+    this.doQuery = this.doQuery.bind(this)
+    this.doQuery("name")
+  }
+
+  doQuery(sort) {
     var _this = this;
-    axios.get("/folders/"+folderID)
+    axios.get("/folders/"+folderID+"?sort="+sort)
     .then(function(result) {
       _this.setState({
         files: result.data.child_files,
@@ -156,7 +161,6 @@ class ObjectList extends Component {
         path: result.data.path.slice(0,-1).split("/").slice(2),
       });
     })
-    this.gotoParent = this.gotoParent.bind(this)
   }
 
   updateLoc(id) {
@@ -167,12 +171,6 @@ class ObjectList extends Component {
     var link = document.createElement("a");
     link.href = "/files/"+id;
     link.click();
-  }
-  gotoParent() {
-    if (this.state.parent_id > 0) {
-      Cookie.set("root_id", this.state.parent_id)
-      location.reload()
-    }
   }
 
   render() {
@@ -266,8 +264,12 @@ class ObjectList extends Component {
             }
 
           >
-            <MenuItem primaryText="Size" />
-            <MenuItem primaryText="Name" />
+            <MenuItem primaryText="Largest" onClick={function() {_this.doQuery("-size")}}/>
+            <MenuItem primaryText="Smallest" onClick={function() {_this.doQuery("size")}}/>
+            <MenuItem primaryText="A-Z" onClick={function() {_this.doQuery("name")}}/>
+            <MenuItem primaryText="Z-A" onClick={function() {_this.doQuery("-name")}}/>
+            <MenuItem primaryText="Latest" onClick={function() {_this.doQuery("-modified")}}/>
+            <MenuItem primaryText="Oldest" onClick={function() {_this.doQuery("modified")}}/>
           </IconMenu>
 
         </ToolbarGroup>
