@@ -29,6 +29,7 @@ import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-mo
 import MenuItem from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import SearchBar from 'material-ui-search-bar'
 
 import axios from "axios";
 
@@ -37,6 +38,10 @@ import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
 import NewFolderPU from './NewFolderPU';
+
+var filesize = require('file-size');
+var ta = require('time-ago')();  // node.js
+
 
 
 import '../dist/gallery.css'
@@ -173,28 +178,40 @@ class ObjectList extends Component {
   render() {
     const _this = this
     const renderFiles = this.state.files.map(function(item, i) {
+      var sectext = filesize(item.size).human() + " " + ta.ago(item.modified)
+
       return (
         <ListItem
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
-        rightIcon={<DeleteButton />}
+        rightIconButton={
+          // icon button clickable but no function yet to delete file
+          <IconButton>
+            <DeleteButton />
+          </IconButton>
+        }
         primaryText={item.name}
-        secondaryText={item.size + " bytes"}
+        secondaryText={sectext}
         />
       )
     });
     const renderFolders = this.state.folders.map(function(item, i) {
+      var sectext = ta.ago(item.modified)
       return (
         <ListItem
         leftAvatar={<Avatar icon={<FileFolder />} />}
         onClick={function (id) {_this.updateLoc(item.id)}}
-        rightIcon={<DeleteButton />}
+        rightIconButton={
+          // icon button clickable but no function yet to delete file
+          <IconButton>
+            <DeleteButton />
+          </IconButton>
+        }
         primaryText={item.name}
-        secondaryText={item.modified}
+        secondaryText={sectext}
         />
       )
     });
-    console.log(this.state.path)
     const renderPath = this.state.path.map(function(item, i) {
       var parts = item.split('.')
       var id = parts.pop()
@@ -205,7 +222,7 @@ class ObjectList extends Component {
           style={styles.button}
           onClick={function() {_this.updateLoc(id)}}
           >
-            <FolderIcon style={styles.rootIcon}/>
+            <FolderIcon style={{verticalAlign: 'middle', lineHeight: '36px'}}/>
           </RaisedButton>
 
         )
@@ -232,12 +249,21 @@ class ObjectList extends Component {
           <RaisedButton style={styles.button}><NewFolderPU /></RaisedButton>
         </ToolbarGroup>
         <ToolbarGroup>
+           <SearchBar
+            onChange={() => console.log('onChange')}
+            onRequestSearch={() => console.log('onRequestSearch')}
+            style={{
+              margin: '0 auto',
+              maxWidth: 800
+      }}
+    />
+
           <ToolbarSeparator />
 
           <IconMenu
             iconButtonElement={
               <FlatButton label="Sort By" icon={<NavigationExpandMoreIcon />} ></FlatButton>
-            } 
+            }
 
           >
             <MenuItem primaryText="Size" />

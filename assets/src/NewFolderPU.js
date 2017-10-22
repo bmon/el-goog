@@ -56,6 +56,7 @@ export default class Login extends React.Component {
     this.setState( rel );
   }
 
+  // need to change this stuff for a new folder
   sendForm() {
     axios.post(
         '/folders/', qs.stringify({

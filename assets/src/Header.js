@@ -43,7 +43,7 @@ const styles = {
   }
 };
 
-const Logged = (props) => (  
+const Logged = (props) => (
   <IconMenu {...props}
     iconButtonElement={<IconButton iconStyle={styles.mediumIcon} ><AccountIcon /></IconButton>}
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
@@ -52,10 +52,10 @@ const Logged = (props) => (
     <MenuItem primaryText="My Files" href="/#/files" />
     <Divider />
     <LogoutPU />
-  </IconMenu> 
+  </IconMenu>
 
 );
-  
+
 class AppBarHeader extends Component {
   constructor(props) {
     super(props);
@@ -68,11 +68,11 @@ class AppBarHeader extends Component {
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
   }
-  
-  handleLoggedIn () {    
+
+  handleLoggedIn () {
     this.setState({logged: true});
   };
-  handleLoggedOut () {    
+  handleLoggedOut () {
     this.setState({logged: false});
   };
 
@@ -95,14 +95,14 @@ class AppBarHeader extends Component {
     }
   }
 
-  render() { 
+  render() {
     return (
       <div>
         <AppBar
           title={<span style={styles.title}></span>}
           onTitleTouchTap={handleTouchTap}
           iconElementLeft={
-            <img src="/assets/transparent_logo.gif" width="auto" height="auto" alt="el-goog logo" onclick="image()"/>
+            <img src="/assets/transparent_logo.gif" width="auto" height="auto" alt="el-goog logo" />
           }
           iconElementRight={<Logged />}
         />

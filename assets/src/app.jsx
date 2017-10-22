@@ -6,6 +6,7 @@ var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 
 var axios = require('axios').axios
+var filesize = require('file-size');
 //import {Router, Route, hashHistory } from 'react-router'
 
 // importing cause requiring a class definition doesnt seem to work
