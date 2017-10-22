@@ -215,7 +215,7 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
         }
 
         if user.ID != userID {
-                http.Error(w, "You do not have permission to view this information", 403)
+                http.Error(w, "You do not have permission to modify this account", 403)
                 return
         }
 
@@ -227,4 +227,30 @@ func UserModifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing information", 403)
                 return
 	}
+
+	sltOldPwd := append([]byte(oldPwd), pwdsalt...)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), sltOldPwd)
+
+        if err != nil {
+                http.Error(w, "Current password is not correct", 400)
+                return
+        }
+
+	sltNewPwd := append([]byte(newPwd), pwdsalt...)
+        hshNewPwd, _ := bcrypt.GenerateFromPassword(sltNewPwd, 10) //salting and hashing the password
+
+        hashedNewPassword := string(hshNewPwd[:])
+
+	db, err := sql.Open("sqlite3", DatabaseFile)
+        if err != nil {
+                fmt.Println(err)
+        }
+        defer db.Close()
+
+	sqlStmt := "UPDATE users SET username = ?, password = ? WHERE id = ?"
+        _, err = db.Exec(sqlStmt, username, hashedNewPassword, user.ID)
+        if err != nil {
+                fmt.Println(sqlStmt, err)
+                fmt.Println(err)
+        }
 }
