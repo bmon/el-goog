@@ -50,7 +50,8 @@ const Logged = (props) => (
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
     <MenuItem primaryText="My Account"  href="/#/profile" />
     <MenuItem primaryText="My Files" href="/#/files" />
-    <MenuItem disabled href="/#/"><LogoutPU /></MenuItem>
+    <Divider />
+    <LogoutPU />
   </IconMenu> 
 
 );

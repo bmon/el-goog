@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
+import MenuItem from 'material-ui/MenuItem';
 
 // css to be applied to elements
 const styles = {
@@ -74,7 +75,7 @@ render() {
 
     return (
       <div>
-        <RaisedButton label="Logout" disableTouchRipple= {true} onClick={this.handleOpen} />
+        <MenuItem primaryText="Logout" onClick={this.handleOpen}></MenuItem>
         <Dialog
           title="Are you sure you want to logout?"
           actions={actions}
