@@ -10,11 +10,8 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
-
-
-var HashRouter = require('react-router-dom').HashRouter
-var Route = require('react-router-dom').Route
-var Link = require('react-router-dom').Link
+import MenuItem from 'material-ui/MenuItem';
+import DeleteButton from 'material-ui/svg-icons/action/delete';
 
 // css to be applied to elements
 const styles = {
@@ -38,8 +35,6 @@ export default class Login extends React.Component {
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleEmail = this.handleEmail.bind(this);
-    this.handlePassword = this.handlePassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -50,81 +45,45 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
-  handleEmail (event) {
-    var key = "email"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
-  handlePassword (event) {
-    var key = "password"
-    var val = event.target.value
-    var rel = {}
-    rel[key] = val
-    this.setState( rel );
-  }
   sendForm() {
-    axios.post(
-        '/login', qs.stringify({
-            email: this.state.email,
-            password: this.state.password,
-        })
+    axios.get(
+        '/logout', qs.stringify({})
     ).then(function(response) {
         // TODO proper form responses
-      window.location = "/#/files";
+        console.log(response)
+        window.location = "/";
     }).catch(function (error) {
-      alert(error.response.data)
+        console.log(response)
     });
 
     // TODO instead have user-friendly response and maintain close button
-    this.setState({open: false});
+    //this.setState({open: false});
   };
 
 render() {
     const actions = [
       <FlatButton
-        label="Cancel"
+        label="Cancel"        
         onClick={this.handleClose}
-      />,
+      />,//
       <FlatButton
-        label="Login"
+        label="Delete"
         primary={true}
         onClick={this.sendForm}
       />,
-    ];
+    ];//
 
     return (
       <div>
-        
+          <IconButton>
+            <DeleteButton onClick={this.handleOpen} />
+          </IconButton>
         <Dialog
-          title="Login"
+          title="Are you sure you want to delete this file?"
           actions={actions}
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='email'
-             name='email'
-             required={true}
-           hintText="Email"
-         //  errorText={"error"}
-               floatingLabelText="Email"
-                value={this.state.email}
-                onChange={this.handleEmail}
-               type="text">
-            </TextField>
-            <br/>
-            <TextField ref='password'
-             name='password'
-             required={true}
-           hintText="Password"
-         //  errorText={"errorrr"}
-               floatingLabelText="Password"
-                value={this.state.password}
-                onChange={this.handlePassword}
-               type="password">
-            </TextField>
-            <br/>
         </Dialog>
       </div>
     );

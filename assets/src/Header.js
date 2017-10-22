@@ -19,6 +19,7 @@ import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 
+
 function handleTouchTap() {
 }
 
@@ -44,8 +45,12 @@ const styles = {
 };
 
 const Logged = (props) => (
+
   <IconMenu {...props}
-    iconButtonElement={<IconButton iconStyle={styles.mediumIcon} ><AccountIcon /></IconButton>}
+    iconButtonElement={
+      <FlatButton label='user' icon={<AccountIcon />}></FlatButton>
+    }
+
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
     <MenuItem primaryText="My Account"  href="/#/profile" />

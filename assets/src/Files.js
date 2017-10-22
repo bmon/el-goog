@@ -38,6 +38,7 @@ import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
 import NewFolderPU from './NewFolderPU';
+import DeleteFile from './DeleteFile'
 
 var filesize = require('file-size');
 var ta = require('time-ago')();  // node.js
@@ -185,16 +186,18 @@ class ObjectList extends Component {
         leftAvatar={<Avatar icon={<Avatar icon={<EditorInsertChart />} backgroundColor={yellow600} />} />}
         onClick={function (id) {_this.downloadFile(item.id)}}
         rightIconButton={
+        
           // icon button clickable but no function yet to delete file
-          <IconButton>
-            <DeleteButton />
-          </IconButton>
+          <div>
+          <DeleteFile />
+        </div>
+        
         }
         primaryText={item.name}
         secondaryText={sectext}
         />
       )
-    });
+    });//
     const renderFolders = this.state.folders.map(function(item, i) {
       var sectext = ta.ago(item.modified)
       return (
@@ -203,15 +206,15 @@ class ObjectList extends Component {
         onClick={function (id) {_this.updateLoc(item.id)}}
         rightIconButton={
           // icon button clickable but no function yet to delete file
-          <IconButton>
-            <DeleteButton />
-          </IconButton>
+          <div>
+          <DeleteFile />
+        </div>
         }
         primaryText={item.name}
         secondaryText={sectext}
         />
       )
-    });
+    });//
     const renderPath = this.state.path.map(function(item, i) {
       var parts = item.split('.')
       var id = parts.pop()

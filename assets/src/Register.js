@@ -11,8 +11,6 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
-import RegisterDialog from './RegisterDialog';
-
 export default class Login extends React.Component {
 
   constructor(props) {
@@ -104,7 +102,6 @@ render() {
           actions={actions}
           modal={true}
           open={this.state.open}
-          onRequestClose={<RegisterDialog />}
         >
           <TextField ref='fullname'
              name='fullname'
