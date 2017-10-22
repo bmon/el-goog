@@ -147,33 +147,52 @@ class ObjectList extends Component {
       files: [],
       folders: [],
       path: [],
+      sort: "name",
+      query: "",
     }
-    var _this = this;
-    axios.get("/folders/"+folderID)
+    this.setSort = this.setSort.bind(this)
+    this.setQuery = this.setQuery.bind(this)
+    this.queryServer = this.queryServer.bind(this)
+    this.refreshServer = this.refreshServer.bind(this)
+    this.refreshServer()
+  }
+
+
+  refreshServer() {
+    this.queryServer(this.state.sort, this.state.query)
+  }
+  queryServer(sort, query) {
+    var _this = this
+    axios.get("/folders/"+folderID+"?sort="+sort+"&q="+query)
     .then(function(result) {
       _this.setState({
         files: result.data.child_files,
         folders: result.data.child_folders,
         path: result.data.path.slice(0,-1).split("/").slice(2),
+        sort: sort,
+        query: query
       });
     })
-    this.gotoParent = this.gotoParent.bind(this)
+  }
+
+  setSort(s) {
+    this.queryServer(s, this.state.query)
+  }
+
+  setQuery(q) {
+    this.queryServer(this.state.sort, q)
   }
 
   updateLoc(id) {
     Cookie.set("root_id", id)
-    location.reload()
+    folderID = id
+    this.refreshServer()
   }
+
   downloadFile(id) {
     var link = document.createElement("a");
     link.href = "/files/"+id;
     link.click();
-  }
-  gotoParent() {
-    if (this.state.parent_id > 0) {
-      Cookie.set("root_id", this.state.parent_id)
-      location.reload()
-    }
   }
 
   render() {
@@ -252,14 +271,11 @@ class ObjectList extends Component {
           <RaisedButton style={styles.button}><NewFolderPU /></RaisedButton>
         </ToolbarGroup>
         <ToolbarGroup>
-           <SearchBar
-            onChange={() => console.log('onChange')}
-            onRequestSearch={() => console.log('onRequestSearch')}
-            style={{
-              margin: '0 auto',
-              maxWidth: 800
-      }}
-    />
+          <SearchBar
+            onChange={(value) => this.setState({ query: value })}
+            onRequestSearch={() => this.setQuery(this.state.query)}
+            style={{margin: '0 auto',maxWidth: 800}}
+          />
 
           <ToolbarSeparator />
 
@@ -267,10 +283,13 @@ class ObjectList extends Component {
             iconButtonElement={
               <FlatButton label="Sort By" icon={<NavigationExpandMoreIcon />} ></FlatButton>
             }
-
           >
-            <MenuItem primaryText="Size" />
-            <MenuItem primaryText="Name" />
+            <MenuItem primaryText="Largest" onClick={function() {_this.setSort("-size")}}/>
+            <MenuItem primaryText="Smallest" onClick={function() {_this.setSort("size")}}/>
+            <MenuItem primaryText="A-Z" onClick={function() {_this.setSort("name")}}/>
+            <MenuItem primaryText="Z-A" onClick={function() {_this.setSort("-name")}}/>
+            <MenuItem primaryText="Latest" onClick={function() {_this.setSort("-modified")}}/>
+            <MenuItem primaryText="Oldest" onClick={function() {_this.setSort("modified")}}/>
           </IconMenu>
 
         </ToolbarGroup>

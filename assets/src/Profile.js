@@ -82,9 +82,10 @@ class UserDetails extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      name: "",
+      Username: "",
       email: "",
     }
+
     this.handleName = this.handleName.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
@@ -92,18 +93,17 @@ class UserDetails extends Component {
 
     var _this = this;
     window.userID = Cookie.get("user_id");
-    console.log(userID);
     axios.get("/users/"+userID)
     .then(function(result) {
-      console.log(result.data.username);
       _this.setState({
-        name: result.data.Username,
+        Username: result.data.Username,
         email: result.data.email,
       });
     })
   }
+
   handleName (event) {
-    var key = "email"
+    var key = "Username"
     var val = event.target.value
     var rel = {}
     rel[key] = val
@@ -117,6 +117,7 @@ class UserDetails extends Component {
     rel[key] = val
     this.setState( rel );
   }
+
   handlePassword (event) {
     var key = "password"
     var val = event.target.value
@@ -125,6 +126,42 @@ class UserDetails extends Component {
     this.setState( rel );
   }
 
+  sendForm() {
+    window.userID = Cookie.get("user_id");
+    axios.post(
+      '/users/'+userID, qs.stringify({
+        Username: this.state.Username,
+    }))
+  }
+
+  changeName (){
+    const actions = [
+      <FlatButton
+        label="OK"
+        primary={true}
+    //    onClick={this.sendForm}
+      />,
+    ]; //
+    return (
+      <Dialog
+        title="Change Name"
+        actions={actions}
+        modal={true}
+      >
+      <TextField ref='New name'
+        name='New name'
+        required={true}
+        hintText="name"
+        floatingLabelText="name"
+  //      value={this.state.Username}
+  //      onChange={this.handleName}
+        type="text">
+      </TextField>
+        <br/>
+      </Dialog>
+    );
+  }
+//
   render(){
     return(
       <div style={styles.body}>
@@ -138,9 +175,11 @@ class UserDetails extends Component {
                   <div>
                     <Card style={styles.containerCard}>
                     <div>
-                      <CardTitle>NAME: {this.state.name}</CardTitle>
+                      <CardTitle>NAME: {this.state.Username}</CardTitle>
                       <CardActions>
-                        <FlatButton style={styles.button} label="Edit Name" primary={true}/>
+                        <FlatButton style={styles.button} 
+                        label="Edit Name" primary={true}
+                        onClick= {this.changeName}/>
                       </CardActions>
                       <Divider />  
                       <br />
