@@ -30,8 +30,9 @@ import SecurityIcon from 'material-ui/svg-icons/hardware/security';
 import Register from './Register';
 import LogoutPU from './LogoutPU';
 import Header from './Header';
-
-
+import EditName from './EditName';
+import ChangePW from './ChangePW';
+import DeleteAccount from './DeleteAccount';
 
 // currently unused
 function handleTouchTap() {
@@ -82,9 +83,10 @@ class UserDetails extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      name: "",
+      Username: "",
       email: "",
     }
+
     this.handleName = this.handleName.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePassword = this.handlePassword.bind(this);
@@ -92,18 +94,17 @@ class UserDetails extends Component {
 
     var _this = this;
     window.userID = Cookie.get("user_id");
-    console.log(userID);
     axios.get("/users/"+userID)
     .then(function(result) {
-      console.log(result.data.username);
       _this.setState({
-        name: result.data.Username,
+        Username: result.data.Username,
         email: result.data.email,
       });
     })
   }
+
   handleName (event) {
-    var key = "email"
+    var key = "Username"
     var val = event.target.value
     var rel = {}
     rel[key] = val
@@ -117,12 +118,21 @@ class UserDetails extends Component {
     rel[key] = val
     this.setState( rel );
   }
+
   handlePassword (event) {
     var key = "password"
     var val = event.target.value
     var rel = {}
     rel[key] = val
     this.setState( rel );
+  }
+
+  sendForm() {
+    window.userID = Cookie.get("user_id");
+    axios.post(
+      '/users/'+userID, qs.stringify({
+        Username: this.state.Username,
+    }))
   }
 
   render(){
@@ -138,10 +148,9 @@ class UserDetails extends Component {
                   <div>
                     <Card style={styles.containerCard}>
                     <div>
-                      <CardTitle>NAME: {this.state.name}</CardTitle>
-                      <CardActions>
-                        <FlatButton style={styles.button} label="Edit Name" primary={true}/>
-                      </CardActions>
+                      <CardTitle>NAME: {this.state.Username}</CardTitle>
+                      <EditName />
+                      <br />
                       <Divider />  
                       <br />
                       <CardTitle>EMAIL: {this.state.email}</CardTitle>
@@ -157,16 +166,13 @@ class UserDetails extends Component {
                     <div>     
                       <CardTitle>Password</CardTitle> 
                       <CardTitle subtitle="Set a unique password to protect your personal account."/>
-                      <CardActions>
-                        <FlatButton style={styles.button} label="Change Password" primary={true}/>
-                      </CardActions>
+                      <ChangePW />
+                      <br />
                       <Divider />
                       <br /> 
                       <CardTitle>Delete Account</CardTitle>
                       <CardTitle subtitle="If you delete your account, you data will be gone forever."/>
-                      <CardActions>
-                        <FlatButton style={styles.button} label="Delete Account" primary={true}/>
-                      </CardActions>
+                      <DeleteAccount />
                       <Divider /> 
                     </div>
                     </Card>

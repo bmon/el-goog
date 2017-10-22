@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 
-	"encoding/json"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -268,47 +267,4 @@ func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (f *File) Delete() {
 	DB.Exec("DELETE from files where id=?", f.ID)
-}
-
-func FilesGetHandler(w http.ResponseWriter, r *http.Request) {
-	user := GetRequestUser(r)
-	if user == nil {
-		http.Error(w, "User is not logged in", 403)
-		return
-	}
-
-	query := r.URL.Query()
-	search := fmt.Sprintf("%%%s%%", query.Get("q"))
-
-	results := make([]File, 0)
-
-	rows, err := DB.Query("SELECT id FROM files WHERE name LIKE ?", search)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var id int
-		if err := rows.Scan(&id); err == nil {
-			f, err := FileSelectByID(id)
-			if err != nil {
-				http.Error(w, err.Error(), 500)
-				return
-			}
-			if f.Parent.GetUserID() == user.ID {
-				results = append(results, *f)
-			} else {
-				fmt.Println(fmt.Sprintf("%s vs %s", f.Parent.GetUserID(), user.ID))
-			}
-		} else {
-			fmt.Println(err)
-			return
-		}
-	}
-	res, err := json.MarshalIndent(results, "", "\t")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	w.Write(res)
 }

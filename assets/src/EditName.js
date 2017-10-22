@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
+import Cookie from 'js-cookie';
 
 var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
@@ -23,14 +24,15 @@ const styles = {
   }
 };
 
-export default class Login extends React.Component {
+export default class EditName extends React.Component {
   constructor(props) {
     super(props);
 
-    // Initial state
     this.state = {
       open: false,
-      name: "",
+      Username: "",
+      password: "",
+      oldpassword: "",
     }
 
     // Bind methods
@@ -47,9 +49,8 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
-
   handleName (event) {
-    var key = "name"
+    var key = "Username"
     var val = event.target.value
     var rel = {}
     rel[key] = val
@@ -58,14 +59,16 @@ export default class Login extends React.Component {
 
   // need to change this stuff for a new folder
   sendForm() {
-    axios.post(
-        '/folders/', qs.stringify({
-            name: this.state.name,
-            parent: window.folderID,
-        })
+    window.userID = Cookie.get("user_id");
+    console.log(userID);
+    axios.put('/users/'+userID, {
+          username: this.state.Username,
+          newPassword: this.state.password,
+          oldPassword: this.state.oldpassword,
+        }
     ).then(function(response) {
-      window.location = "/#/files";
-      location.reload()
+   //   window.location = "/#/profile";
+   //   location.reload()
     }).catch(function (error) {
       alert(error.response.data)
     });
@@ -81,7 +84,7 @@ export default class Login extends React.Component {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Make Folder"
+        label="Save"
         primary={true}
         onClick={this.sendForm}
       />,
@@ -89,21 +92,21 @@ export default class Login extends React.Component {
 
     return (
       <div>
-        <RaisedButton label="New Folder" onClick={this.handleOpen} />
+        <FlatButton label="Edit Name" onClick={this.handleOpen} primary={true} />
         <Dialog
-          title="Make a New Folder"
+          title="Change Name"
           actions={actions}
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='folderName'
+          <TextField ref='New name'
              name='name'
              required={true}
-           hintText="Folder Name"
-               floatingLabelText="Folder Name"
-                value={this.state.name}
-                onChange={this.handleName}
-               type="text">
+             hintText="New name"
+             floatingLabelText="New name"
+             value={this.state.Username}
+             onChange={this.handleName}
+             type="text">
             </TextField>
             <br/>
         </Dialog>

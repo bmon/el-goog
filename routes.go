@@ -62,12 +62,6 @@ var routes = Routes{
 		},
 	},
 	Resource{
-		"/files",
-		[]Op{
-			{"GET", FilesGetHandler},
-		},
-	},
-	Resource{
 		"/folders/{id:[0-9]+}/files",
 		[]Op{
 			{"POST", FileCreateHandler},

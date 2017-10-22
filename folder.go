@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
@@ -35,14 +37,19 @@ func CreateFolder(name string, parent *Folder) *Folder {
 	return f
 }
 
-func (f *Folder) MakeSerial() SerialFolder {
+func (f *Folder) MakeSerial(query string) SerialFolder {
+	if query == "" {
+		query = "%"
+	} else {
+		query = fmt.Sprintf("%%%s%%", query)
+	}
 	parentID := -1
 	if f.Parent != nil {
 		parentID = f.Parent.ID
 	}
 	folder := SerialFolder{f.ID, parentID, f.Name, f.Modified, f.Path(), make([]Folder, 0), make([]File, 0)}
 
-	rows, err := DB.Query("SELECT id FROM folders WHERE parent_id=?", folder.ID)
+	rows, err := DB.Query("SELECT id FROM folders WHERE parent_id=? and name like ?", folder.ID, query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -57,7 +64,7 @@ func (f *Folder) MakeSerial() SerialFolder {
 		}
 	}
 
-	rows, err = DB.Query("SELECT id FROM files WHERE parent_id=?", folder.ID)
+	rows, err = DB.Query("SELECT id FROM files WHERE parent_id=? and name like ?", folder.ID, query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -172,6 +179,8 @@ func (f *Folder) Path() string {
 func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	user := GetRequestUser(r)
 	vars := mux.Vars(r)
+	vals := r.URL.Query()
+
 	folderID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		fmt.Println(err)
@@ -186,25 +195,43 @@ func FolderGetHandler(w http.ResponseWriter, r *http.Request) {
 	if user == nil || user.ID != f.GetUserID() {
 		http.Error(w, "You do not have permission to retrieve this object", 403)
 	}
-	res, err := json.MarshalIndent(f.MakeSerial(), "", "\t")
+
+	sortVal := vals.Get("sort")
+	s := f.MakeSerial(vals.Get("q"))
+	// pick the appropriate sort function
+	switch sortVal {
+
+	case "-name":
+		sort.Slice(s.ChildFiles, func(i, j int) bool {
+			return unicode.ToLower(rune(s.ChildFiles[i].Name[0])) > unicode.ToLower(rune(s.ChildFiles[j].Name[0]))
+		})
+		sort.Slice(s.ChildFolders, func(i, j int) bool {
+			return unicode.ToLower(rune(s.ChildFolders[i].Name[0])) > unicode.ToLower(rune(s.ChildFolders[j].Name[0]))
+		})
+	case "size":
+		sort.Slice(s.ChildFiles, func(i, j int) bool { return s.ChildFiles[i].Size < s.ChildFiles[j].Size })
+	case "-size":
+		sort.Slice(s.ChildFiles, func(i, j int) bool { return s.ChildFiles[i].Size > s.ChildFiles[j].Size })
+	case "modified":
+		sort.Slice(s.ChildFiles, func(i, j int) bool { return s.ChildFiles[i].Modified.Unix() < s.ChildFiles[j].Modified.Unix() })
+		sort.Slice(s.ChildFolders, func(i, j int) bool { return s.ChildFolders[i].Modified.Unix() < s.ChildFolders[j].Modified.Unix() })
+	case "-modified":
+		sort.Slice(s.ChildFiles, func(i, j int) bool { return s.ChildFiles[i].Modified.Unix() > s.ChildFiles[j].Modified.Unix() })
+		sort.Slice(s.ChildFolders, func(i, j int) bool { return s.ChildFolders[i].Modified.Unix() > s.ChildFolders[j].Modified.Unix() })
+	default: // name
+		sort.Slice(s.ChildFiles, func(i, j int) bool {
+			return unicode.ToLower(rune(s.ChildFiles[i].Name[0])) < unicode.ToLower(rune(s.ChildFiles[j].Name[0]))
+		})
+		sort.Slice(s.ChildFolders, func(i, j int) bool {
+			return unicode.ToLower(rune(s.ChildFolders[i].Name[0])) < unicode.ToLower(rune(s.ChildFolders[j].Name[0]))
+		})
+	}
+
+	res, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
-	vals := r.URL.Query()
-	sortVal, ok := vals["sort"]
-	fmt.Println(sortVal)
-	if ok {
-		fmt.Println("got sort query")
-		/*
 
-			if sortVal == "name" {
-
-			}
-			if sortVal == "size" {
-
-			}
-		*/
-	}
 	w.Write(res)
 }
 
@@ -261,7 +288,7 @@ func FolderDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (f *Folder) Delete() {
-	serial := f.MakeSerial()
+	serial := f.MakeSerial("")
 	for _, file := range serial.ChildFiles {
 		file.Delete()
 	}

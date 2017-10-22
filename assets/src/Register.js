@@ -39,6 +39,7 @@ export default class Login extends React.Component {
 
   handleClose () {
     this.setState({open: false});
+
   };
 
   handleUsername (event) {
@@ -72,13 +73,12 @@ export default class Login extends React.Component {
         })
     ).then(function(response) {
         // TODO proper form responses
-      alert('Successfully made an account')
       window.location = "/#/files";
     }).catch(function (error) {
       alert(error.response.data)
     })
     // TODO instead have user-friendly response and maintain close button
-    this.setState({open: false});
+    handleClose()
   }
 
 render() {

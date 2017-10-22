@@ -11,6 +11,7 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
+
 var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
@@ -47,7 +48,6 @@ export default class Login extends React.Component {
   handleClose () {
     this.setState({open: false});
   };
-
   handleName (event) {
     var key = "name"
     var val = event.target.value
@@ -55,8 +55,11 @@ export default class Login extends React.Component {
     rel[key] = val
     this.setState( rel );
   }
-
+<<<<<<< HEAD
   // need to change this stuff for a new folder
+=======
+
+>>>>>>> 27288d925bf829acb56c8f6e75eb4b68938541bc
   sendForm() {
     axios.post(
         '/folders/', qs.stringify({

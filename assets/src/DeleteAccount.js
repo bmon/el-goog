@@ -11,6 +11,7 @@ import Dialog from 'material-ui/Dialog';
 import axios from 'axios';
 import qs from 'qs';
 
+
 var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
@@ -23,20 +24,19 @@ const styles = {
   }
 };
 
-export default class Login extends React.Component {
+export default class DeleteAccount extends React.Component {
   constructor(props) {
     super(props);
 
-    // Initial state
     this.state = {
       open: false,
-      name: "",
+      password: "",
     }
 
     // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleName = this.handleName.bind(this);
+    this.handlePassword = this.handlePassword.bind(this);
     this.sendForm = this.sendForm.bind(this);
   }
 
@@ -48,8 +48,8 @@ export default class Login extends React.Component {
     this.setState({open: false});
   };
 
-  handleName (event) {
-    var key = "name"
+  handlePassword (event) {
+    var key = "oldPassword"
     var val = event.target.value
     var rel = {}
     rel[key] = val
@@ -58,13 +58,14 @@ export default class Login extends React.Component {
 
   // need to change this stuff for a new folder
   sendForm() {
+    window.userID = Cookie.get("user_id");
+    console.log(userID);
     axios.post(
-        '/folders/', qs.stringify({
-            name: this.state.name,
-            parent: window.folderID,
+        ('/users/'+userID), qs.stringify({
+          password: this.state.password,
         })
     ).then(function(response) {
-      window.location = "/#/files";
+      window.location = "/#/profile";
       location.reload()
     }).catch(function (error) {
       alert(error.response.data)
@@ -81,30 +82,22 @@ export default class Login extends React.Component {
         onClick={this.handleClose}
       />,
       <FlatButton
-        label="Make Folder"
+        label="Delete"
         primary={true}
         onClick={this.sendForm}
+        href = "/#/"
       />,
     ];
 
     return (
       <div>
-        <RaisedButton label="New Folder" onClick={this.handleOpen} />
+        <FlatButton label="Change Password" onClick={this.handleOpen} primary={true} />
         <Dialog
-          title="Make a New Folder"
+          title="Are you sure you want to delete your el-goog account?" 
           actions={actions}
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='folderName'
-             name='name'
-             required={true}
-           hintText="Folder Name"
-               floatingLabelText="Folder Name"
-                value={this.state.name}
-                onChange={this.handleName}
-               type="text">
-            </TextField>
             <br/>
         </Dialog>
       </div>
