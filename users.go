@@ -21,7 +21,7 @@ type User struct {
 	ID         int     `json:"id"`
 	Email      string  `json:"email"`
 	Password   string  `json:"-"`
-	Username   string  `josn:"username"`
+	Username   string  `json:"username"`
 	RootFolder *Folder `json:"root_folder"`
 }
 

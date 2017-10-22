@@ -18,7 +18,8 @@ import {white, black} from 'material-ui/styles/colors';
 import Register from './Register';
 import LoginPU from './LoginPU';
 import LogoutPU from './LogoutPU';
-
+import axios from 'axios';
+import qs from 'qs';
 
 function handleTouchTap() {
 }
@@ -44,11 +45,12 @@ const styles = {
   }
 };
 
+
 const Logged = (props) => (
 
   <IconMenu {...props}
     iconButtonElement={
-      <FlatButton label={userName} icon={<AccountIcon />}></FlatButton>
+      <FlatButton label={props.userName} icon={<AccountIcon />}></FlatButton>
     }
 
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
@@ -72,9 +74,23 @@ class AppBarHeader extends Component {
     this.handleLoggedIn = this.handleLoggedIn.bind(this);
     this.handleLoggedOut = this.handleLoggedOut.bind(this);
     this.checkLogged = this.checkLogged.bind(this);
-	
+	this.render = this.render.bind(this);
+	  this.getUserName = this.getUserName.bind(this);
 	if(!Cookie.get("session_id")) window.location = "/#/";
+	this.uid = Cookie.get("user_id")
+	  this.getUserName()
   }
+
+	getUserName() {
+		  axios.get(
+			'/users/'+this.uid,
+			  qs.stringify({})
+		  ).then( (response) => {
+console.log(response)
+			  this.setState({userName: response.data.username})
+		  }).then(function(response){})
+
+	}
 
   handleLoggedIn () {
     this.setState({logged: true});
@@ -103,7 +119,7 @@ class AppBarHeader extends Component {
   }
 //
   render() {
-    window.userName = Cookie.get("username")
+	  console.log(this.state)
     return (
       <div>
         <AppBar
@@ -112,7 +128,7 @@ class AppBarHeader extends Component {
           iconElementLeft={
             <img src="/assets/transparent_logo.gif" width="auto" height="auto" alt="el-goog logo" />
           }
-          iconElementRight={<Logged />}
+          iconElementRight={<Logged userName={this.state.userName} />}
         />
       </div>
     );
