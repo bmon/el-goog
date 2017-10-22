@@ -142,11 +142,10 @@ const HomePage = () => (
     <Divider />
     <br/>
     <CardTitle title="The elegant way to store your files and access them anytime, anywhere" />
-    <CardTitle title="If you sign up, you will be able to:" />
-    <CardTitle titleStyle={styles.content} title="> Upload one or more files at a time" />
-    <CardTitle titleStyle={styles.content} title="> Create folders to store your files in" />
-    <CardTitle titleStyle={styles.content} title="> Download your uploaded files" />
-    <CardTitle titleStyle={styles.content} title="> Delete your files and folders" />
+    <CardTitle titleStyle={styles.content} title="• Upload one or more files at a time •" />
+    <CardTitle titleStyle={styles.content} title="• Create folders to store your files in •" />
+    <CardTitle titleStyle={styles.content} title="• Download your uploaded files •" />
+    <CardTitle titleStyle={styles.content} title="• Delete your files and folders •" />
 
     <br/>
 

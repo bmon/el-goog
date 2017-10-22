@@ -35,7 +35,6 @@ export default class ChangePW extends React.Component {
       NewPassword: "",
     }
 
-    // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleOldPassword = this.handleOldPassword.bind(this);
@@ -67,13 +66,12 @@ export default class ChangePW extends React.Component {
     this.setState( rel );
   }
 
-  // need to change this stuff for a new folder
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
     axios.put(
         ('/users/'+userID), qs.stringify({
-          password: this.state.password,
+          password: this.state.NewPassword,
         })
     ).then(function(response) {
       window.location = "/#/profile";
@@ -81,8 +79,6 @@ export default class ChangePW extends React.Component {
     }).catch(function (error) {
       alert(error.response.data)
     });
-
-    // TODO instead have user-friendly response and maintain close button
     this.setState({open: false});
   };
 
@@ -108,15 +104,6 @@ export default class ChangePW extends React.Component {
           modal={true}
           open={this.state.open}
         >
-          <TextField ref='Old password'
-             name='Old password'
-             required={true}
-             floatingLabelText="Old password"
-             value={this.state.OldPassword}
-             onChange={this.handleOldPassword}
-             type="password">
-            </TextField>
-          <br />
           <TextField ref='New password'
              name='password'
              required={true}

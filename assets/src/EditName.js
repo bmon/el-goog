@@ -16,7 +16,6 @@ var HashRouter = require('react-router-dom').HashRouter
 var Route = require('react-router-dom').Route
 var Link = require('react-router-dom').Link
 
-// css to be applied to elements
 const styles = {
   button: {
     textAlign: 'center',
@@ -34,7 +33,6 @@ export default class EditName extends React.Component {
       password: "",
     }
 
-    // Bind methods
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleName = this.handleName.bind(this);
@@ -56,7 +54,6 @@ export default class EditName extends React.Component {
     this.setState( rel );
   }
 
-  // need to change this stuff for a new folder
   sendForm() {
     window.userID = Cookie.get("user_id");
     console.log(userID);
@@ -64,13 +61,11 @@ export default class EditName extends React.Component {
           username: this.state.Username,
         })
     ).then(function(response) {
-   //   window.location = "/#/profile";
-   //   location.reload()
+     // window.location = "/#/profile";
+      location.reload()
     }).catch(function (error) {
       alert(error.response.data)
     });
-
-    // TODO instead have user-friendly response and maintain close button
     this.setState({open: false});
   };
 
